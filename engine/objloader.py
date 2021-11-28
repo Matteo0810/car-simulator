@@ -1,5 +1,6 @@
 from .helpers.vertex import Vertex
 from .helpers.face import Face
+import re
 
 
 class ObjLoader:
@@ -17,7 +18,7 @@ class ObjLoader:
     @staticmethod
     def load(relative_path: str, size: tuple, distance: int, scale: int):
         return ObjLoader(
-            open(relative_path, 'r').readlines(),
+            open(relative_path, 'r', encoding="utf-8").readlines(),
             size,
             distance,
             scale
@@ -43,28 +44,29 @@ class ObjLoader:
         for vertex_texture in self._content:
             if vertex_texture[0] == "vt":
                 vertex_texture.pop(0)
-                vertex_textures.append((vertex_texture[0], vertex_texture[1]))
+                vertex_textures.append((float(vertex_texture[0]), float(vertex_texture[1])))
         return vertex_textures
 
     def _get_faces(self):
         faces = []
         meshes = self._vertex_meshes
+        textures = self._vertex_textures
 
         for face in self._content:
             if face[0] == "f":
                 face.pop(0)
-                props = [[int(i)-1 for i in j.split('/')] for j in face]
-                faces.append(Face(
-                    meshes[props[0][0]], meshes[props[1][0]], meshes[props[2][0]]))
+                props = [[int(i)-1 for i in re.split('/+', j)] for j in face]
+                vA, vB, vC = meshes[props[0][0]], meshes[props[1][0]], meshes[props[2][0]]
+                faces.append(Face(vA, vB, vC))
         return faces
 
-    def rotate(self, axis, angle):
+    def rotate(self, axis: str, angle: float):
         for vertex in self._vertex_meshes:
             vertex.rotate(axis, angle)
 
-    def move(self, axis, newPos):
+    def move(self, axis: str, newPos: float):
         for vertex in self._vertex_meshes:
-            vertex.rotate(axis, newPos)
+            vertex.move(axis, newPos)
 
     def render(self, canvas):
         for face in self._faces:

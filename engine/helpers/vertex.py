@@ -13,15 +13,15 @@ class Vertex:
     def rotate(self, axis: str, angle: float):
         angle = angle / 450 * 180 / pi
 
-        if axis == 'x':
-            self._y = self._y * cos(angle) - self._y * sin(angle)
-            self._z = self._z * cos(angle) + self._z * sin(angle)
+        if axis == 'z':
+            self._x = self._x * cos(angle) - self._y * sin(angle)
+            self._y = self._y * cos(angle) + self._x * sin(angle)
+        elif axis == 'x':
+            self._y = self._y * cos(angle) - self._z * sin(angle)
+            self._z = self._z * cos(angle) + self._y * sin(angle)
         elif axis == 'y':
-            self._x = self._x * cos(angle) - self._x * sin(angle)
-            self._z = self._z * cos(angle) + self._z * sin(angle)
-        elif axis == 'z':
-            self._x = self._x * cos(angle) - self._x * sin(angle)
-            self._y = self._y * cos(angle) + self._y * sin(angle)
+            self._x = self._x * cos(angle) - self._z * sin(angle)
+            self._z = self._z * cos(angle) + self._x * sin(angle)
         else:
             raise ValueError('Axe invalide')
 
