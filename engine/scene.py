@@ -15,16 +15,17 @@ class Scene(Canvas):
             bg="black"
         )
 
-        self._objects: dict[int, ObjLoader] = {}
+        self._objects: dict[int, Polygon] = dict()
         self._id = 1
 
     def add_obj(self, path: str) -> Polygon:
         obj = ObjLoader.load(path)
-        self._objects[self._id] = obj
+        polygon = obj.get_polygon()
+        self._objects[self._id] = polygon
         self._id += 1
-        return obj.get_polygon()
+        return polygon
 
-    def get_obj(self, object_id: int):
+    def get_obj(self, object_id: int) -> Polygon:
         if object_id in self._objects:
             return self._objects[object_id]
         raise ValueError('Objet introuvable')
