@@ -1,0 +1,9 @@
+# ide
+.idea/*
+.vscode/*
+
+# cache
+__pycache__/*
+
+# github
+.git/*
