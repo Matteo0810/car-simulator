@@ -33,6 +33,7 @@ class Scene(Canvas):
         self.delete('all')
 
     def update(self):
+        self.clear()
         self._render()
 
     def show(self):
