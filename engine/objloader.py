@@ -5,38 +5,23 @@ import re
 
 class ObjLoader:
 
-    def __init__(self, content: list, size: tuple, distance: int, scale: int):
+    def __init__(self, content: list):
         self._content = [line.replace('\n', '').split() for line in content if len(line) > 1]
-        self._size = size
-        self._distance = distance
-        self._scale = scale
 
         self._vertex_meshes = self._get_vertex_meshes()
         self._vertex_textures = self._get_vertex_textures()
         self._faces = self._get_faces()
 
     @staticmethod
-    def load(relative_path: str, size: tuple, distance: int, scale: int):
-        return ObjLoader(
-            open(relative_path, 'r', encoding="utf-8").readlines(),
-            size,
-            distance,
-            scale
-        )
+    def load(relative_path: str):
+        return ObjLoader(open(relative_path, 'r', encoding="utf-8").readlines())
 
     def _get_vertex_meshes(self):
         vertex_meshes = []
         for vertex in self._content:
             if vertex[0] == "v":
                 vertex.pop(0)
-                vertex_meshes.append(
-                    Vertex(
-                        vertex[0],
-                        vertex[1],
-                        vertex[2], 0,
-                        (self._size, self._distance, self._scale)
-                    )
-                )
+                vertex_meshes.append(Vertex(vertex[0], vertex[1], vertex[2]))
         return vertex_meshes
 
     def _get_vertex_textures(self):
