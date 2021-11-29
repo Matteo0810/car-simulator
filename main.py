@@ -1,21 +1,14 @@
-from tkinter import *
-from engine.objloader import ObjLoader
-from helpers.dotenv import dotenv, get_env
+from tkinter import Tk
+from engine.scene import Scene
+from helpers.dotenv import dotenv
 
 dotenv()
 
 root = Tk()
 root.resizable(False, False)
+scene = Scene(root)
 
-canvas = Canvas(
-    master=root,
-    height=get_env('HEIGHT'),
-    width=get_env('WIDTH'),
-    bg="black"
-)
-
-obj = ObjLoader.load("./assets/test.obj")
-obj.render(canvas)
-canvas.pack()
+scene.add_obj('./assets/test.obj')
+scene.show()
 
 root.mainloop()
