@@ -1,4 +1,4 @@
-from .vertex import Vertex
+from engine.polygon.vertex import Vertex
 
 
 class Face:

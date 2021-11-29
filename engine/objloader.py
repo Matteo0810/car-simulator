@@ -1,6 +1,6 @@
-from .helpers.vertex import Vertex
-from .helpers.face import Face
-from .helpers.texture import Texture
+from engine.polygon.vertex import Vertex
+from engine.polygon.face import Face
+from engine.polygon.texture import Texture
 import re
 
 
