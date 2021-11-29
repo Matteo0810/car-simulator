@@ -4,11 +4,14 @@ from helpers.dotenv import get_env
 
 class Vertex:
 
-    def __init__(self, x: int, y: int, z: int, texture: int = 0):
+    def __init__(self, coordinates: list, texture: int = 0):
+        x, y, z = coordinates
         self._x = float(x)
         self._y = float(y)
         self._z = float(z)
+
         self._texture = texture
+
         self._size = (get_env('WIDTH'), get_env('HEIGHT'))
         self._distance = get_env('DISTANCE')
         self._scale = get_env('SCALE')

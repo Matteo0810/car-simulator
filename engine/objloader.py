@@ -1,5 +1,6 @@
 from .helpers.vertex import Vertex
 from .helpers.face import Face
+from .helpers.texture import Texture
 import re
 
 
@@ -17,25 +18,14 @@ class ObjLoader:
         return ObjLoader(open(relative_path, 'r', encoding="utf-8").readlines())
 
     def _get_vertex_meshes(self):
-        vertex_meshes = []
-        for vertex in self._content:
-            if vertex[0] == "v":
-                vertex.pop(0)
-                vertex_meshes.append(Vertex(vertex[0], vertex[1], vertex[2]))
-        return vertex_meshes
+        return [Vertex(vertex[1:]) for vertex in self._content if vertex[0] == 'v']
 
     def _get_vertex_textures(self):
-        vertex_textures = []
-        for vertex_texture in self._content:
-            if vertex_texture[0] == "vt":
-                vertex_texture.pop(0)
-                vertex_textures.append((float(vertex_texture[0]), float(vertex_texture[1])))
-        return vertex_textures
+        return [Texture(texture[1:]) for texture in self._content if texture[0] == 'vt']
 
     def _get_faces(self):
         faces = []
         meshes = self._vertex_meshes
-        textures = self._vertex_textures
 
         for face in self._content:
             if face[0] == "f":
