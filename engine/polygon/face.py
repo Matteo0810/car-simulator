@@ -1,24 +1,22 @@
-from engine.polygon.vertex import Vertex
-
-
 class Face:
 
-    def __init__(self, a: Vertex, b: Vertex, c: Vertex):
-        self._a = a
-        self._b = b
-        self._c = c
+    def __init__(self, meshes):
+        self._meshes = meshes
+        self._flatten_meshes = list(map(lambda vertex: vertex.to_2d(), meshes))
 
-    def get_a(self):
-        return self._a
+    def rotate(self, axis: str, angle: float):
+        for vertex in self._meshes:
+            vertex.rotate(axis, angle)
 
-    def get_b(self):
-        return self._b
+    def move(self, axis: str, angle: float):
+        for vertex in self._meshes:
+            vertex.move(axis, angle)
 
-    def get_c(self):
-        return self._c
+    def _get_flatten_meshes(self):
+        return [vertex for mesh in self._flatten_meshes for vertex in mesh]
 
     def create(self, canvas):
         canvas.create_polygon(
-            self._a.to_2d() + self._b.to_2d() + self._c.to_2d(),
+            self._get_flatten_meshes(),
             outline="gray"
         )
