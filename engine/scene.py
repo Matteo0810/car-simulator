@@ -17,6 +17,20 @@ class Scene(Canvas):
 
         self._objects: dict[int, Polygon] = dict()
         self._id = 1
+        self._previous = []
+
+        self.bind('<B1-Motion>', self._rotate)
+        self.bind('<ButtonRelease-1>', self._reset_rotate)
+
+    def _reset_rotate(self, _):
+        self._previous = []
+
+    def _rotate(self, event):
+        if self._previous:
+            self._objects[1].rotate('x', (event.y - self._previous[1]) / 20)
+            self._objects[1].rotate('y', (event.x - self._previous[0]) / 20)
+            self.update()
+        self._previous = [event.x, event.y]
 
     def add_obj(self, path: str) -> Polygon:
         obj = ObjLoader.load(path)
@@ -42,5 +56,5 @@ class Scene(Canvas):
         self.pack()
 
     def _render(self):
-        for value in self._objects.values():
-            value.get_polygon().render(self)
+        for polygon in self._objects.values():
+            polygon.render(self)

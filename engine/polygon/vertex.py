@@ -48,11 +48,5 @@ class Vertex:
     def get_texture(self):
         return self._texture
 
-    def __iter__(self):
-        return iter([self._x, self._y, self._z])
-
-    def __tuple__(self):
-        return self.flat()
-
     def __str__(self):
         return f'3d Coordinates ({self._x}, {self._y}, {self._z})'

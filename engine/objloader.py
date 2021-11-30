@@ -14,26 +14,24 @@ class ObjLoader:
         self._textures = self._get_textures()
         self._faces = self._get_faces()
 
-        self._polygon = Polygon(self._meshes, self._faces)
+        self._polygon = Polygon(self._faces)
 
     @staticmethod
     def load(relative_path: str):
         return ObjLoader(open(relative_path, 'r', encoding="utf-8").readlines())
 
-    def _get_meshes(self) -> list[Vertex]:
+    def _get_meshes(self) -> list:
         return [Vertex(vertex[1:]) for vertex in self._content if vertex[0] == 'v']
 
-    def _get_textures(self) -> list[Texture]:
+    def _get_textures(self) -> list:
         return [Texture(texture[1:]) for texture in self._content if texture[0] == 'vt']
 
-    def _get_faces(self) -> list[Face]:
+    def _get_faces(self) -> list:
         return [self._get_face(face[1:]) for face in self._content if face[0] == 'f']
 
     def _get_face(self, face_metadata: list) -> Face:
-        meshes = self._meshes
         props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata]
-        vA, vB, vC = meshes[props[0][0]], meshes[props[1][0]], meshes[props[2][0]]
-        return Face(vA, vB, vC)
+        return Face([self._meshes[prop[0]] for prop in props])
 
     def get_polygon(self):
         return self._polygon
