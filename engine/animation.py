@@ -25,3 +25,6 @@ class Animation:
 
     def resume(self):
         self._played = True
+
+    def get_name(self):
+        return self._name

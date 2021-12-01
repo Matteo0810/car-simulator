@@ -16,6 +16,9 @@ class Polygon:
             return self._animations[name]
         raise ValueError(f'Animation \'{name}\' introuvable.')
 
+    def update_animation(self, animation: Animation):
+        self._animations[animation.get_name()] = animation
+
     def rotate(self, axis: str, angle: float):
         for face in self._faces:
             face.rotate(axis, angle)
