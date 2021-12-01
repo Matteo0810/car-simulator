@@ -2,6 +2,8 @@ from tkinter import Canvas
 
 from engine.objloader import ObjLoader
 from engine.polygon.polygon import Polygon
+from engine.camera import Camera
+from engine.controller import Controller
 from helpers.dotenv import get_env
 
 
@@ -15,34 +17,43 @@ class Scene(Canvas):
             bg="black"
         )
 
+        # models 3d
         self._objects: dict[int, Polygon] = dict()
-        self._id = 1
-        self._previous = []
+        self._obj_id = 1
 
-        self.bind('<B1-Motion>', self._rotate)
-        self.bind('<ButtonRelease-1>', self._reset_rotate)
+        # cameras
+        self._cameras: dict[int, Camera] = dict()
+        self._cam_id = 1
 
-    def _reset_rotate(self, _):
-        self._previous = []
+        # mode développeur
+        self._is_dev_env()
 
-    def _rotate(self, event):
-        if self._previous:
-            self._objects[1].rotate('x', (event.y - self._previous[1]) / 20)
-            self._objects[1].rotate('y', (event.x - self._previous[0]) / 20)
-            self.update()
-        self._previous = [event.x, event.y]
+    def _is_dev_env(self):
+        if get_env('ENV') == 'DEV':
+            Controller(self).handle()
 
     def add_obj(self, path: str) -> Polygon:
         obj = ObjLoader.load(path)
         polygon = obj.get_polygon()
-        self._objects[self._id] = polygon
-        self._id += 1
+        self._objects[self._obj_id] = polygon
+        self._obj_id += 1
         return polygon
 
     def get_obj(self, object_id: int) -> Polygon:
         if object_id in self._objects:
             return self._objects[object_id]
         raise ValueError('Objet introuvable')
+
+    def add_camera(self) -> Camera:
+        camera = Camera()
+        self._cameras[self._cam_id] = camera
+        self._cam_id += 1
+        return camera
+
+    def get_camera(self, camera_id: int) -> Camera:
+        if camera_id in self._cameras:
+            return self._cameras[camera_id]
+        raise ValueError('Camera introuvable')
 
     def clear(self):
         self.delete('all')

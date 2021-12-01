@@ -1,4 +1,4 @@
-import os
+import os, re
 
 
 def dotenv():
@@ -10,6 +10,9 @@ def dotenv():
 
 def get_env(key: str):
     value = os.getenv(key)
-    if type(eval(value)) is not str:
-        return eval(value)
-    return value
+    if value is not None:
+        if type(eval(value)) is not str:
+            return eval(value)
+        value = re.sub(r'^"|"$', '', value)
+        return value.strip()
+    raise ValueError('Clé introuvable dans le fichier .env')
