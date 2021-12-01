@@ -2,13 +2,13 @@ class Animation:
 
     def __init__(self, name: str):
         self._name = name
-        self._frames: [int, object] = dict()
+        self._frames = list()
         self._played = False
 
         self._keys = 1
 
     def add_frame(self, callback):
-        self._frames[self._keys] = callback
+        self._frames.append(callback)
 
     def play(self):
         self._played = True
