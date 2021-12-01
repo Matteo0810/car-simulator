@@ -33,7 +33,8 @@ class Vertex:
 
     def move(self, axis: str, newPos: float):
         try:
-            self.__setattr__(f'_{axis}', newPos)
+            var_name = f'_{axis}'
+            self.__setattr__(var_name, self.__getattribute__(var_name) + newPos)
         except ValueError:
             raise ValueError('Axe invalide')
 
@@ -47,6 +48,9 @@ class Vertex:
 
     def get_texture(self):
         return self._texture
+
+    def __iter__(self):
+        return [self._x, self._y, self._z]
 
     def __str__(self):
         return f'3d Coordinates ({self._x}, {self._y}, {self._z})'

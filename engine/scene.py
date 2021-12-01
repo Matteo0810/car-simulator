@@ -4,6 +4,7 @@ from engine.objloader import ObjLoader
 from engine.polygon.polygon import Polygon
 from engine.camera import Camera
 from engine.controller import Controller
+
 from helpers.dotenv import get_env
 
 
@@ -24,6 +25,9 @@ class Scene(Canvas):
         # cameras
         self._cameras: dict[int, Camera] = dict()
         self._cam_id = 1
+
+        # camera par défaut
+        self._default_camera = self.add_camera()
 
         # mode développeur
         self._is_dev_env()

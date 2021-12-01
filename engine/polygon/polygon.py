@@ -1,8 +1,20 @@
+from engine.animation import Animation
+
 class Polygon:
 
     def __init__(self, faces: list):
         self._faces = faces
         self._animations = dict()
+
+    def add_animation(self, name: str) -> Animation:
+        animation = Animation(name)
+        self._animations[name] = animation
+        return animation
+
+    def get_animation(self, name: str) -> Animation:
+        if name in self._animations:
+            return self._animations[name]
+        raise ValueError(f'Animation \'{name}\' introuvable.')
 
     def rotate(self, axis: str, angle: float):
         for face in self._faces:
