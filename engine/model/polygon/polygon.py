@@ -1,4 +1,5 @@
-from engine.animation import Animation
+from engine.model.animation import Animation
+
 
 class Polygon:
 

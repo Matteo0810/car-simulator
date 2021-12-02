@@ -4,14 +4,14 @@ from helpers.dotenv import get_env
 
 class Camera:
 
-    def __init__(self, coordinates: tuple, width: int = get_env('WIDTH'), height: int = get_env('HEIGHT')):
-        x, y, z = coordinates
+    def __init__(self, coordinates: tuple = None, width: int = None, height: int = None):
+        x, y, z = coordinates or (0, 0, 0)
 
         self._x = x
         self._y = y
         self._z = z
-        self._width = width
-        self._height = height
+        self._width = width or get_env('WIDTH')
+        self._height = height or get_env('HEIGHT')
 
     def move(self, axis: str, newPos: float):
         try:

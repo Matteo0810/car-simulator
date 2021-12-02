@@ -1,9 +1,9 @@
 from tkinter import Canvas
 
-from engine.objloader import ObjLoader
-from engine.polygon.polygon import Polygon
-from engine.camera import Camera
-from engine.controller import Controller
+from engine.model.objloader import ObjLoader
+from engine.model.polygon.polygon import Polygon
+from engine.scene.camera import Camera
+from engine.scene.controller import Controller
 
 from helpers.dotenv import get_env
 
@@ -19,8 +19,8 @@ class Scene(Canvas):
         )
 
         # models 3d
-        self._objects: dict[int, Polygon] = dict()
-        self._obj_id = 1
+        self._models: dict[int, Polygon] = dict()
+        self._model_id = 1
 
         # cameras
         self._cameras: dict[int, Camera] = dict()
@@ -36,16 +36,16 @@ class Scene(Canvas):
         if get_env('ENV') == 'DEV':
             Controller(self).handle()
 
-    def add_obj(self, path: str) -> Polygon:
-        obj = ObjLoader.load(path)
-        polygon = obj.get_polygon()
-        self._objects[self._obj_id] = polygon
-        self._obj_id += 1
+    def add_model(self, path: str) -> Polygon:
+        model = ObjLoader.load(path)
+        polygon = model.get_polygon()
+        self._models[self._model_id] = polygon
+        self._model_id += 1
         return polygon
 
-    def get_obj(self, object_id: int) -> Polygon:
-        if object_id in self._objects:
-            return self._objects[object_id]
+    def get_model(self, model_id: int) -> Polygon:
+        if model_id in self._models:
+            return self._models[model_id]
         raise ValueError('Objet introuvable')
 
     def add_camera(self) -> Camera:
@@ -71,5 +71,5 @@ class Scene(Canvas):
         self.pack()
 
     def _render(self):
-        for polygon in self._objects.values():
+        for polygon in self._models.values():
             polygon.render(self)

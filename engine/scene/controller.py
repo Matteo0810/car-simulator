@@ -22,7 +22,7 @@ class Controller:
 
     def _rotate(self, event):
         if self._previous:
-            self._scene.get_obj(1).rotate('x', (event.y - self._previous[1]) / 20)
-            self._scene.get_obj(1).rotate('y', (event.x - self._previous[0]) / 20)
+            self._scene.get_model(1).rotate('x', (event.y - self._previous[1]) / 20)
+            self._scene.get_model(1).rotate('y', (event.x - self._previous[0]) / 20)
             self._scene.update()
         self._previous = [event.x, event.y]

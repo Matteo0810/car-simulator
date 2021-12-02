@@ -1,7 +1,7 @@
-from engine.polygon.vertex import Vertex
-from engine.polygon.face import Face
-from engine.polygon.texture import Texture
-from engine.polygon.polygon import Polygon
+from engine.model.polygon.vertex import Vertex
+from engine.model.polygon.face import Face
+from engine.model.polygon.texture import Texture
+from engine.model.polygon.polygon import Polygon
 import re
 
 
