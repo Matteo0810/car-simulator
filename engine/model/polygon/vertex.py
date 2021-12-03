@@ -38,6 +38,9 @@ class Vertex:
         except ValueError:
             raise ValueError('Axe invalide')
 
+    def rescale(self, scale: int):
+        self._scale = scale
+
     def set_texture(self, texture):
         self._texture = texture
 
@@ -48,6 +51,9 @@ class Vertex:
 
     def get_texture(self):
         return self._texture
+
+    def get_scale(self):
+        return self._scale
 
     def __iter__(self):
         return [self._x, self._y, self._z]

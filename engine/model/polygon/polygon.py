@@ -28,6 +28,13 @@ class Polygon:
         for face in self._faces:
             face.move(axis, newPos)
 
+    def rescale(self, scale: int):
+        for face in self._faces:
+            face.rescale(scale)
+
+    def get_scale(self):
+        return self._faces[0].get_scale()
+
     def render(self, canvas):
         for face in self._faces:
             face.create(canvas)

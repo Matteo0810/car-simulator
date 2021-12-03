@@ -11,6 +11,13 @@ class Face:
         for vertex in self._meshes:
             vertex.move(axis, angle)
 
+    def rescale(self, scale: int):
+        for vertex in self._meshes:
+            vertex.rescale(scale)
+
+    def get_scale(self):
+        return self._meshes[0].get_scale()
+
     def _flatten(self):
         flatten_list = list(map(lambda vertex: vertex.to_2d(), self._meshes))
         return [vertex for mesh in flatten_list for vertex in mesh]

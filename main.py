@@ -8,7 +8,7 @@ root = Tk()
 root.resizable(False, False)
 scene = Scene(root)
 
-scene.add_model('./assets/test.obj')
+scene.get_models().add('./assets/test.obj')
 scene.show()
 
 root.mainloop()

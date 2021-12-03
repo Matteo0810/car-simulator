@@ -1,7 +1,6 @@
 from tkinter import Canvas
 
-from engine.model.objloader import ObjLoader
-from engine.model.polygon.polygon import Polygon
+from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
@@ -18,9 +17,7 @@ class Scene(Canvas):
             bg="black"
         )
 
-        # models 3d
-        self._models: dict[int, Polygon] = dict()
-        self._model_id = 1
+        self._models = Models()
 
         # cameras
         self._cameras: dict[int, Camera] = dict()
@@ -36,18 +33,6 @@ class Scene(Canvas):
         if get_env('ENV') == 'DEV':
             Controller(self).handle()
 
-    def add_model(self, path: str) -> Polygon:
-        model = ObjLoader.load(path)
-        polygon = model.get_polygon()
-        self._models[self._model_id] = polygon
-        self._model_id += 1
-        return polygon
-
-    def get_model(self, model_id: int) -> Polygon:
-        if model_id in self._models:
-            return self._models[model_id]
-        raise ValueError('Objet introuvable')
-
     def add_camera(self) -> Camera:
         camera = Camera()
         self._cameras[self._cam_id] = camera
@@ -58,6 +43,9 @@ class Scene(Canvas):
         if camera_id in self._cameras:
             return self._cameras[camera_id]
         raise ValueError('Camera introuvable')
+
+    def get_models(self) -> Models:
+        return self._models
 
     def clear(self):
         self.delete('all')
@@ -71,5 +59,5 @@ class Scene(Canvas):
         self.pack()
 
     def _render(self):
-        for polygon in self._models.values():
+        for polygon in self._models.all():
             polygon.render(self)
