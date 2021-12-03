@@ -23,7 +23,4 @@ class Face:
         return [vertex for mesh in flatten_list for vertex in mesh]
 
     def create(self, canvas):
-        canvas.create_polygon(
-            self._flatten(),
-            outline="gray"
-        )
+        canvas.create_polygon(self._flatten(), outline="gray")
