@@ -1,5 +1,4 @@
 from engine.model.polygon.vertex import Vertex
-from engine.model.polygon.face import Face
 from engine.model.polygon.texture import Texture
 from engine.model.polygon.polygon import Polygon
 
@@ -15,7 +14,7 @@ class ObjLoader:
         self._textures = self._get_textures()
         self._faces = self._get_faces()
 
-        self._polygon = Polygon(self._faces)
+        self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
     def load(relative_path: str):
@@ -28,11 +27,7 @@ class ObjLoader:
         return [Texture(texture[1:]) for texture in self._content if texture[0] == 'vt']
 
     def _get_faces(self) -> list:
-        return [self._get_face(face[1:]) for face in self._content if face[0] == 'f']
-
-    def _get_face(self, face_metadata: list) -> Face:
-        props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata]
-        return Face([self._meshes[prop[0]] for prop in props])
+        return [face[1:] for face in self._content if face[0] == 'f']
 
     def get_polygon(self):
         return self._polygon

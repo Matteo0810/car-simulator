@@ -45,16 +45,22 @@ class Vertex:
         except ValueError:
             raise ValueError('Axe invalide')
 
+    def rescale(self, scale: int):
+        self._scale = scale
+
     def set_texture(self, texture):
         self._texture = texture
 
     def to_2d(self) -> list:
         width, height = self._size
-        return [int(width / 2 + ((self._x * self._distance) / (self._z + self._distance)) * self._scale),
-                int(height / 2 + ((self._y * self._distance) / (self._z + self._distance)) * self._scale)]
+        return [int(width // 2 + ((self._x * self._distance) / (self._z + self._distance)) * self._scale),
+                int(height // 2 + ((self._y * self._distance) / (self._z + self._distance)) * self._scale)]
 
     def get_texture(self):
         return self._texture
+
+    def get_scale(self):
+        return self._scale
 
     def __iter__(self):
         return [self._x, self._y, self._z]
