@@ -19,14 +19,10 @@ class Scene(Canvas):
 
         self._models = Models()
 
-        # cameras
         self._cameras: dict[int, Camera] = dict()
         self._cam_id = 1
-
-        # camera par défaut
         self._default_camera = self.add_camera()
 
-        # mode développeur
         self._is_dev_env()
 
     def _is_dev_env(self):
@@ -47,17 +43,10 @@ class Scene(Canvas):
     def get_models(self) -> Models:
         return self._models
 
-    def clear(self):
-        self.delete('all')
-
     def update(self):
-        self.clear()
-        self._render()
+        self.delete('all')
+        self._models.update(self)
 
     def show(self):
-        self._render()
+        self._models.update(self)
         self.pack()
-
-    def _render(self):
-        for polygon in self._models.all():
-            polygon.render(self)

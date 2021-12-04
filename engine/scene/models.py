@@ -22,3 +22,7 @@ class Models:
 
     def all(self):
         return self._models.values()
+
+    def update(self, canvas):
+        for polygon in self.all():
+            polygon.render(canvas)
