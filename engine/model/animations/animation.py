@@ -1,3 +1,6 @@
+import time, threading
+
+
 class Animation:
 
     def __init__(self, name: str, polygon):
@@ -8,11 +11,22 @@ class Animation:
 
         self._keys = 0
 
-    def play(self):
+    def play(self, scene):
+        threading.Thread(target=self._play_frames, args=(scene,)).start()
+
+    def _play_frames(self, scene):
         self._played = True
         while self._keys < len(self._frames) and self._played:
-            self._frames[self._keys](self._polygon)
-            self._keys += 1
+            try:
+                self._frames[self._keys](self._polygon)
+                scene.update()
+                time.sleep(0.05)
+                self._keys += 1
+            except SyntaxError:
+                raise SyntaxError('Function not found.')
+
+    def add_frame(self, callback):
+        self._frames.append(callback)
 
     def stop(self):
         self._played = False

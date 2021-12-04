@@ -7,8 +7,8 @@ class Animations:
         self._polygon = polygon
         self._animations = dict()
 
-    def add(self, name: str) -> Animation:
-        animation = Animation(name, self._polygon)
+    def add(self, name: str, callback) -> Animation:
+        animation = callback(Animation(name, self._polygon))
         self._animations[name] = animation
         return animation
 

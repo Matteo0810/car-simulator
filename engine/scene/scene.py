@@ -59,9 +59,9 @@ class Scene(Canvas):
     def _update_latency(self, start: float, end: float):
         latency = round((end - start)*1000*60)
         if self._latency is not None:
-            self._latency['text'] = f'Latence: {latency}s'
+            self._latency['text'] = f'Latence: {latency}ms'
             return
-        self._latency = self.add_label((get_env('WIDTH') // 2, 15), f'Latence: {latency}s')
+        self._latency = self.add_label((get_env('WIDTH') // 2, 15), f'Latence: {latency}ms')
 
     def show(self):
         self._models.update(self)
