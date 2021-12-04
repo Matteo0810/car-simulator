@@ -8,7 +8,7 @@ class Polygon:
     def __init__(self, meshes: list, faces: list):
         self._meshes = meshes
         self._faces = faces
-        self._animations = Animations
+        self._animations = Animations(self)
 
     def rescale(self, scale: int):
         for vertex in self._meshes:
@@ -28,6 +28,9 @@ class Polygon:
 
     def get_scale(self):
         return self._meshes[0].get_scale()
+
+    def get_animations(self):
+        return self._animations
 
     def _get_face(self, face_metadata: list) -> Face:
         props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata]

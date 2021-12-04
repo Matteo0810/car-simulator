@@ -3,11 +3,12 @@ from engine.model.animations.animation import Animation
 
 class Animations:
 
-    def __init__(self):
+    def __init__(self, polygon):
+        self._polygon = polygon
         self._animations = dict()
 
     def add(self, name: str) -> Animation:
-        animation = Animation(name)
+        animation = Animation(name, self._polygon)
         self._animations[name] = animation
         return animation
 

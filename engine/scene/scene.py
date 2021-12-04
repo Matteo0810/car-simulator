@@ -24,8 +24,8 @@ class Scene(Canvas):
         self._cam_id = 1
         self._default_camera = self.add_camera()
 
-        self._fps = None
-        self._update_fps(0, 0)
+        self._latency = None
+        self._update_latency(0, 0)
 
         if self._dev_env():
             Controller(self).setup()
@@ -54,14 +54,14 @@ class Scene(Canvas):
         end = time()
 
         if self._dev_env():
-            self._update_fps(start, end)
+            self._update_latency(start, end)
 
-    def _update_fps(self, start: float, end: float):
-        fps = round((end - start)*1000*60)
-        if self._fps is not None:
-            self._fps['text'] = f'FPS: {fps}'
+    def _update_latency(self, start: float, end: float):
+        latency = round((end - start)*1000*60)
+        if self._latency is not None:
+            self._latency['text'] = f'Latence: {latency}s'
             return
-        self._fps = self.add_label((get_env('WIDTH') // 2, 15), f'FPS: {fps}')
+        self._latency = self.add_label((get_env('WIDTH') // 2, 15), f'Latence: {latency}s')
 
     def show(self):
         self._models.update(self)
