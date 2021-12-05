@@ -35,7 +35,7 @@ class Car:
         self._color = model.default_color
         self._scene = scene
         
-        self._acceleration = 0.3
+        self._acceleration = 0.2
         
         reconstruct_car(self._wheels, width, length, hard_position=position, hard_angle=angle)
     
