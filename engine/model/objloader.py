@@ -17,8 +17,8 @@ class ObjLoader:
         self._faces = self._get_faces()
 
         # materials
-        # self._materials = mtl_loader.get_materials()
-        print(mtl_loader)
+        self._materials = mtl_loader.get_materials()
+        print(self._materials)
 
         self._polygon = Polygon(self._meshes, self._faces)
 

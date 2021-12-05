@@ -8,15 +8,21 @@ class Controller:
         self._models = self._scene.get_models()
 
         self._size = (get_env('WIDTH'), get_env('HEIGHT'))
+
         self._previous = []
+        self._previous_z = None
         self._scale = 0
 
     def setup(self):
         self._scene.focus_set()
         self._scene.bind('<Key>', self._move)
+        self._scene.bind('<MouseWheel>', self._zoom)
+
         self._scene.bind('<B1-Motion>', self._rotate)
         self._scene.bind('<ButtonRelease-1>', self._reset_rotate)
-        self._scene.bind('<MouseWheel>', self._zoom)
+
+        self._scene.bind('<B3-Motion>', self._rotate_z)
+        self._scene.bind('<ButtonRelease-3>', self._reset_rotate)
 
         self.init_labels()
 
@@ -55,6 +61,14 @@ class Controller:
 
     def _reset_rotate(self, _):
         self._previous = []
+        self._previous_z = None
+
+    def _rotate_z(self, event):
+        if self._previous_z:
+            for model in self._models.all():
+                model.rotate('z', (event.x - self._previous_z) / 20)
+            self._scene.update()
+        self._previous_z = event.x
 
     def _rotate(self, event):
         if self._previous:
