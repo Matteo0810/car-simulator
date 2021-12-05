@@ -1,3 +1,4 @@
+from helpers.utils import *
 
 
 class Camera2d:
@@ -6,17 +7,9 @@ class Camera2d:
         self._y = y
         self._zoom = zoom
     
-    @property
-    def x(self):
-        return self._x
-    
-    @property
-    def y(self):
-        return self._y
-    
-    @property
-    def zoom(self):
-        return self._zoom
+    x = property_get("x")
+    y = property_get("y")
+    zoom = property_get("zoom")
     
     def move_to(self, x, y):
         self._x = x

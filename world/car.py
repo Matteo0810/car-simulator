@@ -2,25 +2,10 @@ from math import *
 
 from engine.physics import reconstruct_car
 from helpers.dotenv import get_env
+from helpers.utils import *
 
 import pygame.draw
 from pygame import Vector2
-
-
-def nice_angle(rad):
-    return (rad + pi) % (2 * pi) - pi
-
-
-def unit_vector(angle: float, length: float = 1):
-    return Vector2(cos(angle), sin(angle)) * length
-
-
-def angle_of(vector: Vector2):
-    return atan2(vector.y, vector.x)
-
-
-def lerp(a, b, m):
-    return a * m + b * (1 - m)
 
 
 class Car:
@@ -35,7 +20,7 @@ class Car:
         self._color = model.default_color
         self._scene = scene
         
-        self._acceleration = 0.2
+        self._acceleration = 20  # pi/s²
         
         reconstruct_car(self._wheels, width, length, hard_position=position, hard_angle=angle)
     
@@ -45,25 +30,32 @@ class Car:
             wheel.last_position = wheel.position
         
             actual_wheel_speed = wheel.velocity.length()
-        
-            drifting = unit_vector(wheel.angle, actual_wheel_speed * copysign(1, self._wheel_speed)).distance_to(wheel.velocity)
-        
-            wheel.position += wheel.velocity * dt
 
             cos_angle = cos(unit_vector(wheel.angle).angle_to(wheel.velocity) / 180 * pi)
-            projection = cos_angle * unit_vector(wheel.angle) * wheel.velocity.length()
+            projection = cos_angle * unit_vector(wheel.angle, actual_wheel_speed)
+            
+            #pygame.draw.rect(self._scene.screen, (0, 0, 0), pygame.rect.Rect(unit_vector(wheel.angle, 5) + wheel.position + Vector2(750, 500), (3, 3)))
+            pygame.draw.rect(self._scene.screen, (0, 0, 255), pygame.rect.Rect(projection + wheel.position + Vector2(750, 500), (3, 3)))
+            pygame.draw.rect(self._scene.screen, (255, 0, 0), pygame.rect.Rect(wheel.velocity + wheel.position + Vector2(750, 500), (3, 3)))
+        
+            drifting = unit_vector(wheel.angle, actual_wheel_speed * copysign(1, cos_angle)).distance_to(wheel.velocity)
+            
+            def inc_velocity(acceleration):
+                if wheel.velocity.length() < abs(self._wheel_speed):
+                    wheel.velocity += min(abs(self._wheel_speed) - wheel.velocity.length(), acceleration) * unit_vector(wheel.angle) * dt
+                print(wheel.velocity.length())
             
             if self._braking or drifting > get_env("DRIFT_TRESHOLD"):
                 self._color = (255, 0, 0)
-                wheel.velocity *= (0.8 * abs(cos_angle)) ** dt
-                wheel.velocity = lerp(wheel.velocity, unit_vector(wheel.angle) * self._wheel_speed,
-                                      (1 - self._acceleration / 2) ** dt)
+                wheel.velocity *= (0.7 * abs(cos_angle)) ** dt
+                #inc_velocity(self._acceleration / 2)
                 
                 wheel.position += lerp(wheel.velocity, projection, 0.8) * dt
+                
             else:
-                wheel.velocity *= (0.976 * abs(cos_angle)) ** dt
-                wheel.velocity = lerp(wheel.velocity, unit_vector(wheel.angle) * self._wheel_speed,
-                                      (1 - self._acceleration) ** dt)
+                wheel.velocity *= (0.94 * (1 - (1 - abs(cos_angle)) ** 4)) ** dt
+                #TODO AJOUTER DE LA PROJECTION A LA VELOCITE
+                inc_velocity(self._acceleration)
                 
                 wheel.position += projection * dt
 
@@ -75,45 +67,22 @@ class Car:
         reconstruct_car(self._wheels, self._width, self._length)
         self._wheels[2].angle += self._steer_angle
         self._wheels[3].angle += self._steer_angle
+        if self._wheel_speed < 0:
+            for wheel in self._wheels:
+                wheel.angle = nice_angle(wheel.angle + pi)
         
         for i in range(4):
             wheel = self._wheels[i]
             wheel.velocity += (wheel.position - wheels_pre_fabrik[i]) / 1
     
-    @property
-    def model(self):
-        return self._model
-    
-    @property
-    def color(self):
-        return self._color
-    
-    @property
-    def wheel_speed(self):
-        return self._wheel_speed
-    
-    @wheel_speed.setter
-    def wheel_speed(self, speed):
-        self._wheel_speed = speed
+    model = property_get("model")
+    color = property_get("color")
+    wheel_speed = property_getset("wheel_speed")
+    steer_angle = property_getset("steer_angle")
+    braking = property_getset("braking")
 
     def get_actual_front_wheels_speed(self):
         return lerp(self._wheels[0].velocity.length() * copysign(1, self._wheel_speed), self._wheels[1].velocity.length() * copysign(1, self._wheel_speed), 0.5)
-    
-    @property
-    def steer_angle(self):
-        return self._steer_angle
-    
-    @steer_angle.setter
-    def steer_angle(self, angle):
-        self._steer_angle = angle
-
-    @property
-    def braking(self):
-        return self._braking
-
-    @braking.setter
-    def braking(self, braking):
-        self._braking = braking
     
 
 class Wheel:
@@ -130,19 +99,8 @@ class CarModel:
         self._default_color = default_color
         self._hitbox = hitbox
         self._weight = weight
-    
-    @property
-    def name(self):
-        return self._name
-    
-    @property
-    def weight(self):
-        return self._weight
-    
-    @property
-    def default_color(self):
-        return self._default_color
-    
-    @property
-    def hitbox(self):
-        return self._hitbox
+
+    name = property_get("name")
+    weight = property_get("weight")
+    default_color = property_get("default_color")
+    hitbox = property_get("hitbox")
