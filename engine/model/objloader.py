@@ -3,8 +3,6 @@ from engine.model.polygon.texture import Texture
 from engine.model.polygon.polygon import Polygon
 from engine.model.material.mtl_loader import MTLLoader
 
-import re
-
 
 class ObjLoader:
 
@@ -18,9 +16,9 @@ class ObjLoader:
 
         # materials
         self._materials = mtl_loader.get_materials()
-        print(self._materials)
+        self._material = self._get_material()
 
-        self._polygon = Polygon(self._meshes, self._faces)
+        self._polygon = Polygon(self._meshes, self._faces, self._material)
 
     @staticmethod
     def load(relative_path: str):
@@ -28,6 +26,12 @@ class ObjLoader:
             open(relative_path, 'r', encoding="utf-8").readlines(),
             MTLLoader.load(relative_path)
         )
+
+    def _get_material(self):
+        for content in self._content:
+            if content[0] == 'usemtl':
+                return self._materials[content[1]]
+        return None
 
     def _get_meshes(self) -> list:
         return [Vertex(vertex[1:]) for vertex in self._content if vertex[0] == 'v']

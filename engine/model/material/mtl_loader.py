@@ -10,7 +10,7 @@ class MTLLoader:
     @staticmethod
     def load(relative_path: str):
         relative_path = relative_path.split('.')[0] + ".mtl"
-        return MTLLoader(open(relative_path, 'r', encoding="utf-8").readlines())
+        return MTLLoader(open(relative_path, 'r', encoding="utf-8").readlines(),)
 
     def _parse_materials(self) -> dict:
         result, content = {}, self._content
