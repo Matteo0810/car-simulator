@@ -28,7 +28,7 @@ class Controller:
         self._scene.add_label((width-150, height-50), "souris : rotation")
 
     def _move(self, event):
-        switcher = {
+        moves = {
             'z': ('y', 0.5),
             'q': ('x', 0.5),
             'd': ('x', -0.5),
@@ -36,7 +36,7 @@ class Controller:
         }
 
         for model in self._models.all():
-            r = switcher.get(event.char)
+            r = moves.get(event.char)
             if r is not None:
                 model.move(r[0], r[1])
         self._scene.update()
