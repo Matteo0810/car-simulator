@@ -24,7 +24,7 @@ if __name__ == '__main__':
             else:
                 scene.controller.handle(event)
         
-        dt = time() - last_frame
+        dt = (time() - last_frame)*2
         scene.controller.tick(dt)
         scene.update(dt)
         

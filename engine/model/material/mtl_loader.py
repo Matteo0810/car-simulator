@@ -5,7 +5,7 @@ class MTLLoader:
 
     def __init__(self, content: list):
         self._content = [line.split() for line in content if len(line) > 1]
-        print(self._parse_materials())
+        self._parse_materials()
 
     @staticmethod
     def load(relative_path: str):
@@ -20,7 +20,12 @@ class MTLLoader:
                 result[content[i][1]] = {}
                 j = i + 1
                 while j < len(content) and content[j][0] != 'newmtl':
-                    result[content[i][1]][content[j][0]] = (content[j][1], content[j][1:])[len(content[j]) > 2]
+                    result[content[i][1]][content[j][0]] = self._get_value_from(content[j])
                     j += 1
             i += 1
         return {name: Material(metadata) for name, metadata in result.items()}
+
+    def _get_value_from(self, value: str):
+        if len(value) > 2:
+            return [eval(item) for item in value[1:]]
+        return eval(value[1])
