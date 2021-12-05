@@ -22,8 +22,8 @@ class Animation:
                 scene.update()
                 time.sleep(0.05)
                 self._keys += 1
-            except SyntaxError:
-                raise SyntaxError('Function not found.')
+            except ValueError:
+                raise ValueError('Function not found.')
 
     def add_frame(self, callback):
         self._frames.append(callback)
