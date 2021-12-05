@@ -16,14 +16,14 @@ class Controller:
             if pygame.key.get_pressed()[pygame.K_s]:
                 car.braking = True
             else:
-                car.wheel_speed = 150
+                car.wheel_speed = 120
         elif pygame.key.get_pressed()[pygame.K_s]:
-            car.wheel_speed = -150
+            car.wheel_speed = -60
         
         if pygame.key.get_pressed()[pygame.K_q]:
-            car.steer_angle += -10 / abs(car.get_actual_front_wheels_speed())
+            car.steer_angle += -10 / max(10, abs(car.get_actual_front_wheels_speed()))
         if pygame.key.get_pressed()[pygame.K_d]:
-            car.steer_angle += 10 / abs(car.get_actual_front_wheels_speed())
+            car.steer_angle += 10 / max(10, abs(car.get_actual_front_wheels_speed()))
     
     def handle(self, event: pygame.event.Event):
         pass
