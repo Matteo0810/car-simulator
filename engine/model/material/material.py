@@ -31,4 +31,4 @@ class Material:
         return self._metadata['illum']
 
     def get_color(self):
-        return self._metadata['map_Kd']
+        return Color.from_list(self._metadata['color'] + [0.3])
