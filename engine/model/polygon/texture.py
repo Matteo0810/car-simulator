@@ -1,9 +1,8 @@
 class Texture:
 
     def __init__(self, uv: list):
-        u, v = uv
-        self._u = float(u)
-        self._v = float(v)
+        self._u = 0
+        self._v = 0
         self._average = (self._u+self._v)/2
 
     def get_alpha(self):

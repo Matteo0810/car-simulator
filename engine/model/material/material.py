@@ -13,13 +13,13 @@ class Material:
         return Color.from_list(self._metadata['Ka']+[self.get_alpha()])
 
     def get_diffuse_color(self):
-        return self._metadata['Kd']
+        return Color.from_list(self._metadata['Kd']+[self.get_alpha()])
 
     def get_specular_color(self):
-        return self._metadata['Ks']
+        return Color.from_list(self._metadata['Ks'] + [self.get_alpha()])
 
     def get_emissive_color(self):
-        return self._metadata['Ke']
+        return Color.from_list(self._metadata['Ke'] + [self.get_alpha()])
 
     def get_specular_exponent(self):
         return self._metadata['Ns']
@@ -29,3 +29,6 @@ class Material:
 
     def get_illuminations(self):
         return self._metadata['illum']
+
+    def get_color(self):
+        return self._metadata['map_Kd']
