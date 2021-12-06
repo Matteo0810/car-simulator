@@ -28,32 +28,33 @@ class Car:
         self._color = (0, 255, 0)
         for wheel in self._wheels:
             wheel.last_position = wheel.position
-
-            cos_angle = cos(unit_vector(wheel.angle).angle_to(wheel.velocity) / 180 * pi)
             
             #pygame.draw.rect(self._scene.screen, (0, 0, 0), pygame.rect.Rect(unit_vector(wheel.angle, 5) + wheel.position + Vector2(750, 500), (3, 3)))
-        
-            drifting = unit_vector(wheel.angle, wheel.velocity.length()).distance_to(wheel.velocity)
+            
+            drifting = unit_vector(wheel.angle, wheel.actual_speed).distance_to(wheel.velocity)
             
             def inc_velocity(acceleration):
-                if wheel.velocity.length() < abs(self._wheel_speed):
-                    wheel.velocity += min(abs(self._wheel_speed) - wheel.velocity.length(), acceleration) * unit_vector(wheel.angle) * dt
+                if wheel.actual_speed * sign(self._wheel_speed) < abs(self._wheel_speed):
+                    actual_acceleration = min(self._wheel_speed - wheel.actual_speed
+                                              , acceleration * sign(self._wheel_speed)
+                                              , key=lambda x: sign(self._wheel_speed) * x)
+                    wheel.velocity += actual_acceleration * unit_vector(wheel.angle) * dt
+
+            inc_velocity(self._acceleration)
+            projection = unit_vector(wheel.angle, wheel.actual_speed)
             
             if self._braking or drifting > get_env("DRIFT_TRESHOLD"):
                 self._color = (255, 0, 0)
-                wheel.velocity *= (0.6 * abs(cos_angle)) ** dt
-                inc_velocity(self._acceleration / 2)
-
-                projection = abs(cos_angle) * unit_vector(wheel.angle, wheel.velocity.length())
-                wheel.position += wheel.velocity * dt
-                
+                wheel.velocity *= 0.8 ** dt
             else:
-                wheel.velocity *= (0.94 * (1 - (1 - abs(cos_angle)) ** 4)) ** dt
-                inc_velocity(self._acceleration)
-
-                projection = abs(cos_angle) * unit_vector(wheel.angle, wheel.velocity.length())
                 wheel.velocity = projection
-                wheel.position += projection * dt
+            
+            wheel.position += wheel.velocity * dt
+            
+            rotation_speed_loss = abs(cos(angle_of(wheel.velocity) - wheel.angle))
+            if wheel.actual_speed != 0:
+                wheel.velocity *= (0.9 * rotation_speed_loss) ** dt
+                wheel.velocity -= wheel.velocity.normalize() * dt * 5
             
             pygame.draw.rect(self._scene.screen, (0, 0, 255), pygame.rect.Rect(projection + wheel.position + Vector2(750, 500), (3, 3)))
             pygame.draw.rect(self._scene.screen, (255, 0, 0), pygame.rect.Rect(wheel.velocity + wheel.position + Vector2(750, 500), (3, 3)))
@@ -66,9 +67,9 @@ class Car:
         reconstruct_car(self._wheels, self._width, self._length)
         self._wheels[2].angle += self._steer_angle
         self._wheels[3].angle += self._steer_angle
-        if self._wheel_speed < 0:
-            for wheel in self._wheels:
-                wheel.angle = nice_angle(wheel.angle + pi)
+        #if self._wheel_speed < 0:
+        #    for wheel in self._wheels:
+        #        wheel.angle = nice_angle(wheel.angle + pi)
         
         for i in range(4):
             wheel = self._wheels[i]
@@ -81,7 +82,7 @@ class Car:
     braking = property_getset("braking")
 
     def get_actual_front_wheels_speed(self):
-        return lerp(self._wheels[0].velocity.length() * copysign(1, self._wheel_speed), self._wheels[1].velocity.length() * copysign(1, self._wheel_speed), 0.5)
+        return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
     
 
 class Wheel:
@@ -90,6 +91,10 @@ class Wheel:
         self.angle = angle
         self.last_position = position
         self.velocity = Vector2(0, 0)
+    
+    @property
+    def actual_speed(self):
+        return cos(angle_of(self.velocity) - self.angle) * self.velocity.length()
 
 
 class CarModel:

@@ -16,8 +16,12 @@ class Controller:
             if pygame.key.get_pressed()[pygame.K_s]:
                 car.braking = True
             else:
+                if car.get_actual_front_wheels_speed() < -1:
+                    car.braking = True
                 car.wheel_speed = 120
         elif pygame.key.get_pressed()[pygame.K_s]:
+            if car.get_actual_front_wheels_speed() > 1:
+                car.braking = True
             car.wheel_speed = -60
         
         if pygame.key.get_pressed()[pygame.K_q]:
