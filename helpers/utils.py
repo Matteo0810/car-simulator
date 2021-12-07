@@ -1,14 +1,5 @@
-from pygame import Vector2
 from ctypes import c_float, c_int32, cast, byref, POINTER
 from math import cos, sin, atan2, pi, copysign
-
-
-def unit_vector(angle: float, length: float = 1):
-    return Vector2(cos(angle), sin(angle)) * length
-
-
-def angle_of(vector: Vector2):
-    return atan2(vector.y, vector.x)
 
 
 def nice_angle(rad):

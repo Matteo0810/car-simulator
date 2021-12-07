@@ -1,5 +1,5 @@
 import math
-from utils import fast_invsqrt
+from helpers.utils import fast_invsqrt
 
 
 class Vector2:
@@ -32,10 +32,10 @@ class Vector2:
     def distance(self, other):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
     
-    def normalized(self):
+    def normalize(self):
         return self / self.length()
     
-    def fast_normalized(self):
+    def fast_normalize(self):
         return self * fast_invsqrt(self.length_squared())
     
     def angle(self, other=None):
@@ -52,21 +52,25 @@ class Vector2:
         if not isinstance(other, Vector2):
             raise TypeError()
         return self.__class__(self.x + other.x, self.y + other.y)
+    __radd__ = __add__
     
     def __sub__(self, other):
         if not isinstance(other, Vector2):
             raise TypeError()
         return self.__class__(self.x - other.x, self.y - other.y)
+    __rsub__ = __sub__
     
     def __mul__(self, other):
         if type(other) is not int and type(other) is not float:
             raise TypeError()
         return self.__class__(self.x * other, self.y * other)
+    __rmul__ = __mul__
     
     def __truediv__(self, other):
         if type(other) is not int and type(other) is not float:
             raise TypeError()
         return self.__class__(self.x / other, self.y / other)
+    __rtruediv__ = __truediv__
     
     def __eq__(self, other):
         if not isinstance(other, Vector2):
@@ -130,21 +134,25 @@ class Vector3:
         if not isinstance(other, Vector3):
             raise TypeError()
         return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z)
+    __radd__ = __add__
     
     def __sub__(self, other):
         if not isinstance(other, Vector3):
             raise TypeError()
         return self.__class__(self.x - other.x, self.y - other.y, self.z - other.z)
+    __rsub__ = __sub__
     
     def __mul__(self, other):
         if type(other) is not int and type(other) is not float:
             raise TypeError()
         return self.__class__(self.x * other, self.y * other, self.z * other)
+    __rmul__ = __mul__
     
     def __truediv__(self, other):
         if type(other) is not int and type(other) is not float:
             raise TypeError()
         return self.__class__(self.x / other, self.y / other, self.z / other)
+    __rtruediv__ = __truediv__
     
     def __eq__(self, other):
         if not isinstance(other, Vector3):
