@@ -55,10 +55,7 @@ class Car:
             if wheel.actual_speed != 0:
                 wheel.velocity *= (0.9 * rotation_speed_loss) ** dt
                 wheel.velocity -= wheel.velocity.normalize() * dt * 5
-            
-            pygame.draw.rect(self._scene.screen, (0, 0, 255), pygame.rect.Rect(projection + wheel.position + Vector2(750, 500), (3, 3)))
-            pygame.draw.rect(self._scene.screen, (255, 0, 0), pygame.rect.Rect(wheel.velocity + wheel.position + Vector2(750, 500), (3, 3)))
-
+     
     def tick(self, dt):
         self._accelerate(dt)
         
@@ -84,6 +81,8 @@ class Car:
     def get_actual_front_wheels_speed(self):
         return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
     
+    def get_center_of_mass(self):
+        return sum((w.position for w in self._wheels), Vector2(0, 0)) / 4
 
 class Wheel:
     def __init__(self, position, angle):
@@ -98,7 +97,7 @@ class Wheel:
 
 
 class CarModel:
-    def __init__(self, name, hitbox: tuple[int, int], weight, default_color):
+    def __init__(self, name, hitbox: tuple, weight, default_color):
         self._name = name
         self._default_color = default_color
         self._hitbox = hitbox
