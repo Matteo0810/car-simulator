@@ -38,6 +38,9 @@ class Vector2:
     def fast_normalize(self):
         return self * fast_invsqrt(self.length_squared())
     
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
+    
     def angle(self, other=None):
         if other:
             return (self.angle() - other.angle()) % (2 * math.pi) - math.pi
@@ -127,6 +130,14 @@ class Vector3:
     
     def fast_normalized(self):
         return self * fast_invsqrt(self.length_squared())
+    
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y + self.z * other.z
+    
+    def cross(self, other):
+        return Vector3(self.y * other.z - self.z * other.y,
+             self.z * other.x - self.x * other.z,
+             self.x * other.y - self.y * other.x)
     
     # TODO : angle
     
