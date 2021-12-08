@@ -1,6 +1,6 @@
 from engine.debug.controller import Controller
 from world.car import Car, CarModel
-from pygame.math import Vector2
+from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d
 from helpers.dotenv import get_env
 from helpers.utils import *
@@ -32,10 +32,10 @@ class Scene2d:
     def _render(self, dt):
         for road in self._roads:
             points = [
-                road.start + unit_vector(angle_of(road.end - road.start) - pi) * road.width / 2,
-                road.start + unit_vector(angle_of(road.end - road.start) + pi) * road.width / 2,
-                road.end + unit_vector(angle_of(road.end - road.start) + pi) * road.width / 2,
-                road.end + unit_vector(angle_of(road.end - road.start) - pi) * road.width / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() - pi) * road.width / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() + pi) * road.width / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() + pi) * road.width / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() - pi) * road.width / 2,
             ]
             
             points = [(int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y)) for p in points]
