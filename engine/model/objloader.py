@@ -1,5 +1,4 @@
 from engine.model.polygon.vertex import Vertex
-from engine.model.polygon.texture import Texture
 from engine.model.polygon.polygon import Polygon
 from engine.model.material.mtl_loader import MTLLoader
 
@@ -11,7 +10,6 @@ class ObjLoader:
 
         # polygon
         self._meshes = self._get_meshes()
-        self._textures = self._get_textures()
         self._faces = self._get_faces()
 
         # materials
@@ -35,9 +33,6 @@ class ObjLoader:
 
     def _get_meshes(self) -> list:
         return [Vertex(vertex[1:]) for vertex in self._content if vertex[0] == 'v']
-
-    def _get_textures(self) -> list:
-        return [Texture(texture[1:]) for texture in self._content if texture[0] == 'vt']
 
     def _get_faces(self) -> list:
         return [face[1:] for face in self._content if face[0] == 'f']

@@ -1,14 +1,5 @@
-from pygame import Vector2
 from ctypes import c_float, c_int32, cast, byref, POINTER
-from math import cos, sin, atan2, pi
-
-
-def unit_vector(angle: float, length: float = 1):
-    return Vector2(cos(angle), sin(angle)) * length
-
-
-def angle_of(vector: Vector2):
-    return atan2(vector.y, vector.x)
+from math import cos, sin, atan2, pi, copysign
 
 
 def nice_angle(rad):
@@ -39,7 +30,11 @@ def property_getset(name):
     return property(getter("_" + name), setter("_" + name))
 
 
-def ctypes_isqrt(number):
+def sign(x):
+    return 0 if x == 0 else copysign(1, x)
+
+
+def fast_invsqrt(number):
     """
     TODO v * fast_invsqrt(v.x * v.x + v.y * v.y)
     """

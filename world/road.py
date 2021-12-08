@@ -1,7 +1,7 @@
 from math import *
 
-from pygame import Vector2
 from helpers.utils import *
+from helpers.vector import Vector2
 
 
 class Road:

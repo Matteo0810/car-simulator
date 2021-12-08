@@ -24,8 +24,9 @@ class Scene(Canvas):
         self._cam_id = 1
         self._default_camera = self.add_camera()
 
-        self._latency = None
-        self._update_latency(0, 0)
+        # FPS (Mode dev seulement)
+        self._fps_label = None
+        self._update_fps()
 
         if self._dev_env():
             Controller(self).setup()
@@ -48,20 +49,18 @@ class Scene(Canvas):
         return self._models
 
     def update(self):
-        start = time()
         self.delete('all')
         self._models.update(self)
-        end = time()
 
         if self._dev_env():
-            self._update_latency(start, end)
+            self._update_fps()
 
-    def _update_latency(self, start: float, end: float):
-        latency = round((end - start)*1000*60)
-        if self._latency is not None:
-            self._latency['text'] = f'Latence: {latency}ms'
+    def _update_fps(self):
+        # TODO FPS à fix...
+        if self._fps_label is not None:
+            self._fps_label['text'] = f'FPS: 0'
             return
-        self._latency = self.add_label((get_env('WIDTH') // 2, 15), f'Latence: {latency}ms')
+        self._fps_label = self.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
 
     def show(self):
         self._models.update(self)

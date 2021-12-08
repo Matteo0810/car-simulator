@@ -1,17 +1,6 @@
 from math import *
-from pygame import Vector2
-
-
-def unit_vector(angle: float, length: float = 1):
-    return Vector2(cos(angle), sin(angle)) * length
-
-
-def angle_of(vector: Vector2):
-    return atan2(vector.y, vector.x)
-
-
-def nice_angle(rad):
-    return (rad + pi) % (2 * pi) - pi
+from helpers.vector import Vector2
+from helpers.utils import *
 
 
 def reconstruct_car(wheels, car_width, car_length, hard_position=None, hard_angle=None):
@@ -30,12 +19,12 @@ def reconstruct_car(wheels, car_width, car_length, hard_position=None, hard_angl
     if hard_angle is None:
         car_angles = []
         for i in range(4):
-            car_angles.append(angle_of(wheels[i].position - center_of_mass) - wheel_angles[i])
+            car_angles.append((wheels[i].position - center_of_mass).angle() - wheel_angles[i])
         
         mean_angle = atan2(sum((sin(a) for a in car_angles)), sum((cos(a) for a in car_angles)))
     else:
         mean_angle = hard_angle
     
     for i in range(4):
-        wheels[i].position = center_of_mass + unit_vector(wheel_angles[i] + mean_angle) * diagonal / 2
+        wheels[i].position = center_of_mass + Vector2.of_angle(wheel_angles[i] + mean_angle) * diagonal / 2
         wheels[i].angle = mean_angle

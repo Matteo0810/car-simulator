@@ -4,13 +4,11 @@ from helpers.dotenv import get_env
 
 class Vertex:
 
-    def __init__(self, coordinates: list, texture: int = 0, size: tuple = None, scale: int = 100):
+    def __init__(self, coordinates: list, size: tuple = None, scale: int = 100):
         x, y, z = coordinates
         self._x = float(x)
         self._y = float(y)
         self._z = float(z)
-
-        self._texture = texture
 
         self._distance = 6
         self._scale = scale
@@ -48,16 +46,10 @@ class Vertex:
     def rescale(self, scale: int):
         self._scale = scale
 
-    def set_texture(self, texture):
-        self._texture = texture
-
     def to_2d(self) -> list:
         width, height = self._size
         return [int(width + ((self._x * self._distance) / (self._z + self._distance)) * self._scale),
                 int(height + ((self._y * self._distance) / (self._z + self._distance)) * self._scale)]
-
-    def get_texture(self):
-        return self._texture
 
     def get_scale(self):
         return self._scale
