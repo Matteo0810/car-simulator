@@ -55,7 +55,7 @@ class Vertex:
         return self._scale
 
     def __iter__(self):
-        return [self._x, self._y, self._z]
+        return [self._x, self._y, self._z].__iter__()
 
     def __str__(self):
         return f'3d Coordinates ({self._x}, {self._y}, {self._z})'

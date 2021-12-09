@@ -1,5 +1,4 @@
 from tkinter import Canvas, Label
-from time import time
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
@@ -29,10 +28,14 @@ class Scene(Canvas):
         self._update_fps()
 
         if self._dev_env():
-            Controller(self).setup()
+            self._controller = Controller(self).setup()
 
     def _dev_env(self):
         return get_env('ENV') == 'DEV'
+
+    def get_controller(self):
+        if get_env('ENV') == 'DEV':
+            return self._controller
 
     def add_camera(self) -> Camera:
         camera = Camera()
@@ -48,9 +51,9 @@ class Scene(Canvas):
     def get_models(self) -> Models:
         return self._models
 
-    def update(self):
-        self.delete('all')
-        self._models.update(self)
+    def update(self, callback = None):
+        self.clear()
+        self._models.update(self, callback)
 
         if self._dev_env():
             self._update_fps()
@@ -61,6 +64,9 @@ class Scene(Canvas):
             self._fps_label['text'] = f'FPS: 0'
             return
         self._fps_label = self.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
+
+    def clear(self):
+        self.delete('all')
 
     def show(self):
         self._models.update(self)

@@ -31,7 +31,7 @@ class Controller:
 
         self._scene.add_label((width - 140, height - 130), "roulette : taille")
         self._scene.add_label((width - 185, height - 90), "z-q-s-d : mouvement")
-        self._scene.add_label((width-150, height-50), "souris : rotation")
+        self._scene.add_label((width - 150, height - 50), "souris : rotation")
 
     def _move(self, event):
         moves = {
@@ -40,12 +40,12 @@ class Controller:
             'd': ('x', -0.5),
             's': ('y', -0.5)
         }
+        self._scene.update(lambda model: self._move_model(moves, model, event.char))
 
-        for model in self._models.all():
-            r = moves.get(event.char)
-            if r is not None:
-                model.move(r[0], r[1])
-        self._scene.update()
+    def _move_model(self, moves, model, char):
+        r = moves.get(char)
+        if r is not None:
+            model.move(r[0], r[1])
 
     def _zoom(self, event):
         self._scale += (-1, 1)[event.delta > 0]
@@ -55,25 +55,22 @@ class Controller:
         elif event.delta < 0 and self._scale > 0:
             self._scale = 1
 
-        for model in self._models.all():
-            model.rescale(model.get_scale() + self._scale)
-        self._scene.update()
+        self._scene.update(lambda model: model.rescale(model.get_scale() + self._scale))
 
     def _reset_rotate(self, _):
         self._previous = []
         self._previous_z = None
 
-    def _rotate_z(self, event):
-        if self._previous_z:
-            for model in self._models.all():
-                model.rotate('z', (event.x - self._previous_z) / 20)
-            self._scene.update()
-        self._previous_z = event.x
-
     def _rotate(self, event):
         if self._previous:
-            for model in self._models.all():
-                model.rotate('x', (event.y - self._previous[1]) / 20)
-                model.rotate('y', (event.x - self._previous[0]) / 20)
-            self._scene.update()
+            self._scene.update(lambda model: self._rotate_xy(model, event))
         self._previous = [event.x, event.y]
+
+    def _rotate_z(self, event):
+        if self._previous_z:
+            self._scene.update(lambda model: model.rotate('z', (event.x - self._previous_z) / 20))
+        self._previous_z = event.x
+
+    def _rotate_xy(self, model, event):
+        model.rotate('x', (event.y - self._previous[1]) / 20)
+        model.rotate('y', (event.x - self._previous[0]) / 20)
