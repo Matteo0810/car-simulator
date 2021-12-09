@@ -17,7 +17,7 @@ if __name__ == "__main__":
     root.resizable(False, False)
 
     scene = Scene(root)
-    model = scene.get_models().add('assets/cube/cube.obj')
+    scene.get_models().add('world/assets/cube/cube.obj')
     scene.show()
 
     """
