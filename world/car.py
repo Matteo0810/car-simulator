@@ -83,6 +83,9 @@ class Car:
     def get_actual_front_wheels_speed(self):
         return lerp(self._wheels[0].velocity.length() * copysign(1, self._wheel_speed), self._wheels[1].velocity.length() * copysign(1, self._wheel_speed), 0.5)
     
+    @property
+    def wheels(self):
+        return self._wheels[:]
 
 class Wheel:
     def __init__(self, position, angle):
