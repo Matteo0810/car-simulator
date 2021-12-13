@@ -14,9 +14,10 @@ class Face:
         return [vertex for mesh in flatten_list for vertex in mesh]
 
     def create(self, canvas):
-        canvas.create_polygon(self._flatten(), fill=self.get_shaders())
+        canvas.create_polygon(self._flatten(), fill=self._material.get_color())
 
     def get_shaders(self):
+        # TODO a fix scalaire des vecteurs
         v1 = Vector3(*self._meshes[1]) - Vector3(*self._meshes[0])
         v2 = Vector3(*self._meshes[2]) - Vector3(*self._meshes[1])
         normal = v1.cross(v2).fast_normalized()

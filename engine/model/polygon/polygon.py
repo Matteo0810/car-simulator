@@ -1,15 +1,13 @@
 from engine.model.animations.animations import Animations
 from engine.model.polygon.face import Face
-from engine.model.material.material import Material
 import re
 
 
 class Polygon:
 
-    def __init__(self, meshes: list, faces: list, material: Material):
+    def __init__(self, meshes: list, faces: list):
         self._meshes = meshes
         self._faces = faces
-        self._material = material
         self._animations = Animations(self)
 
     def rescale(self, scale: int):
@@ -35,5 +33,5 @@ class Polygon:
         return self._animations
 
     def _get_face(self, face_metadata: list) -> Face:
-        props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata]
-        return Face([self._meshes[prop[0]] for prop in props], self._material)
+        props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata[:-1]]
+        return Face([self._meshes[prop[0]] for prop in props], face_metadata[-1])
