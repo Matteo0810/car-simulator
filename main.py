@@ -4,8 +4,8 @@ from helpers.dotenv import dotenv
 
 
 def rotate_animation(animation):
-    for i in range(50):
-        animation.add_frame(lambda polygon: polygon.rotate('x', i))
+    for i in range(30):
+        animation.add_frame(lambda polygon: polygon.rotate('y', i))
     return animation
 
 
@@ -17,12 +17,12 @@ if __name__ == "__main__":
     root.resizable(False, False)
 
     scene = Scene(root)
-    scene.get_models().add('world/assets/cube/cube.obj')
+    model = scene.get_models().add('world/assets/cube/cube.obj')
     scene.show()
-
+ 
     """
     model.get_animations()\
-        .add('test', lambda animation: rotate_animation(animation))\
+        .add('rotation', lambda animation: rotate_animation(animation))\
         .play(scene)
     """
 

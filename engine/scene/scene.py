@@ -17,11 +17,8 @@ class Scene(Canvas):
             bg="black",
         )
 
-        self._models = Models()
-
-        self._cameras: dict[int, Camera] = dict()
-        self._cam_id = 1
-        self._default_camera = self.add_camera()
+        default_camera = Camera()
+        self._models = Models(default_camera)
 
         # FPS (Mode dev seulement)
         self._fps_label = None
@@ -37,16 +34,8 @@ class Scene(Canvas):
         if get_env('ENV') == 'DEV':
             return self._controller
 
-    def add_camera(self) -> Camera:
-        camera = Camera()
-        self._cameras[self._cam_id] = camera
-        self._cam_id += 1
-        return camera
-
-    def get_camera(self, camera_id: int) -> Camera:
-        if camera_id in self._cameras:
-            return self._cameras[camera_id]
-        raise ValueError('Camera introuvable')
+    def get_camera(self) -> Camera:
+        return self._default_camera
 
     def get_models(self) -> Models:
         return self._models
