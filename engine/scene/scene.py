@@ -31,7 +31,7 @@ class Scene(Canvas):
         return get_env('ENV') == 'DEV'
 
     def get_controller(self):
-        if get_env('ENV') == 'DEV':
+        if self._dev_env():
             return self._controller
 
     def get_camera(self) -> Camera:
@@ -48,7 +48,7 @@ class Scene(Canvas):
             self._update_fps()
 
     def _update_fps(self):
-        # TODO FPS à fix...
+
         if self._fps_label is not None:
             self._fps_label['text'] = f'FPS: 0'
             return
