@@ -1,4 +1,5 @@
-import time, threading
+from time import sleep
+from threading import Thread
 
 
 class Animation:
@@ -13,7 +14,7 @@ class Animation:
         self._keys = 0
 
     def play(self, scene, delay = 0.05):
-        threading.Thread(target=self._play_frames, args=(scene,delay)).start()
+        Thread(target=self._play_frames, args=(scene,delay)).start()
 
     def _play_frames(self, scene, delay):
         self._played = True
@@ -21,7 +22,7 @@ class Animation:
             try:
                 self._frames[self._keys](self._polygon)
                 scene.update()
-                time.sleep(delay)
+                sleep(delay)
                 self._keys += 1
             except ValueError:
                 raise ValueError('Function not found.')

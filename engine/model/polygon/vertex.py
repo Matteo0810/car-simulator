@@ -1,4 +1,4 @@
-from math import pi, cos, sin, tan
+from math import pi, cos, sin
 from helpers.dotenv import get_env
 
 
@@ -53,6 +53,15 @@ class Vertex:
 
     def get_scale(self):
         return self._scale
+
+    def get_z(self):
+        return self._z
+
+    def get_y(self):
+        return self._y
+
+    def get_x(self):
+        return self._x
 
     def __iter__(self):
         return [self._x, self._y, self._z].__iter__()

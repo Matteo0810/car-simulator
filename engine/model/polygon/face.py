@@ -29,3 +29,7 @@ class Face:
         shade = max(0, normal.dot(Vector3(0, 0, -1)) * .5 + .5)
         r, g, b = tuple(self._material.get_color())
         return Color.from_list([r*shade, g*shade, b*shade, 1])
+
+
+    def avrg_z(self):
+        return -(sum([vertex.get_z() for vertex in self._meshes]) / len(self._meshes))
