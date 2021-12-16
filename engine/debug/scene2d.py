@@ -12,9 +12,9 @@ import pygame
 
 class Scene2d:
     def __init__(self, screen: pygame.Surface):
-        self._world = World()
-        self._world.cars = [Car(self, Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0))),
-                            Car(self, Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255)))]
+        self._world = World.load("assets/world.json")
+        self._world.cars.extend([Car(self, Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0))),
+                            Car(self, Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255)))])
         self._user_car = self._world.cars[0]
         
         self._roads = [Road(Vector2(-50, -30), Vector2(50, -30), 34, None, None)]
@@ -35,15 +35,15 @@ class Scene2d:
     def _render(self, dt):
         for road in self._roads:
             points = [
-                road.start + Vector2.of_angle((road.end - road.start).angle() - pi) * road.width / 2,
-                road.start + Vector2.of_angle((road.end - road.start).angle() + pi) * road.width / 2,
-                road.end + Vector2.of_angle((road.end - road.start).angle() + pi) * road.width / 2,
-                road.end + Vector2.of_angle((road.end - road.start).angle() - pi) * road.width / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() - pi/2) * road.width / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() + pi/2) * road.width / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() + pi/2) * road.width / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() - pi/2) * road.width / 2,
             ]
             
             points = [(int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y)) for p in points]
             pygame.draw.polygon(self._screen, (100, 100, 100), points)
-            
+        
         for car in self._world.cars:
             car.tick(dt)
             

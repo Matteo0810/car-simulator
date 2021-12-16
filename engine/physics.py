@@ -1,6 +1,6 @@
 from math import *
 
-#import pygame
+import pygame
 
 from helpers.vector import Vector2
 from helpers.utils import *
@@ -33,30 +33,27 @@ def reconstruct_car(wheels, car_width, car_length, hard_position=None, hard_angl
         wheels[i].angle = mean_angle
 
 
-def _normal(p0, v, p1, p2, screen):
+def _normal(p0, v0, p1, v1, p2, v2, screen):
     """
         Retourne le vecteur normal au segment [p1, p2] s'il y a intersection avec [p0, p0+v]
         Retourne None s'il n'y a pas d'intersection
     """
-    a1 = p2.y - p1.y
-    b1 = p1.x - p2.x
-    c1 = -a1 * p1.x - b1 * p1.y
-    
-    a2 = v.y
-    b2 = -v.x
-    c2 = -a2 * p0.x - b2 * p0.y
+
+    cp1 = p1 - p0
+    cp2 = p2 - p0
+    cv1 = v1 - v0
+    cv2 = v2 - v0
     
     try:
-        iy = (a1 * c2 - a2 * c1) / (a2 * b1 - a1 * b2)
-        ix = (-b1 * iy - c1) / a1
+        t = - (cp1.x * (cp2.y - cp1.y) + cp1.y * (cp1.x - cp1.x)) / (cp1.x * (cv2.y - cv1.y) + cp1.y * (cv1.x - cv1.x))
         
-        intersection = Vector2(ix, iy)
-        #pygame.draw.rect(screen, (0, 0, 255), pygame.rect.Rect(tuple(intersection + Vector2(750, 500)), (2, 2)))
+        intersection = p0 + v0 * t
+        pygame.draw.rect(screen, (0, 0, 255), pygame.rect.Rect(tuple(Vector2(350, 250)), (2, 2)))
         
         segment_length = p1.distance(p2)
         if intersection.distance(p2) < segment_length \
             and intersection.distance(p1) < segment_length \
-            and intersection.distance(p0) < v.length():
+            and intersection.distance(p0) < v0.length():
             
             normal = Vector2(-(p2.y - p1.y), p2.x - p1.x)
             u = p0 - intersection
@@ -72,7 +69,7 @@ def check_collision(car1, car2, dt, screen):
     nearest_col = None
     for wheel0 in car1.wheels:
         for wheel1, wheel2 in [(car2.wheels[0], car2.wheels[1]), (car2.wheels[1], car2.wheels[2]), (car2.wheels[2], car2.wheels[3]), (car2.wheels[3], car2.wheels[0])]:
-            intersection, normal = _normal(wheel0.position, wheel0.velocity * dt, wheel1.position, wheel2.position, screen)
+            intersection, normal = _normal(wheel0.position, wheel0.velocity * dt, wheel1.position, wheel1.velocity * dt, wheel2.position, wheel2.velocity * dt, screen)
             if normal:
                 if not nearest_col or wheel0.position.distance(intersection) < nearest_col[0]:
                     nearest_col = (wheel0.position.distance(intersection), wheel0, wheel1, wheel2, normal)

@@ -100,7 +100,7 @@ class Wheel:
 
 
 class CarModel:
-    def __init__(self, name, hitbox: tuple[int, int], weight, default_color):
+    def __init__(self, name, hitbox: tuple, weight, default_color):
         self._name = name
         self._default_color = default_color
         self._hitbox = hitbox
