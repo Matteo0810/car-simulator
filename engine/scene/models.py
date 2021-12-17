@@ -4,13 +4,16 @@ from engine.model.polygon.polygon import Polygon
 
 class Models(dict):
 
-    def __init__(self):
+    def __init__(self, camera, loader):
         super().__init__()
         self._model_id = 1
+        self._camera = camera
+        self._loader = loader
 
     def add(self, path: str) -> Polygon:
         model = ObjLoader.load(path)
         polygon = model.get_polygon()
+        polygon.set_camera(self._camera)
         self[self._model_id] = polygon
         self._model_id += 1
         return polygon
