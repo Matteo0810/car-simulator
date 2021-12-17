@@ -6,6 +6,7 @@ from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
 from helpers.dotenv import get_env
+from world.world_settings import Time, Weather
 
 
 class Scene(Canvas):
@@ -27,6 +28,9 @@ class Scene(Canvas):
         # models
         self._models = Models(self._default_camera, None)
 
+        # world settings
+        self.configure(bg=Time.DAY.value)
+
         # FPS (Mode dev seulement)
         self._fps = _FPS(self)
         self._fps.update()
@@ -34,7 +38,6 @@ class Scene(Canvas):
         if self._dev_env():
             self._controller = Controller(self).setup()
 
-    @property
     def _dev_env(self):
         return get_env('ENV') == 'DEV'
 

@@ -8,7 +8,7 @@ class World:
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
         self._cars = cars
-        #self._roads ...
+        # self._roads ...
 
     @property
     def cars(self):
@@ -22,7 +22,7 @@ class World:
         """
 
         cars = []
-        
+
         """
             attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
             {
@@ -32,16 +32,16 @@ class World:
             la liste roads définie ici devra par contre contenir des objets Road
         """
         roads = []
-        
+
         for j_road in content["roads"]:
             # j_road pour indiquer que c'est un dictionnaire issu d'un fichier json
-            
+
             # on récupère les attributs et on les tranforme un par un
             start = Vector2(*j_road["start"])
-            
+
             # puis on créé l'objet
             # road = Road(start, ...)
             pass
-        
+
         # il faudra ajouter des paramètres au constructeur et les renseigner ici
         return World(cars)
