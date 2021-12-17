@@ -1,12 +1,12 @@
 from tkinter import Canvas, Label
 from time import time
-from threading import Thread
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
 from helpers.dotenv import get_env
+
 
 class Scene(Canvas):
 
@@ -34,6 +34,7 @@ class Scene(Canvas):
         if self._dev_env():
             self._controller = Controller(self).setup()
 
+    @property
     def _dev_env(self):
         return get_env('ENV') == 'DEV'
 
@@ -47,7 +48,7 @@ class Scene(Canvas):
     def get_models(self) -> Models:
         return self._models
 
-    def update(self, callback = None):
+    def update(self, callback=None):
         self.clear()
         self._models.update(self, callback)
 
@@ -73,7 +74,7 @@ class Scene(Canvas):
 
 
 class _FPS:
-    
+
     def __init__(self, scene):
         self._scene = scene
         self._count = 0
@@ -95,6 +96,7 @@ class _FPS:
             return
         self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
 
+
 class _Loader:
 
     def __init__(self, scene):
@@ -103,7 +105,7 @@ class _Loader:
         self._progress_bar = None
         self._progress = 0
         self._max = 100
-        
+
     def progress(self):
         if self._max > self._progress:
             self._progress += 2
@@ -122,8 +124,8 @@ class _Loader:
 
     def load(self):
         if not self._label and not self._progress_bar:
-            mwidth, mheight = get_env('WIDTH') // 2, get_env('HEIGHT') // 2
-            self._label = self._scene.add_label(((mwidth)-60, mheight), f'Chargement en cours...')
-            self._progress_bar = self._scene.create_rectangle(mwidth, mheight, mwidth+self._progress, mheight+70, fill="white")
+            m_width, m_height = get_env('WIDTH') // 2, get_env('HEIGHT') // 2
+            self._label = self._scene.add_label((m_width - 60, m_height), f'Chargement en cours...')
+            self._progress_bar = self._scene.create_rectangle(m_width, m_height, m_width + self._progress,
+                                                              m_height + 70, fill="white")
         return self
-        
