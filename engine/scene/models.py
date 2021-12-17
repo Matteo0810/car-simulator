@@ -11,8 +11,8 @@ class Models(dict):
         self._loader = loader
         self.resources = 'world/assets'
 
-    def add(self, path: str, size=None) -> Polygon:
-        model = ObjLoader.load(path, size=size)
+    def add(self, path: str, position=None, size=None) -> Polygon:
+        model = ObjLoader.load(path, position=position, size=size)
         polygon = model.get_polygon()
         polygon.set_camera(self._camera)
         self[self._model_id] = polygon

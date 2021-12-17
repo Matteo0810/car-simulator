@@ -4,7 +4,7 @@ from helpers.dotenv import get_env
 
 class Vertex:
 
-    def __init__(self, coordinates: list, size: tuple = None, scale: int = 100):
+    def __init__(self, coordinates: list, position: tuple = None, scale: int = 100):
         x, y, z = coordinates
         self._x = float(x)
         self._y = float(y)
@@ -12,7 +12,7 @@ class Vertex:
 
         self._distance = 6
         self._scale = scale
-        self._size = size or (get_env('WIDTH') // 2, get_env('HEIGHT') // 2)
+        self._position = position or (get_env('WIDTH') // 2, get_env('HEIGHT') // 2)
 
     def rotate(self, axis: str, angle: float):
         angle = angle / 450 * 180 / pi
@@ -47,7 +47,7 @@ class Vertex:
         self._scale = scale
 
     def to_2d(self) -> list:
-        width, height = self._size
+        width, height = self._position
         return [int(width + ((self._x * self._distance) / (self._z + self._distance)) * self._scale),
                 int(height + ((self._y * self._distance) / (self._z + self._distance)) * self._scale)]
 
