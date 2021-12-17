@@ -29,6 +29,9 @@ class Vector2:
     def length(self):
         return math.sqrt(self.length_squared())
     
+    def distance_squared(self, other):
+        return (self.x - other.x) ** 2 + (self.y - other.y) ** 2
+    
     def distance(self, other):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
     
@@ -50,6 +53,9 @@ class Vector2:
     @staticmethod
     def of_angle(angle, length=1):
         return Vector2(math.cos(angle), math.sin(angle)) * length
+    
+    def __iter__(self):
+        return [self.x, self.y].__iter__()
     
     def __add__(self, other):
         if not isinstance(other, Vector2):
