@@ -13,8 +13,8 @@ class Animation:
 
         self._keys = 0
 
-    def play(self, scene, delay = 0.05):
-        Thread(target=self._play_frames, args=(scene,delay)).start()
+    def play(self, scene, delay=0.05):
+        Thread(target=self._play_frames, args=(scene, delay)).start()
 
     def _play_frames(self, scene, delay):
         self._played = True

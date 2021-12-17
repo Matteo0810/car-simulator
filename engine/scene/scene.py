@@ -1,11 +1,12 @@
 from tkinter import Canvas, Label
+from time import time
+from threading import Thread
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
 from helpers.dotenv import get_env
-
 
 class Scene(Canvas):
 
@@ -17,15 +18,18 @@ class Scene(Canvas):
             bg="black",
         )
 
-        self._models = Models()
+        # loader
+        # loader = _Loader(self).load()
 
-        self._cameras: dict[int, Camera] = dict()
-        self._cam_id = 1
-        self._default_camera = self.add_camera()
+        # camera
+        self._default_camera = Camera()
+
+        # models
+        self._models = Models(self._default_camera, None)
 
         # FPS (Mode dev seulement)
-        self._fps_label = None
-        self._update_fps()
+        self._fps = _FPS(self)
+        self._fps.update()
 
         if self._dev_env():
             self._controller = Controller(self).setup()
@@ -34,19 +38,11 @@ class Scene(Canvas):
         return get_env('ENV') == 'DEV'
 
     def get_controller(self):
-        if get_env('ENV') == 'DEV':
+        if self._dev_env():
             return self._controller
 
-    def add_camera(self) -> Camera:
-        camera = Camera()
-        self._cameras[self._cam_id] = camera
-        self._cam_id += 1
-        return camera
-
-    def get_camera(self, camera_id: int) -> Camera:
-        if camera_id in self._cameras:
-            return self._cameras[camera_id]
-        raise ValueError('Camera introuvable')
+    def get_camera(self) -> Camera:
+        return self._default_camera
 
     def get_models(self) -> Models:
         return self._models
@@ -56,14 +52,7 @@ class Scene(Canvas):
         self._models.update(self, callback)
 
         if self._dev_env():
-            self._update_fps()
-
-    def _update_fps(self):
-        # TODO FPS à fix...
-        if self._fps_label is not None:
-            self._fps_label['text'] = f'FPS: 0'
-            return
-        self._fps_label = self.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
+            self._fps.update()
 
     def clear(self):
         self.delete('all')
@@ -81,3 +70,60 @@ class Scene(Canvas):
                       font=("impact", font_size))
         label.place(x=x, y=y)
         return label
+
+
+class _FPS:
+    
+    def __init__(self, scene):
+        self._scene = scene
+        self._count = 0
+        self._last = time()
+        self._label = None
+
+    def _update_count(self):
+        current = time()
+        if (current - self._last) > 1:
+            self._count = 0
+            self._last = current
+            return
+        self._count += 1
+
+    def update(self):
+        self._update_count()
+        if self._label is not None:
+            self._label['text'] = f'FPS: {self._count}'
+            return
+        self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
+
+class _Loader:
+
+    def __init__(self, scene):
+        self._scene = scene
+        self._label = None
+        self._progress_bar = None
+        self._progress = 0
+        self._max = 100
+        
+    def progress(self):
+        if self._max > self._progress:
+            self._progress += 2
+            self._update_progress()
+
+    def _update_progress(self):
+        scene = self._scene
+        coords = scene.coords(self._progress_bar)
+        coords[2] += self._progress
+        scene.coords(self._progress_bar, *coords)
+
+    def delete(self):
+        scene = self._scene
+        scene.delete(self._progress_bar)
+        self._label.destroy()
+
+    def load(self):
+        if not self._label and not self._progress_bar:
+            mwidth, mheight = get_env('WIDTH') // 2, get_env('HEIGHT') // 2
+            self._label = self._scene.add_label(((mwidth)-60, mheight), f'Chargement en cours...')
+            self._progress_bar = self._scene.create_rectangle(mwidth, mheight, mwidth+self._progress, mheight+70, fill="white")
+        return self
+        

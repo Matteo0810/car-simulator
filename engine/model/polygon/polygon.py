@@ -10,6 +10,7 @@ class Polygon:
         self._meshes = meshes
         self._faces = faces
         self._material = material
+        self._camera = None
         self._animations = Animations(self)
 
     def rescale(self, scale: int):
@@ -25,8 +26,11 @@ class Polygon:
             vertex.move(axis, newPos)
 
     def render(self, canvas):
-        for face in [self._get_face(face) for face in self._faces]:
+        for face in self._sort_z():
             face.create(canvas)
+
+    def set_camera(self, camera):
+        self._camera = camera
 
     def get_scale(self):
         return self._meshes[0].get_scale()
@@ -36,4 +40,7 @@ class Polygon:
 
     def _get_face(self, face_metadata: list) -> Face:
         props = [[int(element) - 1 for element in re.split('[/| ]+', metadata)] for metadata in face_metadata]
-        return Face([self._meshes[prop[0]] for prop in props], self._material)
+        return Face([self._meshes[prop[0]] for prop in props], self._material, self._camera)
+
+    def _sort_z(self) -> list:
+        return sorted([self._get_face(face) for face in self._faces], key=lambda vertex: vertex.avg_z())

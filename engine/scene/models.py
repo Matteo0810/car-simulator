@@ -9,9 +9,10 @@ class Models(dict):
         self._model_id = 1
         self._camera = camera
         self._loader = loader
+        self.resources = 'world/assets'
 
-    def add(self, path: str) -> Polygon:
-        model = ObjLoader.load(path)
+    def add(self, path: str, size=None) -> Polygon:
+        model = ObjLoader.load(path, size=size)
         polygon = model.get_polygon()
         polygon.set_camera(self._camera)
         self[self._model_id] = polygon

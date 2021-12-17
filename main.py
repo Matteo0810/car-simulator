@@ -5,7 +5,7 @@ from helpers.dotenv import dotenv
 
 def rotate_animation(animation):
     for i in range(30):
-        animation.add_frame(lambda polygon: polygon.rotate('y', i))
+        animation.add_frame(lambda polygon: polygon.rotate('x', i))
     return animation
 
 
@@ -17,9 +17,12 @@ if __name__ == "__main__":
     root.resizable(False, False)
 
     scene = Scene(root)
-    model = scene.get_models().add('world/assets/cube/cube.obj')
+    models = scene.get_models()
+
+    modelA = models.add(f'{models.resources}/cube/cube')
+    # modelB = models.add(f'{models.resources}/cube/cube.obj')
     scene.show()
- 
+
     """
     model.get_animations()\
         .add('rotation', lambda animation: rotate_animation(animation))\
