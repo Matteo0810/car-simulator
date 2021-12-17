@@ -1,6 +1,8 @@
 from tkinter import Tk
 from engine.scene.scene import Scene
 from helpers.dotenv import dotenv
+import json
+from world.world import World
 
 
 def rotate_animation(animation):
@@ -16,6 +18,9 @@ if __name__ == "__main__":
     root.title('Car simulator')
     root.resizable(False, False)
 
+    # json_world = json.loads(open("world/assets/world.json", mode='r').read())
+    # world = World.load(json_world)
+    
     scene = Scene(root)
     models = scene.get_models()
 

@@ -3,15 +3,20 @@ from time import time, sleep
 
 from helpers.dotenv import dotenv, get_env
 from engine.debug.scene2d import Scene2d
+from world.world import World
 
 import pygame
+import json
 
 dotenv()
 
 pygame.init()
 screen = pygame.display.set_mode((get_env("WIDTH"), get_env("HEIGHT")))
 
-scene = Scene2d(screen)
+json_world = json.loads(open("world/assets/world.json", mode='r').read())
+world = World.load(json_world)
+
+scene = Scene2d(screen, world)
 
 if __name__ == '__main__':
     last_frame = time()

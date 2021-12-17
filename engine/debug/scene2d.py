@@ -11,8 +11,8 @@ import pygame
 
 
 class Scene2d:
-    def __init__(self, screen: pygame.Surface):
-        self._world = World.load("assets/world.json")
+    def __init__(self, screen: pygame.Surface, world):
+        self._world = world
         self._world.cars.extend([Car(self, Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0))),
                             Car(self, Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255)))])
         self._user_car = self._world.cars[0]

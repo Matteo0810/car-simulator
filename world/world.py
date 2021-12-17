@@ -1,30 +1,47 @@
-import json
+from helpers.vector import Vector2
+from world.road import Road
 
 
 class World:
-    def __init__(self, content):
+    def __init__(self, cars):  # TODO : ajouter les paramètres manquants
         """
-            content: dictionnaire contenant des voitures,des routes, des d'intersections et des obstacles
-
-            notre but ici va être de trier tout ce contenu dans plusieurs liste: exemple: une liste de voitures,
-            une liste de route, une liste d'intersection et une liste d'obstacles un exemple si dessus d'un attributs
-            _cars (un _ au début pour dire que cette attribut est privé et donc accéssible que dans cette classe) on
-            le définit comme une liste vide pour ensuite le remplir avec les voitures que l'ont trouvera dans le
-            contenu
+            Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
-        self._cars = []
+        self._cars = cars
+        #self._roads ...
 
     @property
     def cars(self):
         return self._cars
 
     @staticmethod
-    def load(chem):
-        content = open(chem, mode='r').read()
-        print(json.loads(content))
-        content = json.loads(content)
+    def load(content):
+        """
+        :param content: dictionnaire représentant le json du monde
+        :return: le monde
+        """
 
-        return World(content)
-
-
-World.load("assets/world.json")
+        cars = []
+        
+        """
+            attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
+            {
+                "start": [x, y],
+                etc...
+            }
+            la liste roads définie ici devra par contre contenir des objets Road
+        """
+        roads = []
+        
+        for j_road in content["roads"]:
+            # j_road pour indiquer que c'est un dictionnaire issu d'un fichier json
+            
+            # on récupère les attributs et on les tranforme un par un
+            start = Vector2(*j_road["start"])
+            
+            # puis on créé l'objet
+            # road = Road(start, ...)
+            pass
+        
+        # il faudra ajouter des paramètres au constructeur et les renseigner ici
+        return World(cars)
