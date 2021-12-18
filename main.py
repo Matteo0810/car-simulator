@@ -24,8 +24,7 @@ if __name__ == "__main__":
     scene = Scene(root)
     models = scene.get_models()
 
-    modelA = models.add(f'{models.resources}/cube/cube')
-    # modelB = models.add(f'{models.resources}/cube/cube.obj')
+    modelA = models.add(f'{models.resources}/cube/cube.obj')
     scene.show()
 
     """

@@ -6,7 +6,8 @@ from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
 from helpers.dotenv import get_env
-from world.world_settings import Time, Weather
+from helpers.utils import property_get
+from world.world_settings import Time
 
 
 class Scene(Canvas):
@@ -29,20 +30,22 @@ class Scene(Canvas):
         self._models = Models(self._default_camera, None)
 
         # world settings
-        self.configure(bg=Time.DAY.value)
+        self._time = Time.DAY.value
+        self.configure(bg=self._time)
 
         # FPS (Mode dev seulement)
         self._fps = _FPS(self)
         self._fps.update()
 
-        if self._dev_env():
+        if property_get("env"):
             self._controller = Controller(self).setup()
 
-    def _dev_env(self):
+    @property
+    def env(self):
         return get_env('ENV') == 'DEV'
 
     def get_controller(self):
-        if self._dev_env():
+        if property_get("env"):
             return self._controller
 
     def get_camera(self) -> Camera:
@@ -55,7 +58,7 @@ class Scene(Canvas):
         self.clear()
         self._models.update(self, callback)
 
-        if self._dev_env():
+        if property_get("env"):
             self._fps.update()
 
     def clear(self):
@@ -69,7 +72,7 @@ class Scene(Canvas):
         x, y = coordinates
         label = Label(self,
                       text=text,
-                      background="black",
+                      background=self._time,
                       foreground="white",
                       font=("impact", font_size))
         label.place(x=x, y=y)
