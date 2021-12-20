@@ -33,4 +33,5 @@ class Material:
     def get_color(self):
         if 'color' not in self._metadata:
             return Color.from_list([255, 255, 255, 1])
+
         return Color.from_list(self._metadata['color'] + [1])

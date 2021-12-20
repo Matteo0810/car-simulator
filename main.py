@@ -24,7 +24,7 @@ if __name__ == "__main__":
     scene = Scene(root)
     models = scene.get_models()
 
-    modelA = models.add(f'{models.resources}/test/test')
+    modelA = models.add(f'{models.resources}/cliff/cliff')
     scene.show()
 
     """
