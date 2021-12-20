@@ -1,5 +1,4 @@
 from enum import Enum
-from helpers.color import Color
 
 
 class Weather(Enum):

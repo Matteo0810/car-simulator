@@ -5,43 +5,48 @@ from engine.model.material.mtl_loader import MTLLoader
 
 class ObjLoader:
 
-    def __init__(self, content: list, mtl_loader: MTLLoader, position: tuple = None, size: int = None):
+    def __init__(self, content: list, mtl_loader: MTLLoader, position=None, size=None):
+        self._materials = mtl_loader.get_materials()
         self._content = [line.split() for line in content if len(line) > 1]
 
-        # polygon
+        # positions
         self._position = position
         self._size = size
+
+        # polygon
         self._meshes = self._get_meshes()
         self._faces = self._get_faces()
 
-        # materials
-        self._materials = mtl_loader.get_materials()
-        self._material = self._get_material()
-
-        self._polygon = Polygon(self._meshes, self._faces, self._material)
+        self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position: tuple = None, size: tuple = None):
+    def load(relative_path: str, position=None, size=None):
         if len(relative_path.split('.')) < 2:
-            relative_path += '.obj'
+            relative_path += ".obj"
         return ObjLoader(
             open(relative_path, 'r', encoding="utf-8").readlines(),
             MTLLoader.load(relative_path),
-            position,
-            size
+            position, size
         )
 
-    def _get_material(self):
-        for content in self._content:
-            if content[0] == 'usemtl':
-                return self._materials[content[1]]
-        return None
-
     def _get_meshes(self) -> list:
-        return [Vertex(vertex[1:], self._position, self._size) for vertex in self._content if vertex[0] == 'v']
+        return [Vertex(element[1:], self._position, self._size) for element in self._content if element[0] == 'v']
 
-    def _get_faces(self) -> list:
-        return [face[1:] for face in self._content if face[0] == 'f']
+    def _get_faces(self) -> dict:
+        result, content = {}, self._content
+        i, j = 0, 0
+        while i < len(content):
+            if content[i][0] == 'usemtl':
+                material = self._materials[content[i][1]]
+                if material not in result:
+                    result[material] = []
+                j = i + 1
+                while j < len(content) and content[j][0] != 'usemtl':
+                    if content[j][0] == 'f':
+                        result[material].append(content[j][1:])
+                    j += 1
+            i += 1
+        return result
 
     def get_polygon(self):
         return self._polygon

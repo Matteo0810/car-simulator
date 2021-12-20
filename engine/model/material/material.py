@@ -31,4 +31,6 @@ class Material:
         return self._metadata['illum']
 
     def get_color(self):
-        return Color.from_list(self._metadata['color'] + [0.3])
+        if 'color' not in self._metadata:
+            return Color.from_list([255, 255, 255, 1])
+        return Color.from_list(self._metadata['color'] + [1])

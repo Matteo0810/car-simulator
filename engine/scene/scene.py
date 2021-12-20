@@ -1,5 +1,6 @@
 from tkinter import Canvas, Label
 from time import time
+from random import randint
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
@@ -17,7 +18,7 @@ class Scene(Canvas):
             master=root,
             height=get_env('HEIGHT'),
             width=get_env('WIDTH'),
-            bg="black",
+            bg="black"
         )
 
         # loader
@@ -31,21 +32,20 @@ class Scene(Canvas):
 
         # world settings
         self._time = Time.DAY.value
-        self.configure(bg=self._time)
+        # self.configure(bg=self._time)
 
         # FPS (Mode dev seulement)
         self._fps = _FPS(self)
         self._fps.update()
 
-        if property_get("env"):
+        if self._dev():
             self._controller = Controller(self).setup()
 
-    @property
-    def env(self):
+    def _dev(self):
         return get_env('ENV') == 'DEV'
 
     def get_controller(self):
-        if property_get("env"):
+        if self._dev():
             return self._controller
 
     def get_camera(self) -> Camera:
@@ -58,7 +58,7 @@ class Scene(Canvas):
         self.clear()
         self._models.update(self, callback)
 
-        if property_get("env"):
+        if self._dev():
             self._fps.update()
 
     def clear(self):
@@ -72,7 +72,7 @@ class Scene(Canvas):
         x, y = coordinates
         label = Label(self,
                       text=text,
-                      background=self._time,
+                      background="black",
                       foreground="white",
                       font=("impact", font_size))
         label.place(x=x, y=y)
