@@ -14,10 +14,12 @@ class World:
     @property
     def cars(self):
         return self._cars
+    
     @property
     def roads(self):
         return self._roads
 
+    @property
     def obstacles(self):
         return self._obstacles
 
@@ -32,7 +34,7 @@ class World:
         intersection = []
         obstacles = []
 
-
+        """""
             attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
             {
                 "start": [x, y],
@@ -53,7 +55,7 @@ class World:
 
             # puis on créé l'objet
             road = Road(start, end, speed_limit, None, None)
-            pass
+            roads.append(road)
 
         # il faudra ajouter des paramètres au constructeur et les renseigner ici
-        return World(cars, roads, obstacle )
+        return World(cars, roads, obstacles)

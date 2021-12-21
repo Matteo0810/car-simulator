@@ -17,8 +17,6 @@ class Scene2d:
         self._user_car = None
         self.reset()
         
-        self._roads = []
-        
         self._screen = screen
         
         self._camera = Camera2d(0, 0)
@@ -33,12 +31,12 @@ class Scene2d:
         pygame.display.update()
     
     def _render(self, dt):
-        for road in self._roads:
+        for road in self.world.roads:
             points = [
-                road.start + Vector2.of_angle((road.end - road.start).angle() - pi/2) * road.width / 2,
-                road.start + Vector2.of_angle((road.end - road.start).angle() + pi/2) * road.width / 2,
-                road.end + Vector2.of_angle((road.end - road.start).angle() + pi/2) * road.width / 2,
-                road.end + Vector2.of_angle((road.end - road.start).angle() - pi/2) * road.width / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() - pi/2) * get_env("ROAD_WIDTH") / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() + pi/2) * get_env("ROAD_WIDTH") / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() + pi/2) * get_env("ROAD_WIDTH") / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() - pi/2) * get_env("ROAD_WIDTH") / 2,
             ]
             
             points = [(int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y)) for p in points]
@@ -54,8 +52,8 @@ class Scene2d:
     
     def reset(self):
         self._world.cars.clear()
-        self._world.cars.extend([Car(Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0), 30)),
-                            Car(Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255), 20))])
+        self._world.cars.extend([Car(Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0), 25)),
+                Car(Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255), 25))])
         self._user_car = self._world.cars[0]
     
     screen = property_get("screen")
