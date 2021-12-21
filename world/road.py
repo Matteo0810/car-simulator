@@ -2,19 +2,20 @@ from math import *
 
 from helpers.utils import *
 from helpers.vector import Vector2
+from helpers.dotenv import get_env
 
 
 class Road:
-    def __init__(self, start: Vector2, end: Vector2, width, start_intersection, end_intersection):
+    def __init__(self, start: Vector2, end: Vector2, speed_limit, start_intersection, end_intersection):
         self._start = start
         self._end = end
-        self._width = width
+        self._speed_limit = speed_limit
         self._paths = (Path(self, 0), Path(self, 1))
         self._intersections = (start_intersection, end_intersection)
     
     start = property_get("start")
     end = property_get("end")
-    width = property_get("width")
+    speed_limit = property_get("speed_limit")
     intersections = property_get("intersections")
 
 
@@ -26,16 +27,16 @@ class Path:
     @property
     def start(self):
         if self._id:
-            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * self._road.width / 4
+            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * get_env("ROAD_WIDTH") / 4
         else:
-            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * self._road.width / 4
+            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * get_env("ROAD_WIDTH") / 4
     
     @property
     def end(self):
         if not self._id:
-            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * self._road.width / 4
+            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * get_env("ROAD_WIDTH") / 4
         else:
-            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * self._road.width / 4
+            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * get_env("ROAD_WIDTH") / 4
     
     @property
     def intersection(self):
