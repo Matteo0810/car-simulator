@@ -15,14 +15,6 @@ class Vector2:
     def y(self):
         return self._y
     
-    """@x.setter
-    def x(self, x):
-        self._x = x
-
-    @y.setter
-    def y(self, y):
-        self._y = y"""
-    
     def length_squared(self):
         return self.x ** 2 + self.y ** 2
     
@@ -56,6 +48,9 @@ class Vector2:
     
     def __iter__(self):
         return [self.x, self.y].__iter__()
+    
+    def __repr__(self):
+        return f"Vector2(*{(self.x, self.y)})"
     
     def __add__(self, other):
         if not isinstance(other, Vector2):
@@ -114,14 +109,6 @@ class Vector3:
     def z(self):
         return self._z
     
-    """@x.setter
-    def x(self, x):
-        self._x = x
-
-    @y.setter
-    def y(self, y):
-        self._y = y"""
-    
     def length_squared(self):
         return self.x ** 2 + self.y ** 2 + self.z ** 2
     
@@ -132,7 +119,7 @@ class Vector3:
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2)
     
     def normalized(self):
-        return self / self.length()
+        return self / self.length() if self != Vector3(0, 0, 0) else Vector3(0, 0, 0)
     
     def fast_normalized(self):
         return self * fast_invsqrt(self.length_squared())
@@ -146,6 +133,12 @@ class Vector3:
              self.x * other.y - self.y * other.x)
     
     # TODO : angle
+    
+    def __repr__(self):
+        return f"Vector3(*{(self.x, self.y, self.z)})"
+    
+    def __iter__(self):
+        return [self.x, self.y].__iter__()
     
     def __add__(self, other):
         if not isinstance(other, Vector3):
