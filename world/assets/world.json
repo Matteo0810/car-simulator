@@ -3,7 +3,9 @@
         {
             "start":[8, -3],
             "end" : [5, 10],
-            "width" : 30
+            "width" : 30,
+            "speed limit" : 90,
+            "intersection" : [None, None]
         }
     ]
 }

@@ -3,12 +3,12 @@ from world.road import Road
 
 
 class World:
-    def __init__(self, cars):  # TODO : ajouter les paramètres manquants
+    def __init__(self, cars, roads):  # TODO : ajouter les paramètres manquants
         """
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
         self._cars = cars
-        # self._roads ...
+        self._roads = roads
 
     @property
     def cars(self):
@@ -20,8 +20,9 @@ class World:
         :param content: dictionnaire représentant le json du monde
         :return: le monde
         """
-
+        roads = []
         cars = []
+        param_content
 
         """
             attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
@@ -38,10 +39,14 @@ class World:
 
             # on récupère les attributs et on les tranforme un par un
             start = Vector2(*j_road["start"])
+            end = Vector2(*j_road["end"])
+            width = (*j_road["width"])
+            speed_limit = (*j_road["speed"])
+            intersection = (*j_road"intersection")
 
             # puis on créé l'objet
-            # road = Road(start, ...)
+            road = Road(start, end, width, speed_limit, intersection)
             pass
 
         # il faudra ajouter des paramètres au constructeur et les renseigner ici
-        return World(cars)
+        return World(cars, roads)
