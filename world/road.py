@@ -26,18 +26,17 @@ class Path:
     @property
     def start(self):
         if self._id:
-            return self._road.start + unit_vector(angle_of(self._road.end - self._road.start) - pi) * self._road.width / 4
+            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * self._road.width / 4
         else:
-            return self._road.end + unit_vector(angle_of(self._road.start - self._road.end) - pi) * self._road.width / 4
+            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * self._road.width / 4
     
     @property
     def end(self):
         if not self._id:
-            return self._road.start + unit_vector(angle_of(self._road.end - self._road.start) - pi) * self._road.width / 4
+            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * self._road.width / 4
         else:
-            return self._road.end + unit_vector(angle_of(self._road.start - self._road.end) - pi) * self._road.width / 4
+            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * self._road.width / 4
     
     @property
     def intersection(self):
         return self._road.intersections[self._id]
-        
