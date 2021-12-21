@@ -3,20 +3,23 @@ from world.road import Road
 
 
 class World:
-    def __init__(self, cars, roads, obstacle):  # TODO : ajouter les paramètres manquants
+    def __init__(self, cars, roads, obstacles):  # TODO : ajouter les paramètres manquants
         """
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
         self._cars = cars
         self._roads = roads
-        self.obstacle = obstacle
+        self._obstacles = obstacles
 
     @property
     def cars(self):
         return self._cars
-
+    @property
     def roads(self):
         return self._roads
+
+    def obstacles(self):
+        return self._obstacles
 
     @staticmethod
     def load(content):
@@ -27,10 +30,9 @@ class World:
         roads = []
         cars = []
         intersection = []
-        obstacle = []
+        obstacles = []
 
 
-        """
             attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
             {
                 "start": [x, y],
