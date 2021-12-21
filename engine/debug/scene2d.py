@@ -13,11 +13,11 @@ import pygame
 class Scene2d:
     def __init__(self, screen: pygame.Surface, world):
         self._world = world
-        self._world.cars.extend([Car(self, Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0))),
-                            Car(self, Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255)))])
-        self._user_car = self._world.cars[0]
+
+        self._user_car = None
+        self.reset()
         
-        self._roads = [Road(Vector2(-50, -30), Vector2(50, -30), 34, None, None)]
+        self._roads = []
         
         self._screen = screen
         
@@ -45,12 +45,18 @@ class Scene2d:
             pygame.draw.polygon(self._screen, (100, 100, 100), points)
         
         for car in self._world.cars:
-            car.tick(dt)
+            car.tick(self.world, dt)
             
             points = (wheel.position for wheel in car._wheels)
             points = [(int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y)) for p in points]
             
             pygame.draw.polygon(self._screen, car.color, points)
+    
+    def reset(self):
+        self._world.cars.clear()
+        self._world.cars.extend([Car(Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0), 30)),
+                            Car(Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255), 20))])
+        self._user_car = self._world.cars[0]
     
     screen = property_get("screen")
     user_car = property_get("user_car")

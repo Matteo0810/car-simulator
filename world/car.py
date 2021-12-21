@@ -8,7 +8,7 @@ from engine.physics import check_collision
 
 
 class Car:
-    def __init__(self, scene, position, angle, model):
+    def __init__(self, position, angle, model):
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
         self._model = model
         self._width = width = model.hitbox[0]
@@ -17,16 +17,13 @@ class Car:
         self._wheel_speed = 0
         self._steer_angle = 0
         self._color = model.default_color
-        self._scene = scene
         
-        self._acceleration = 20  # pi/s²
+        self._acceleration = model.acceleration  # pi/s²
         
         reconstruct_car(self._wheels, width, length, hard_position=position, hard_angle=angle)
     
     def _accelerate(self, dt):
         for wheel in self._wheels:
-            wheel.last_position = wheel.position
-            
             drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity)
             
             def inc_velocity(acceleration):
@@ -40,29 +37,36 @@ class Car:
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
             if self._braking or drifting > get_env("DRIFT_TRESHOLD"):
-                wheel.velocity *= 0.8 ** dt
+                wheel.velocity *= 1#0.8 ** dt
+                wheel.velocity -= wheel.velocity.normalize() * dt * 5
                 
             else:
                 wheel.velocity = projection
 
             rotation_speed_loss = abs(cos(wheel.velocity.angle() - wheel.angle))
             if wheel.actual_speed != 0:
-                wheel.velocity *= (0.9 * rotation_speed_loss) ** dt
-                wheel.velocity -= wheel.velocity.normalize() * dt * 5
+                wheel.velocity *= (1 * rotation_speed_loss) ** dt
+                wheel.velocity -= wheel.velocity.normalize() * dt * 10
             
             #pygame.draw.rect(self._scene.screen, (0, 0, 255), pygame.rect.Rect(projection + wheel.position + Vector2(750, 500), (3, 3)))
             #pygame.draw.rect(self._scene.screen, (255, 0, 0), pygame.rect.Rect(wheel.velocity + wheel.position + Vector2(750, 500), (3, 3)))
 
-    def tick(self, dt):
+    def tick(self, world, dt):
+        for wheel in self._wheels:
+            wheel.last_position = wheel.position
+        
         self._accelerate(dt)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
+            
+        self.reconstruct()
         
-        for car in self._scene.world.cars:
+        for car in world.cars:
             if car is not self:
-                check_collision(self, car, dt, self._scene.screen)
-        
+                check_collision(self, car, dt)
+    
+    def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]
         
         reconstruct_car(self._wheels, self._width, self._length)
@@ -100,13 +104,15 @@ class Wheel:
 
 
 class CarModel:
-    def __init__(self, name, hitbox: tuple, weight, default_color):
+    def __init__(self, name, hitbox: tuple, weight, default_color, acceleration):
         self._name = name
         self._default_color = default_color
         self._hitbox = hitbox
         self._weight = weight
+        self._acceleration = acceleration
 
     name = property_get("name")
     weight = property_get("weight")
     default_color = property_get("default_color")
     hitbox = property_get("hitbox")
+    acceleration = property_get("acceleration")
