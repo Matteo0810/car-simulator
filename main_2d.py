@@ -8,17 +8,18 @@ from world.world import World
 import pygame
 import json
 
-dotenv()
 
-pygame.init()
-screen = pygame.display.set_mode((get_env("WIDTH"), get_env("HEIGHT")))
+def main():
+    dotenv()
+    
+    pygame.init()
+    screen = pygame.display.set_mode((get_env("WIDTH"), get_env("HEIGHT")))
 
-json_world = json.loads(open("world/assets/world.json", mode='r').read())
-world = World.load(json_world)
+    json_world = json.loads(open("world/assets/world.json", mode='r').read())
+    world = World.load(json_world)
 
-scene = Scene2d(screen, world)
-
-if __name__ == '__main__':
+    scene = Scene2d(screen, world)
+    
     last_frame = time()
     
     while True:
@@ -33,3 +34,7 @@ if __name__ == '__main__':
         
         last_frame = time()
         sleep(0.01)
+
+
+if __name__ == '__main__':
+    main()
