@@ -82,7 +82,7 @@ class Vector2:
         return self.x == other.x and self.y == other.y
     
     def __str__(self):
-        return f'Position(x={self.x}, y={self.y})'
+        return f'Vector2(x={self.x}, y={self.y})'
     
     def __neg__(self):
         return self.__class__(-self.x, -self.y)
@@ -170,7 +170,7 @@ class Vector3:
         return self.x == other.x and self.y == other.y and self.z == other.z
     
     def __str__(self):
-        return f'Position(x={self.x}, y={self.y})'
+        return f'Vector3(x={self.x}, y={self.y}, z={self.z})'
     
     def __neg__(self):
         return self.__class__(-self.x, -self.y, -self.z)
