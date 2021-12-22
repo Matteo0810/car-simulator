@@ -1,5 +1,7 @@
 from math import *
 
+from engine.modeled import Modeled
+from engine.model_ import Model
 from engine.physics import reconstruct_car
 from helpers.dotenv import get_env
 from helpers.utils import *
@@ -7,20 +9,22 @@ from helpers.vector import Vector2
 from engine.physics import check_collision
 
 
-class Car:
-    def __init__(self, position, angle, model):
+class Car(Modeled):
+    def __init__(self, position, angle, car_type):
+        super().__init__(car_type.model)
+        
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
-        self._model = model
-        self._width = width = model.hitbox[0]
-        self._length = length = model.hitbox[1]
+        self._model = car_type
+        self._width = width = car_type.width
+        self._length = length = car_type.length
         self._braking = False
         self._wheel_speed = 0
         self._steer_angle = 0
-        self._color = model.default_color
+        self._color = car_type.default_color
         
-        self._acceleration = model.acceleration  # pi/s²
+        self._acceleration = car_type.acceleration  # pi/s²
         
-        reconstruct_car(self._wheels, width, length, hard_position=position, hard_angle=angle)
+        reconstruct_car(self._wheels, width, length, forced_position=position, forced_angle=angle)
     
     def _accelerate(self, dt):
         for wheel in self._wheels:
@@ -103,16 +107,18 @@ class Wheel:
         return cos(self.velocity.angle() - self.angle) * self.velocity.length()
 
 
-class CarModel:
-    def __init__(self, name, hitbox: tuple, weight, default_color, acceleration):
-        self._name = name
+class CarType:
+    def __init__(self, model, width, length, weight, default_color, acceleration):
+        self._model = model
         self._default_color = default_color
-        self._hitbox = hitbox
+        self._width = width
+        self._length = length
         self._weight = weight
         self._acceleration = acceleration
 
-    name = property_get("name")
+    model = property_get("model")
     weight = property_get("weight")
     default_color = property_get("default_color")
-    hitbox = property_get("hitbox")
+    width = property_get("width")
+    length = property_get("length")
     acceleration = property_get("acceleration")

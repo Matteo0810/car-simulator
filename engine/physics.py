@@ -7,7 +7,7 @@ from helpers.utils import *
 from helpers.dotenv import get_env
 
 
-def reconstruct_car(wheels, car_width, car_length, hard_position=None, hard_angle=None):
+def reconstruct_car(wheels, car_width, car_length, forced_position=None, forced_angle=None):
     front_angle = atan2(car_width, car_length)
     diagonal = sqrt(car_width ** 2 + car_length ** 2)
     
@@ -18,16 +18,16 @@ def reconstruct_car(wheels, car_width, car_length, hard_position=None, hard_angl
         nice_angle(-front_angle)
     ]
     
-    center_of_mass = hard_position if hard_position else sum((w.position for w in wheels), Vector2(0, 0)) / 4
+    center_of_mass = forced_position if forced_position else sum((w.position for w in wheels), Vector2(0, 0)) / 4
     
-    if hard_angle is None:
+    if forced_angle is None:
         car_angles = []
         for i in range(4):
             car_angles.append((wheels[i].position - center_of_mass).angle() - wheel_angles[i])
         
         mean_angle = atan2(sum((sin(a) for a in car_angles)), sum((cos(a) for a in car_angles)))
     else:
-        mean_angle = hard_angle
+        mean_angle = forced_angle
     
     for i in range(4):
         wheels[i].position = center_of_mass + Vector2.of_angle(wheel_angles[i] + mean_angle) * diagonal / 2
@@ -114,28 +114,11 @@ def check_collision(car1, car2, dt):
                 f1 = lerp(wheel1.velocity, wheel2.velocity, 1 - rel_hit_pos)
                 f = f0 + f1
                 
-                wheel0.velocity = normal * f.length()*2
+                wheel0.velocity = normal * f.length() * 2
                 wheel0.position = collision + wheel0.velocity * dt
                 
-                wheel1.velocity = lerp(normal * -f.length()*2, wheel1.velocity, rel_hit_pos)
-                wheel2.velocity = lerp(normal * -f.length()*2, wheel2.velocity, 1 - rel_hit_pos)
+                wheel1.velocity = lerp(normal * -f.length() * 2, wheel1.velocity, rel_hit_pos)
+                wheel2.velocity = lerp(normal * -f.length() * 2, wheel2.velocity, 1 - rel_hit_pos)
                 
                 wheel1.position = lerp(wheel1.last_position, wheel1.position, t)
                 wheel2.position = lerp(wheel2.last_position, wheel2.position, t)
-    
-    """for acollision in sorted(collisions, key=lambda l: l[5]):
-        wheel0, wheel1, wheel2, collision, normal, t = acollision
-        rel_hit_pos = wheel2.position.distance(collision) / wheel1.position.distance(wheel2.position)
-        
-        f0 = wheel0.velocity
-        f1 = lerp(wheel1.velocity, wheel2.velocity, 1 - rel_hit_pos)
-        f = f0 + f1
-        
-        wheel0.velocity = normal * f.length()
-        wheel0.position = collision
-        
-        wheel1.velocity = lerp(normal * -f.length(), wheel1.velocity, rel_hit_pos)
-        wheel2.velocity = lerp(normal * -f.length(), wheel2.velocity, 1 - rel_hit_pos)
-        
-        wheel1.position = wheel1.last_position
-        wheel2.position = wheel2.last_position"""

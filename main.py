@@ -1,6 +1,6 @@
 from tkinter import Tk
 from engine.scene.scene import Scene
-from helpers.dotenv import dotenv
+from helpers.dotenv import dotenv, get_env
 import json
 from world.world import World
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     scene = Scene(root)
     models = scene.get_models()
 
-    modelA = models.add(f'{models.resources}/cliff/cliff')
+    modelA = models.add(get_env("MODELS_DIR") + "cliff/cliff")
     scene.show()
 
     """

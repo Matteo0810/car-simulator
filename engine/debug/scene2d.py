@@ -1,5 +1,5 @@
 from engine.debug.controller import Controller
-from world.car import Car, CarModel
+from world.car import Car, CarType
 from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d
 from helpers.dotenv import get_env
@@ -52,8 +52,10 @@ class Scene2d:
     
     def reset(self):
         self._world.cars.clear()
-        self._world.cars.extend([Car(Vector2(0, 0), 0, CarModel("default", (10, 20), 1, (0, 255, 0), 25)),
-                Car(Vector2(50, 0), 0, CarModel("default", (10, 20), 1, (0, 0, 255), 25))])
+        
+        self._world.cars.extend([Car(Vector2(0, 0), 0, CarType(None, 10, 20, 1, (0, 255, 0), 25)),
+                Car(Vector2(50, 0), 0, CarType(None, 10, 20, 1, (0, 0, 255), 25))])
+        
         self._user_car = self._world.cars[0]
     
     screen = property_get("screen")

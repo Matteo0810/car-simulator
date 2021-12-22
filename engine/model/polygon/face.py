@@ -21,12 +21,12 @@ class Face:
     def get_shaders(self):
         direction = self._camera.get_direction()  # of camera
 
-        v1 = Vector3(*self._meshes[1]) - Vector3(*self._meshes[0])
-        v2 = Vector3(*self._meshes[2]) - Vector3(*self._meshes[1])
+        v1 = Vector3(*self._meshes[0]) - Vector3(*self._meshes[-1])
+        v2 = Vector3(*self._meshes[-1]) - Vector3(*self._meshes[-2])
         normal = v1.cross(v2).fast_normalized()
         if direction.dot(normal) < 0:
             normal = -normal
-        shade = max(0, normal.dot(Vector3(0, 0, -1)) * .5 + .5)
+        shade = max(0, normal.dot(Vector3(0, 0, 1)) * .6 + .4)
         r, g, b = tuple(self._material.get_color())
         return Color.from_list([r * shade, g * shade, b * shade, 1])
 
