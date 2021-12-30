@@ -1,7 +1,7 @@
 from math import *
 
 from engine.modeled import Modeled
-from engine.model import Model
+from engine.model_ import Model
 from engine.physics import reconstruct_car
 from helpers.dotenv import get_env
 from helpers.utils import *
