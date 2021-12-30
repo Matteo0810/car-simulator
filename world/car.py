@@ -1,12 +1,9 @@
-from math import *
-
 from engine.modeled import Modeled
-from engine.model_ import Model
-from engine.physics import reconstruct_car
-from helpers.dotenv import get_env
+
+from engine.physics import reconstruct_car, check_collision
+
 from helpers.utils import *
 from helpers.vector import Vector2
-from engine.physics import check_collision
 
 
 class Car(Modeled):
@@ -22,44 +19,38 @@ class Car(Modeled):
         self._steer_angle = 0
         self._color = car_type.default_color
         
-        self._acceleration = car_type.acceleration  # pi/s²
-        
         reconstruct_car(self._wheels, width, length, forced_position=position, forced_angle=angle)
     
-    def _accelerate(self, dt):
+    def _accelerate(self, world, dt):
         for wheel in self._wheels:
-            drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity)
+            ground = world.get_ground_at(wheel.position)
             
-            def inc_velocity(acceleration):
-                if wheel.actual_speed * sign(self._wheel_speed) < abs(self._wheel_speed):
-                    actual_acceleration = min(self._wheel_speed - wheel.actual_speed
-                                              , acceleration * sign(self._wheel_speed)
-                                              , key=lambda x: sign(self._wheel_speed) * x)
-                    wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
+            drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity) > ground.grip \
+                    or self._braking
+            
+            if not drifting and wheel.actual_speed * sign(self._wheel_speed) < abs(self._wheel_speed):
+                actual_acceleration = min(self._wheel_speed - wheel.actual_speed,
+                                          self._model.acceleration * sign(self._wheel_speed),
+                                          key=lambda x: sign(self._wheel_speed) * x)
+                wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
 
-            inc_velocity(self._acceleration)
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
-            if self._braking or drifting > get_env("DRIFT_TRESHOLD"):
-                wheel.velocity *= 1#0.8 ** dt
+            if drifting:
                 wheel.velocity -= wheel.velocity.normalize() * dt * 5
-                
             else:
                 wheel.velocity = projection
 
             rotation_speed_loss = abs(cos(wheel.velocity.angle() - wheel.angle))
             if wheel.actual_speed != 0:
-                wheel.velocity *= (1 * rotation_speed_loss) ** dt
-                wheel.velocity -= wheel.velocity.normalize() * dt * 10
-            
-            #pygame.draw.rect(self._scene.screen, (0, 0, 255), pygame.rect.Rect(projection + wheel.position + Vector2(750, 500), (3, 3)))
-            #pygame.draw.rect(self._scene.screen, (255, 0, 0), pygame.rect.Rect(wheel.velocity + wheel.position + Vector2(750, 500), (3, 3)))
+                wheel.velocity *= rotation_speed_loss ** dt
+                wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
 
     def tick(self, world, dt):
         for wheel in self._wheels:
             wheel.last_position = wheel.position
         
-        self._accelerate(dt)
+        self._accelerate(world, dt)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
