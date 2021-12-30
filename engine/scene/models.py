@@ -10,7 +10,7 @@ class Models(dict):
         self._camera = camera
         self._loader = loader
 
-    def add(self, path: str, position=None, size=None, material_path=None) -> Polygon:
+    def add(self, path: str, position: tuple = None, size: int = None, material_path: str = None) -> Polygon:
         model = ObjLoader.load(path, position=position, size=size, material_path=material_path)
         polygon = model.get_polygon()
         polygon.set_camera(self._camera)
@@ -27,6 +27,8 @@ class Models(dict):
         return self.values()
 
     def update(self, canvas, callback=None):
+        if len(self) < 1:
+            return
         for polygon in self.all():
             if callback:
                 callback(polygon)

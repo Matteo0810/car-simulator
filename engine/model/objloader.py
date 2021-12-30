@@ -20,7 +20,7 @@ class ObjLoader:
         self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position=None, size=None, material_path=None):
+    def load(relative_path: str, position: tuple = None, size: int = None, material_path:str = None):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
         return ObjLoader(

@@ -1,19 +1,17 @@
-from tkinter import Canvas, Label
+import json
+
+from tkinter import Canvas, Label, Button
 from time import time
-from random import randint
+from helpers.dotenv import get_env
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
 
-from helpers.dotenv import get_env
-from helpers.utils import property_get
-from world.world_settings import Time
-
 
 class Scene(Canvas):
 
-    def __init__(self, root):
+    def __init__(self, root, controller=False, loaded_content=None):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -21,25 +19,19 @@ class Scene(Canvas):
             bg="black"
         )
 
-        # loader
-        # loader = _Loader(self).load()
+        self.gui = root
+        self.middle_width = get_env('WIDTH') // 2
+        self.middle_height = get_env('HEIGHT') // 2
 
-        # camera
         self._default_camera = Camera()
-
-        # models
         self._models = Models(self._default_camera, None)
 
-        # world settings
-        self._time = Time.DAY.value
-        # self.configure(bg=self._time)
-
-        # FPS (Mode dev seulement)
-        self._fps = _FPS(self)
-        self._fps.update()
-
         if self._dev():
-            self._controller = Controller(self).setup()
+            self._fps = _FPS(self)
+            self._fps.update()
+
+            if controller:
+                self._controller = Controller(self).setup()
 
     def _dev(self):
         return get_env('ENV') == 'DEV'
@@ -68,15 +60,36 @@ class Scene(Canvas):
         self._models.update(self)
         self.pack()
 
-    def add_label(self, coordinates: tuple, text: str, font_size: int = 15):
+    def add_label(self, coordinates: tuple, text: str, font_size: int = 16, color: str = "white"):
         x, y = coordinates
         label = Label(self,
                       text=text,
                       background="black",
-                      foreground="white",
-                      font=("impact", font_size))
+                      foreground=color,
+                      font=("fixedsys", font_size))
         label.place(x=x, y=y)
         return label
+
+    def add_button(self, coordinates: tuple, text: str, callback, font_size: int = 16, color: str = "white"):
+        x, y = coordinates
+        button = Button(self,
+                        text=text,
+                        activebackground="black",
+                        border=0,
+                        relief='flat',
+                        background="black",
+                        foreground=color,
+                        activeforeground=color,
+                        command=callback,
+                        font=("fixedsys", font_size))
+
+        current_text = button.cget("text")
+
+        # events
+        button.bind("<Enter>", func=lambda _: button.config(text='> ' + current_text))
+        button.bind("<Leave>", func=lambda _: button.config(text=current_text))
+        button.place(x=x, y=y)
+        return button
 
 
 class _FPS:
@@ -98,9 +111,9 @@ class _FPS:
     def update(self):
         self._update_count()
         if self._label is not None:
-            self._label['text'] = f'FPS: {self._count}'
+            self._label['text'] = f'[Dev] FPS: {self._count}'
             return
-        self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'FPS: 0')
+        self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'[Dev] FPS: 0')
 
 
 class _Loader:

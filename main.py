@@ -1,34 +1,17 @@
-from tkinter import Tk
-from engine.scene.scene import Scene
 from helpers.dotenv import dotenv, get_env
-
-
-def rotate_animation(animation):
-    for i in range(30):
-        animation.add_frame(lambda polygon: polygon.rotate('x', i))
-    return animation
-
+from engine.scene.frame import Frame
 
 if __name__ == "__main__":
     dotenv()
 
-    root = Tk()
-    root.title('Car simulator')
-    root.resizable(False, False)
+    frame = Frame()
 
     # json_world = json.loads(open("world/assets/world.json", mode='r').read())
     # world = World.load(json_world)
-    
-    scene = Scene(root)
-    models = scene.get_models()
 
-    modelA = models.add(f'{get_env("MODELS_DIR")}/cliff/cliff')
-    scene.show()
+    scene = frame.get_scene()
 
-    """
-    model.get_animations()\
-        .add('rotation', lambda animation: rotate_animation(animation))\
-        .play(scene)
-    """
+    # modelA = models.add(f'{get_env("MODELS_DIR")}/cliff/cliff')
+    # road = RoadModel([10, 10], [100, 100], models)
 
-    root.mainloop()
+    frame.show()

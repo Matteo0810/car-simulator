@@ -48,26 +48,13 @@ class Path:
 
 class RoadModel:
 
-    def __init__(self, start, end, models: Models):
+    def __init__(self, start: list, end: list, models: Models):
         self._start = start
         self._end = end
-        self._coords = self._get_coords()
-        self._length = self._get_length()
-        self._model = models.add(f'{get_env("MODELS_DIR")}/roads/road')
-        self._set()
+        self._model = models.add(f'{get_env("MODELS_DIR")}/roads/road',
+                                 position=self._get_middle(),
+                                 size=get_env('ROAD_WIDTH'))
 
-    def _get_coords(self):
-        xA, yA = self._start
-        xB, yB = self._end
-        width = get_env('ROAD_WIDTH')
-        return [
-            [xA, yA + width], [xA, yA - width],
-            [xB, yB + width], [xB, yB + width]
-        ]
-
-    def _get_length(self):
-        xA, yA, xB, yB = self._coords
-        return [xA + xB, yA + yB]
-
-    def _set(self):
-        pass
+    def _get_middle(self):
+        return (self._start[0] - self._end[0]) // 2, \
+               (self._start[1] - self._end[1]) // 2

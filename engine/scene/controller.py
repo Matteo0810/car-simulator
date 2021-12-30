@@ -29,9 +29,9 @@ class Controller:
     def init_labels(self):
         width, height = self._size
 
-        self._scene.add_label((width - 140, height - 130), "roulette : taille")
+        self._scene.add_label((width - 170, height - 130), "roulette : taille")
         self._scene.add_label((width - 185, height - 90), "z-q-s-d : mouvement")
-        self._scene.add_label((width - 150, height - 50), "souris : rotation")
+        self._scene.add_label((width - 170, height - 50), "souris : rotation")
 
     def _move(self, event):
         moves = {
