@@ -1,5 +1,12 @@
 import math
+import struct
+
 from helpers.utils import fast_invsqrt
+
+
+def bits(f: float):
+    s = struct.pack('>f', f)
+    return struct.unpack('>l', s)[0]
 
 
 class Vector2:
@@ -88,7 +95,7 @@ class Vector2:
         return self.__class__(-self.x, -self.y)
     
     def __hash__(self):
-        return hash(self.x * 86281339878799307 + 7 * 8628133987879930 * self.y)
+        return ((bits(self.x) * 73856093) ^ (bits(self.y) * 19349663)) % 0x80000000
 
 
 class Vector3:
@@ -176,4 +183,4 @@ class Vector3:
         return self.__class__(-self.x, -self.y, -self.z)
     
     def __hash__(self):
-        return hash(self.x * 86281339878799307 + 7 * 8628133987879930 * self.y + 7 * 7 * 8628133987879930 * self.z)
+        return ((bits(self.x) * 73856093) ^ (bits(self.y) * 19349663) ^ (bits(self.z) * 83492791)) % 0x80000000
