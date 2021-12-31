@@ -20,8 +20,8 @@ class Scene(Canvas):
         )
 
         self.gui = root
-        self.middle_width = get_env('WIDTH') // 2
-        self.middle_height = get_env('HEIGHT') // 2
+        self.width = get_env('WIDTH')
+        self.height = get_env('HEIGHT')
 
         self._default_camera = Camera()
         self._models = Models(self._default_camera, None)

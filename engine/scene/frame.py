@@ -26,7 +26,7 @@ class Frame(Tk):
         self._scene = scene(self)
         self._scene.show()
 
-    def back_scene(self):
+    def previous_scene(self):
         self.use(self._previous_scene)
 
     def get_scene(self):

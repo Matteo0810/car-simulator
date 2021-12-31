@@ -1,5 +1,6 @@
 from engine.model.objloader import ObjLoader
 from engine.model.polygon.polygon import Polygon
+from helpers.dotenv import get_env
 
 
 class Models(dict):
@@ -11,6 +12,7 @@ class Models(dict):
         self._loader = loader
 
     def add(self, path: str, position: tuple = None, size: int = None, material_path: str = None) -> Polygon:
+        path = f'{get_env("MODELS_DIR")}{path}'
         model = ObjLoader.load(path, position=position, size=size, material_path=material_path)
         polygon = model.get_polygon()
         polygon.set_camera(self._camera)

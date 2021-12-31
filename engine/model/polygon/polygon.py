@@ -18,10 +18,12 @@ class Polygon:
     def rotate(self, axis: str, angle: float):
         for vertex in self._meshes:
             vertex.rotate(axis, angle)
+        return self
 
     def move(self, axis: str, newPos: float):
         for vertex in self._meshes:
             vertex.move(axis, newPos)
+        return self
 
     def render(self, canvas):
         for face in self._sort_z():
