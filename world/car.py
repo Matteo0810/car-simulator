@@ -16,8 +16,21 @@ class Car(Modeled):
         self._length = length = car_type.length
         self._color = car_type.default_color
         self.ai = ai
-        
-        reconstruct_car(self._wheels, width, length, forced_position=position, forced_angle=angle)
+
+        front_angle = atan2(width, length)
+        diagonal = (width ** 2 + length ** 2) ** 0.5
+
+        wheel_angles = [
+            nice_angle(front_angle + pi),
+            nice_angle(-front_angle + pi),
+            nice_angle(front_angle),
+            nice_angle(-front_angle)
+        ]
+
+        for i in range(4):
+            self._wheels[i].position = position + Vector2.of_angle(wheel_angles[i] + angle) * diagonal / 2
+            self._wheels[i].last_position = self._wheels[i].position
+            self._wheels[i].angle = angle
     
     def _accelerate(self, world, dt, target_speed, braking):
         for wheel in self._wheels:
@@ -50,19 +63,19 @@ class Car(Modeled):
         steer_angle = self.ai.get_steer_angle(world, self)
         braking = self.ai.is_braking(world, self)
         
-        for wheel in self._wheels:
-            wheel.last_position = wheel.position
-        
         self._accelerate(world, dt, target_speed, braking)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
-            
-        self.reconstruct(steer_angle)
         
         for car in world.cars:
             if car is not self:
                 check_collision(self, car, dt)
+
+        for wheel in self._wheels:
+            wheel.last_position = wheel.position
+        
+        self.reconstruct(steer_angle)
     
     def reconstruct(self, steer_angle):
         wheels_pre_fabrik = [w.position for w in self._wheels]

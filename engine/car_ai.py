@@ -13,3 +13,7 @@ class AI(ABC):
     @abstractmethod
     def is_braking(self, world, car):
         pass
+    
+    # pas une méthode abstraite !
+    def pre_tick(self):
+        pass

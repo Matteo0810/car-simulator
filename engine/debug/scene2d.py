@@ -38,6 +38,18 @@ class Scene2d:
             
             points = [(int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y)) for p in points]
             pygame.draw.polygon(self._screen, (100, 100, 100), points)
+
+            points = [
+                road.start + Vector2.of_angle((road.end - road.start).angle() - pi / 2) + (road.end - road.start).normalize() * get_env("ROAD_WIDTH") / 2,
+                road.start + Vector2.of_angle((road.end - road.start).angle() + pi / 2) + (road.end - road.start).normalize() * get_env("ROAD_WIDTH") / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() + pi / 2) - (road.end - road.start).normalize() * get_env("ROAD_WIDTH") / 2,
+                road.end + Vector2.of_angle((road.end - road.start).angle() - pi / 2) - (road.end - road.start).normalize() * get_env("ROAD_WIDTH") / 2,
+            ]
+
+            points = [
+                (int(p.x + get_env("WIDTH") / 2 + self._camera.x), int(p.y + get_env("HEIGHT") / 2 + self._camera.y))
+                for p in points]
+            pygame.draw.polygon(self._screen, (200, 200, 200), points)
         
         for car in self._world.cars:
             car.tick(self.world, dt)
@@ -58,7 +70,7 @@ class Scene2d:
         }
         
         green_car = Car(Vector2(0, 0), 0, CarType(None, 10, 20, 1, (0, 255, 0), 25), PygameController(self, 120, 60))
-        blue_car = Car(Vector2(40, 0), 0, CarType(None, 10, 20, 1, (0, 0, 255), 25), PygameController(self, 120, 60, blue_controls))
+        blue_car = Car(Vector2(50, 0), 0, CarType(None, 10, 20, 1, (0, 0, 255), 25), PygameController(self, 120, 60, blue_controls))
 
         self._world.cars.extend([green_car, blue_car])
         
