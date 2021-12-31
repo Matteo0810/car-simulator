@@ -1,5 +1,4 @@
-import json
-
+import wave
 from tkinter import Canvas, Label, Button
 from time import time
 from helpers.dotenv import get_env
@@ -11,7 +10,7 @@ from engine.scene.controller import Controller
 
 class Scene(Canvas):
 
-    def __init__(self, root, controller=False, loaded_content=None):
+    def __init__(self, root, controller=False):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -22,6 +21,9 @@ class Scene(Canvas):
         self.gui = root
         self.width = get_env('WIDTH')
         self.height = get_env('HEIGHT')
+
+        self.mid_width = self.width // 2
+        self.mid_height = self.height // 2
 
         self._default_camera = Camera()
         self._models = Models(self._default_camera, None)
@@ -85,9 +87,10 @@ class Scene(Canvas):
 
         current_text = button.cget("text")
 
-        # events
+        # default events
         button.bind("<Enter>", func=lambda _: button.config(text='> ' + current_text))
         button.bind("<Leave>", func=lambda _: button.config(text=current_text))
+
         button.place(x=x, y=y)
         return button
 
@@ -116,35 +119,10 @@ class _FPS:
         self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'[Dev] FPS: 0')
 
 
-class _Loader:
+class _GameSound:
 
-    def __init__(self, scene):
-        self._scene = scene
-        self._label = None
-        self._progress_bar = None
-        self._progress = 0
-        self._max = 100
-
-    def progress(self):
-        if self._max > self._progress:
-            self._progress += 2
-            self._update_progress()
-
-    def _update_progress(self):
-        scene = self._scene
-        coords = scene.coords(self._progress_bar)
-        coords[2] += self._progress
-        scene.coords(self._progress_bar, *coords)
-
-    def delete(self):
-        scene = self._scene
-        scene.delete(self._progress_bar)
-        self._label.destroy()
-
-    def load(self):
-        if not self._label and not self._progress_bar:
-            m_width, m_height = get_env('WIDTH') // 2, get_env('HEIGHT') // 2
-            self._label = self._scene.add_label((m_width - 60, m_height), f'Chargement en cours...')
-            self._progress_bar = self._scene.create_rectangle(m_width, m_height, m_width + self._progress,
-                                                              m_height + 70, fill="white")
-        return self
+    def __init__(self, file: str):
+        try:
+            self._wave = wave.open(file, 'rb')
+        except wave.Error as error:
+            raise error

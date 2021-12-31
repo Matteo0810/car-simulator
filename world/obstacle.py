@@ -1,5 +1,5 @@
-from engine.modeled import Modeled
-from engine.model_ import Model
+from engine.model.modeled import Modeled
+from engine.model.model import Model
 from helpers.vector import Vector2
 
 
