@@ -1,9 +1,25 @@
+from enum import Enum
+
 from helpers.vector import Vector2
 from world.road import Road
 
 
+class GroundType(Enum):
+    GRASS = 0
+    ROAD = 1
+    VOID = 2
+
+    @property
+    def friction_loss(self):
+        return [15, 8, 100000][self.value]
+    
+    @property
+    def grip(self):
+        return [20, 30, 0][self.value]
+
+
 class World:
-    def __init__(self, cars, roads, obstacles):  # TODO : ajouter les paramètres manquants
+    def __init__(self, cars, roads, obstacles):
         """
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
@@ -22,6 +38,9 @@ class World:
     @property
     def obstacles(self):
         return self._obstacles
+    
+    def get_ground_at(self, position):
+        return GroundType(any((road.contains(position) for road in self._roads)))
 
     @staticmethod
     def load(content):
