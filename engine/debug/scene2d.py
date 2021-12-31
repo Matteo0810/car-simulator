@@ -57,10 +57,10 @@ class Scene2d:
             "d": pygame.K_RIGHT
         }
         
-        green_car = Car(Vector2(0, 0), 0, CarType(None, 10, 20, 1, (0, 255, 0), 100), PygameController(self, 1200, 600))
-        #blue_car = Car(Vector2(40, 0), 0, CarType(None, 10, 20, 1, (0, 0, 255), 25), PygameController(self, 120, 60, blue_controls))
+        green_car = Car(Vector2(0, 0), 0, CarType(None, 10, 20, 1, (0, 255, 0), 25), PygameController(self, 120, 60))
+        blue_car = Car(Vector2(40, 0), 0, CarType(None, 10, 20, 1, (0, 0, 255), 25), PygameController(self, 120, 60, blue_controls))
 
-        self._world.cars.extend([green_car, ])
+        self._world.cars.extend([green_car, blue_car])
         
         self._user_car = self._world.cars[0]
     

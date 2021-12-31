@@ -26,9 +26,6 @@ class Car(Modeled):
             drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity) > ground.grip \
                     or braking
             
-            if drifting:
-                print("braking:", braking, "drifting:", drifting)
-            
             if not drifting and wheel.actual_speed * sign(target_speed) < abs(target_speed):
                 actual_acceleration = min(target_speed - wheel.actual_speed,
                                           self._model.acceleration * sign(target_speed),
