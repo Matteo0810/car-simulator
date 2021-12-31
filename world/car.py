@@ -1,4 +1,4 @@
-from engine.modeled import Modeled
+from engine.model.modeled import Modeled
 
 from engine.physics import reconstruct_car, check_collision
 
