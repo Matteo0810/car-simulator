@@ -7,37 +7,39 @@ from helpers.vector import Vector2
 
 
 class Car(Modeled):
-    def __init__(self, position, angle, car_type):
+    def __init__(self, position, angle, car_type, ai):
         super().__init__(car_type.model)
         
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
         self._model = car_type
         self._width = width = car_type.width
         self._length = length = car_type.length
-        self._braking = False
-        self._wheel_speed = 0
-        self._steer_angle = 0
         self._color = car_type.default_color
+        self.ai = ai
         
         reconstruct_car(self._wheels, width, length, forced_position=position, forced_angle=angle)
     
-    def _accelerate(self, world, dt):
+    def _accelerate(self, world, dt, target_speed, braking):
         for wheel in self._wheels:
             ground = world.get_ground_at(wheel.position)
             
             drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity) > ground.grip \
-                    or self._braking
+                    or braking
             
-            if not drifting and wheel.actual_speed * sign(self._wheel_speed) < abs(self._wheel_speed):
-                actual_acceleration = min(self._wheel_speed - wheel.actual_speed,
-                                          self._model.acceleration * sign(self._wheel_speed),
-                                          key=lambda x: sign(self._wheel_speed) * x)
+            if drifting:
+                print("braking:", braking, "drifting:", drifting)
+            
+            if not drifting and wheel.actual_speed * sign(target_speed) < abs(target_speed):
+                actual_acceleration = min(target_speed - wheel.actual_speed,
+                                          self._model.acceleration * sign(target_speed),
+                                          key=lambda x: sign(target_speed) * x)
                 wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
 
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
             if drifting:
                 wheel.velocity -= wheel.velocity.normalize() * dt * 5
+                wheel.velocity = lerp(projection, wheel.velocity, dt)
             else:
                 wheel.velocity = projection
 
@@ -47,26 +49,30 @@ class Car(Modeled):
                 wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
 
     def tick(self, world, dt):
+        target_speed = self.ai.get_wheel_speed(world, self)
+        steer_angle = self.ai.get_steer_angle(world, self)
+        braking = self.ai.is_braking(world, self)
+        
         for wheel in self._wheels:
             wheel.last_position = wheel.position
         
-        self._accelerate(world, dt)
+        self._accelerate(world, dt, target_speed, braking)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
             
-        self.reconstruct()
+        self.reconstruct(steer_angle)
         
         for car in world.cars:
             if car is not self:
                 check_collision(self, car, dt)
     
-    def reconstruct(self):
+    def reconstruct(self, steer_angle):
         wheels_pre_fabrik = [w.position for w in self._wheels]
         
         reconstruct_car(self._wheels, self._width, self._length)
-        self._wheels[2].angle += self._steer_angle
-        self._wheels[3].angle += self._steer_angle
+        self._wheels[2].angle += steer_angle
+        self._wheels[3].angle += steer_angle
         
         for i in range(4):
             wheel = self._wheels[i]
@@ -74,12 +80,14 @@ class Car(Modeled):
     
     model = property_get("model")
     color = property_get("color")
-    wheel_speed = property_getset("wheel_speed")
     steer_angle = property_getset("steer_angle")
     braking = property_getset("braking")
 
     def get_actual_front_wheels_speed(self):
         return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
+
+    def get_actual_back_wheels_speed(self):
+        return lerp(self._wheels[2].actual_speed, self._wheels[3].actual_speed, 0.5)
     
     @property
     def wheels(self):

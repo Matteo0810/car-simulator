@@ -1,12 +1,12 @@
 from sys import exit
 from time import time, sleep
+import json
+
+import pygame
 
 from helpers.dotenv import dotenv, get_env
 from engine.debug.scene2d import Scene2d
 from world.world import World
-
-import pygame
-import json
 
 
 def main():
@@ -27,9 +27,11 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit(0)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    scene.reset()
         
         dt = (time() - last_frame)*2
-        scene.controller.tick(dt)
         scene.update(dt)
         
         last_frame = time()

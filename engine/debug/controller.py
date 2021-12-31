@@ -1,57 +1,45 @@
+from math import copysign
+
 import pygame.event
-from math import log
+
+from engine.car_ai import AI
+
+BASE_CONTROLS = {
+    "z": pygame.K_z,
+    "q": pygame.K_q,
+    "s": pygame.K_s,
+    "d": pygame.K_d
+}
 
 
-class Controller:
-    def __init__(self, scene):
+class PygameController(AI):
+    def __init__(self, scene, fw_speed, bw_speed, controls=BASE_CONTROLS):
         self._scene = scene
+        self._fw_speed = fw_speed
+        self._bw_speed = bw_speed
+        self._controls = controls
     
-    def tick(self, dt):
-        user_controls = []
-        if pygame.key.get_pressed()[pygame.K_z]:
-            user_controls.append("z")
-        if pygame.key.get_pressed()[pygame.K_s]:
-            user_controls.append("s")
-        if pygame.key.get_pressed()[pygame.K_q]:
-            user_controls.append("q")
-        if pygame.key.get_pressed()[pygame.K_d]:
-            user_controls.append("d")
-        
-        self.handle_control(self._scene.user_car, user_controls)
-        
-        second_controls = []
-        if pygame.key.get_pressed()[pygame.K_UP]:
-            second_controls.append("z")
-        if pygame.key.get_pressed()[pygame.K_DOWN]:
-            second_controls.append("s")
-        if pygame.key.get_pressed()[pygame.K_LEFT]:
-            second_controls.append("q")
-        if pygame.key.get_pressed()[pygame.K_RIGHT]:
-            second_controls.append("d")
-        
-        self.handle_control(self._scene.world.cars[1], second_controls)
-        
-        if pygame.key.get_pressed()[pygame.K_r]:
-            self._scene.reset()
-    
-    def handle_control(self, car, controls):
-        car.wheel_speed = 0
-        car.braking = False
-        car.steer_angle = 0
-        if "z" in controls:
-            if "s" in controls:
-                car.braking = True
+    def get_wheel_speed(self, world, car):
+        if pygame.key.get_pressed()[self._controls["z"]]:
+            if not pygame.key.get_pressed()[self._controls["s"]]:
+                return self._fw_speed
             else:
-                if car.get_actual_front_wheels_speed() < -1:
-                    car.braking = True
-                car.wheel_speed = 12000
-        elif "s" in controls:
-            if car.get_actual_front_wheels_speed() > 1:
-                car.braking = True
-            car.wheel_speed = -6000
-        
-        if "q" in controls:
-            car.steer_angle += -20 / max(20, abs(car.get_actual_front_wheels_speed()))
-        if "d" in controls:
-            car.steer_angle += 20 / max(20, abs(car.get_actual_front_wheels_speed()))
-            
+                return 0
+        elif pygame.key.get_pressed()[self._controls["s"]]:
+            return -self._bw_speed
+        actual_speed = car.get_actual_back_wheels_speed()
+        return 0 if abs(actual_speed) < car.model.acceleration else actual_speed - copysign(car.model.acceleration, actual_speed)
+
+    def get_steer_angle(self, world, car):
+        steer_angle = 0
+        if pygame.key.get_pressed()[self._controls["q"]]:
+            steer_angle += -20 / max(20, abs(car.get_actual_front_wheels_speed()))
+        if pygame.key.get_pressed()[self._controls["d"]]:
+            steer_angle += 20 / max(20, abs(car.get_actual_front_wheels_speed()))
+        return steer_angle
+
+    def is_braking(self, world, car):
+        if pygame.key.get_pressed()[self._controls["z"]]:
+            if pygame.key.get_pressed()[self._controls["s"]]:
+                return True
+        return False
