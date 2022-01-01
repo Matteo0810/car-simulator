@@ -68,14 +68,11 @@ class Car(Modeled):
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
         
+        self.reconstruct(steer_angle)
+        
         for car in world.cars:
             if car is not self:
                 check_collision(self, car, dt)
-
-        for wheel in self._wheels:
-            wheel.last_position = wheel.position
-        
-        self.reconstruct(steer_angle)
     
     def reconstruct(self, steer_angle):
         wheels_pre_fabrik = [w.position for w in self._wheels]
@@ -88,16 +85,20 @@ class Car(Modeled):
             wheel = self._wheels[i]
             wheel.velocity += (wheel.position - wheels_pre_fabrik[i]) / 1
     
+    def post_tick(self, world, dt):
+        for wheel in self._wheels:
+            wheel.last_position = Vector2(*wheel.position)
+    
     model = property_get("model")
     color = property_get("color")
     steer_angle = property_getset("steer_angle")
     braking = property_getset("braking")
 
     def get_actual_front_wheels_speed(self):
-        return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
+        return lerp(self._wheels[2].actual_speed, self._wheels[3].actual_speed, 0.5)
 
     def get_actual_back_wheels_speed(self):
-        return lerp(self._wheels[2].actual_speed, self._wheels[3].actual_speed, 0.5)
+        return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
     
     @property
     def wheels(self):

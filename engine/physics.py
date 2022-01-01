@@ -52,11 +52,6 @@ def _solve_quadratic(a, b, c) -> tuple:
 
 
 def _normal(p0, v0, p1, v1, p2, v2, p=False):
-    """
-        Retourne le vecteur normal au segment [p1, p2] s'il y a intersection avec [p0, p0+v]
-        Retourne None s'il n'y a pas d'intersection
-    """
-
     cp1 = p1 - p0
     cp2 = p2 - p0
     cv1 = v1 - v0
@@ -73,6 +68,7 @@ def _normal(p0, v0, p1, v1, p2, v2, p=False):
         print(p0, v0)
         print(p1, v1)
         print(p2, v2)
+        print(a, b, c)
         print(solutions)
     
     if solutions == ALL_REALS:
@@ -81,7 +77,7 @@ def _normal(p0, v0, p1, v1, p2, v2, p=False):
         t_index = -1
         
         for i in range(len(solutions)):
-            if 0 <= solutions[i] < 1 and (t_index == -1 or solutions[i] < solutions[t_index]):
+            if 0 < solutions[i] < 1 and (t_index == -1 or solutions[i] < solutions[t_index]):
                 t_index = i
         
         if t_index == -1:
@@ -117,23 +113,23 @@ def check_collision(car1, car2, dt):
                 args.append(w.last_position)
                 args.append(w.position - w.last_position)
             
-            #if _dist(*(tuple(wheel1.position) + tuple(wheel2.position) + tuple(wheel0.position))) < 1:
-                #args.append(True)
-            
             collision, normal, t = _normal(*args)
             
             if normal:
                 collisions.append((wheel0, wheel1, wheel2, collision, normal, t))
-                rel_hit_pos = wheel2.position.distance(collision) / wheel1.position.distance(wheel2.position)
-                
-                f0 = wheel0.velocity
-                f1 = lerp(wheel1.velocity, wheel2.velocity, 1 - rel_hit_pos)
-                
-                wheel0.velocity = f1
-                wheel0.position = collision + normal
-                
-                wheel1.velocity = lerp(f0, wheel1.velocity, rel_hit_pos)
-                wheel2.velocity = lerp(f0, wheel2.velocity, 1 - rel_hit_pos)
-                
-                wheel1.position = lerp(wheel1.last_position, wheel1.position, t) - normal
-                wheel2.position = lerp(wheel2.last_position, wheel2.position, t) - normal
+    
+    for collision_ in collisions[:]:
+        wheel0, wheel1, wheel2, collision, normal, t = collision_
+        rel_hit_pos = wheel2.position.distance(collision) / wheel1.position.distance(wheel2.position)
+        
+        u1 = wheel0.velocity
+        u2 = lerp(wheel1.velocity, wheel2.velocity, rel_hit_pos)
+        
+        wheel0.velocity += normal / 2 + u2 - u1
+        wheel0.position = collision + normal / 2
+        
+        wheel1.velocity += lerp(-normal / 2 + u1 - wheel1.velocity, 0, rel_hit_pos)
+        wheel2.velocity += lerp(-normal / 2 + u1 - wheel2.velocity, 0, 1 - rel_hit_pos)
+        
+        wheel1.position = lerp(wheel1.last_position, wheel1.position, t) - normal / 2
+        wheel2.position = lerp(wheel2.last_position, wheel2.position, t) - normal / 2

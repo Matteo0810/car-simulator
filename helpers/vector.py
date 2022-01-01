@@ -35,7 +35,7 @@ class Vector2:
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
     
     def normalize(self):
-        return self / self.length()
+        return self / self.length() if self != Vector2(0, 0) else Vector2(0, 0)
     
     def fast_normalize(self):
         return self * fast_invsqrt(self.length_squared())

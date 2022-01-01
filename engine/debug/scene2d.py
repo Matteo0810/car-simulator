@@ -57,6 +57,8 @@ class Scene2d:
         
         for car in self._world.cars:
             car.tick(self.world, dt)
+        for car in self._world.cars:
+            car.post_tick(self.world, dt)
             
             points = [wheel.position for wheel in car.wheels]
             
@@ -73,7 +75,7 @@ class Scene2d:
         }
         
         green_car = Car(Vector2(0, 0), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 6), PygameController(self, 30, 15))
-        blue_car = Car(Vector2(12, 0), 0, CarType(None, 2.2, 5, 1, (0, 0, 255), 6), PygameController(self, 30, 15, blue_controls))
+        blue_car = Car(Vector2(12, -1), -pi / 4, CarType(None, 2.2, 5, 1, (0, 0, 255), 6), PygameController(self, 30, 15, blue_controls))
 
         self._world.cars.extend([green_car, blue_car])
         
