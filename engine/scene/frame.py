@@ -1,7 +1,6 @@
 from tkinter import Tk, Label
 
 from helpers.dotenv import get_env
-from engine.scene.scene import Scene
 
 from engine.scene.scenes.title_screen import TitleScreen
 

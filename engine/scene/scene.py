@@ -1,8 +1,8 @@
-import wave
 from tkinter import Canvas, Label, Button
 from time import time
 from helpers.dotenv import get_env
 
+from engine.scene.sound import Sound
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
@@ -62,6 +62,9 @@ class Scene(Canvas):
         self._models.update(self)
         self.pack()
 
+    def get_sound(self, file: str):
+        return Sound(file)
+
     def add_label(self, coordinates: tuple, text: str, font_size: int = 16, color: str = "white"):
         x, y = coordinates
         label = Label(self,
@@ -117,12 +120,3 @@ class _FPS:
             self._label['text'] = f'[Dev] FPS: {self._count}'
             return
         self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'[Dev] FPS: 0')
-
-
-class _GameSound:
-
-    def __init__(self, file: str):
-        try:
-            self._wave = wave.open(file, 'rb')
-        except wave.Error as error:
-            raise error
