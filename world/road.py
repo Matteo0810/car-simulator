@@ -47,6 +47,9 @@ class Road:
     
     def contains(self, position):
         return self._paths[0].contains(position) or self._paths[1].contains(position)
+    
+    def intersection_built(self):
+        self._intersections = (self._intersections[0].built, self._intersections[1].built)
 
 
 class Path:
@@ -82,6 +85,10 @@ class Path:
             return (self._road.start - self._road.end).normalize()
         else:
             return (self._road.end - self._road.start).normalize()
+
+    @property
+    def road(self):
+        return self._road
     
     def contains(self, position):
         return _dist(*(tuple(self.start) + tuple(self.end) + tuple(position))) < get_env("ROAD_WIDTH")

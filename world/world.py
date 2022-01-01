@@ -2,6 +2,7 @@ from enum import Enum
 
 from helpers.vector import Vector2
 from world.road import Road
+from world.intersection import IntersectionBuilder, LightsType
 
 
 class GroundType(Enum):
@@ -41,7 +42,46 @@ class World:
     
     def get_ground_at(self, position):
         return GroundType(any((road.contains(position) for road in self._roads)))
-
+    
+    @staticmethod
+    def _get_intersections(loaded_intersections, j_content, si_id, ei_id):
+        if si_id == -1:
+            start_intersection = IntersectionBuilder(LightsType.NONE)
+        else:
+            if si_id in loaded_intersections:
+                start_intersection = loaded_intersections[si_id]
+            else:
+                start_intersection = IntersectionBuilder(LightsType[j_content["intersections"][si_id]["type"]])
+                loaded_intersections[si_id] = start_intersection
+    
+        if ei_id == -1:
+            end_intersection = IntersectionBuilder(LightsType.NONE)
+        else:
+            if ei_id in loaded_intersections:
+                end_intersection = loaded_intersections[ei_id]
+            else:
+                end_intersection = IntersectionBuilder(LightsType[j_content["intersections"][ei_id]["type"]])
+                loaded_intersections[ei_id] = end_intersection
+        
+        return start_intersection, end_intersection
+    
+    @staticmethod
+    def _add_road(j_intersection, intersection, road_id, road, is_start):
+        if intersection.ligths_type == LightsType.NONE:
+            intersection.add_road(road, is_start)
+    
+        elif intersection.ligths_type == LightsType.STOPS:
+            intersection.add_road(road, is_start, has_stop=(road_id in j_intersection["stops"]))
+    
+        elif intersection.ligths_type == LightsType.LIGHTS:
+            group_id = -1
+            for i in range(len(j_intersection["groups"])):
+                if road_id in j_intersection["groups"][i]:
+                    group_id = i
+            if group_id == -1:
+                raise IndexError(f"Le groupe de feu n'est pas renseigné pour la route {road_id}")
+            intersection.add_road(road, is_start, lights_group=group_id)
+            
     @staticmethod
     def load(content):
         """
@@ -50,8 +90,12 @@ class World:
         """
         roads = []
         cars = []
-        intersection = []
         obstacles = []
+        
+        # On range les intersections par id
+        # Quand on charge une route et que l'intersection n'est pas chargée, on la charge et on l'ajoute au dictionnaire
+        # Quand l'intersection est déjà chargée, on la récupère simplement
+        intersections = {}
 
         """""
             attention, content["roads"] est une liste qui contient d'autres dictionnaires, qui ressemblent à ca:
@@ -61,20 +105,29 @@ class World:
             }
             la liste roads définie ici devra par contre contenir des objets Road
         """
-        roads = []
-
-        for j_road in content["roads"]:
+        
+        for road_id in range(len(content["roads"])):
+            j_road = content["roads"][road_id]
             # j_road pour indiquer que c'est un dictionnaire issu d'un fichier json
-
+            
             # on récupère les attributs et on les tranforme un par un
             start = Vector2(*j_road["start"])
             end = Vector2(*j_road["end"])
             speed_limit = j_road["speed_limit"]
+            
+            si_id = j_road["start_intersection"]
+            ei_id = j_road["end_intersection"]
 
-
+            start_intersection, end_intersection = World._get_intersections(intersections, content, si_id, ei_id)
+            
             # puis on créé l'objet
-            road = Road(start, end, speed_limit, None, None)
+            road = Road(start, end, speed_limit, start_intersection, end_intersection)
             roads.append(road)
-
-        # il faudra ajouter des paramètres au constructeur et les renseigner ici
+            
+            World._add_road(content["intersections"][si_id], start_intersection, road_id, road, True)
+            World._add_road(content["intersections"][ei_id], end_intersection, road_id, road, False)
+        
+        for road in roads:
+            road.intersection_built()
+        
         return World(cars, roads, obstacles)

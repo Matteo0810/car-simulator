@@ -1,9 +1,11 @@
+from enum import Enum
+
 from helpers.dotenv import get_env
 from world.road import Path
 from helpers.utils import property_get
 
 
-class LightsType:
+class LightsType(Enum):
     # NONE: les voitures ne respectent que la priorité a droite
     NONE = 0
     
@@ -59,3 +61,28 @@ class Intersection:
     @property
     def ligths_type(self):
         return self._ligths_type
+
+
+class IntersectionBuilder:
+    def __init__(self, ligths_type):
+        self._inbounds = []
+        self._outbounds = []
+        self._ligths_type = ligths_type
+        self._built = None
+    
+    def add_road(self, road, is_start, has_stop=False, lights_group=-1):
+        self._inbounds.append(PathInfo(road.intersections[not is_start], has_stop, lights_group))
+        self._outbounds.append(road.intersections[is_start])
+        return self
+    
+    def build(self):
+        self._built = Intersection(self._inbounds, self._outbounds, self._ligths_type)
+        return self._built
+    
+    @property
+    def ligths_type(self):
+        return self._ligths_type
+    
+    @property
+    def built(self):
+        return self._built
