@@ -60,12 +60,16 @@ class Vector2:
         return f"Vector2(*{(self.x, self.y)})"
     
     def __add__(self, other):
+        if other == 0 or other is None:
+            return self
         if not isinstance(other, Vector2):
             raise TypeError()
         return self.__class__(self.x + other.x, self.y + other.y)
     __radd__ = __add__
     
     def __sub__(self, other):
+        if other == 0 or other is None:
+            return self
         if not isinstance(other, Vector2):
             raise TypeError()
         return self.__class__(self.x - other.x, self.y - other.y)

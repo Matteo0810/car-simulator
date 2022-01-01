@@ -2,7 +2,7 @@
     "roads": [
         {
             "id": 0,
-            "start":[-200, 0],
+            "start":[-50, 0],
             "end" : [0, 0],
             "speed_limit" : 90,
             "__comment": "-1: pas d'intersection (considéré comme une intersection avec aucune autre voie)",
@@ -11,7 +11,7 @@
         },
         {
             "id": 1,
-            "start":[200, 0],
+            "start":[50, 0],
             "end" : [0, 0],
             "speed_limit" : 90,
             "start_intersection": -1,
@@ -19,7 +19,7 @@
         },
         {
             "id": 2,
-            "start":[0, 200],
+            "start":[0, 50],
             "end" : [0, 0],
             "speed_limit" : 90,
             "start_intersection": -1,

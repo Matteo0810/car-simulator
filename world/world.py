@@ -12,11 +12,11 @@ class GroundType(Enum):
 
     @property
     def friction_loss(self):
-        return [15, 8, 100000][self.value]
+        return [3.75, 2, 100000][self.value]
     
     @property
     def grip(self):
-        return [20, 30, 0][self.value]
+        return [5, 7.5, 0][self.value]
 
 
 class World:
