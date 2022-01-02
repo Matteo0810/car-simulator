@@ -71,8 +71,8 @@ class IntersectionBuilder:
         self._built = None
     
     def add_road(self, road, is_start, has_stop=False, lights_group=-1):
-        self._inbounds.append(PathInfo(road.intersections[not is_start], has_stop, lights_group))
-        self._outbounds.append(road.intersections[is_start])
+        self._inbounds.append(PathInfo(road.paths[not is_start], has_stop, lights_group))
+        self._outbounds.append(road.paths[is_start])
         return self
     
     def build(self):

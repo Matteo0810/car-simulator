@@ -16,15 +16,15 @@ class GroundType(Enum):
     
     @property
     def grip(self):
-        return [5, 7.5, 0][self.value]
+        return [2, 5, 0][self.value]
 
 
 class World:
-    def __init__(self, cars, roads, obstacles):
+    def __init__(self, roads, obstacles):
         """
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
-        self._cars = cars
+        self._cars = []
         self._roads = roads
         self._obstacles = obstacles
 
@@ -39,9 +39,13 @@ class World:
     @property
     def obstacles(self):
         return self._obstacles
+
+    @property
+    def collideables(self):
+        return self._obstacles + self._cars
     
     def get_ground_at(self, position):
-        return GroundType(any((road.contains(position) for road in self._roads)))
+        return GroundType.ROAD#(any((road.contains(position) for road in self._roads)))
     
     @staticmethod
     def _get_intersections(loaded_intersections, j_content, si_id, ei_id):
@@ -52,7 +56,6 @@ class World:
                 start_intersection = loaded_intersections[si_id]
             else:
                 start_intersection = IntersectionBuilder(LightsType[j_content["intersections"][si_id]["type"]])
-                loaded_intersections[si_id] = start_intersection
     
         if ei_id == -1:
             end_intersection = IntersectionBuilder(LightsType.NONE)
@@ -61,8 +64,9 @@ class World:
                 end_intersection = loaded_intersections[ei_id]
             else:
                 end_intersection = IntersectionBuilder(LightsType[j_content["intersections"][ei_id]["type"]])
-                loaded_intersections[ei_id] = end_intersection
-        
+
+        loaded_intersections[si_id] = start_intersection
+        loaded_intersections[ei_id] = end_intersection
         return start_intersection, end_intersection
     
     @staticmethod
@@ -89,7 +93,6 @@ class World:
         :return: le monde
         """
         roads = []
-        cars = []
         obstacles = []
         
         # On range les intersections par id
@@ -130,4 +133,4 @@ class World:
         for road in roads:
             road.intersection_built()
         
-        return World(cars, roads, obstacles)
+        return World(roads, obstacles)

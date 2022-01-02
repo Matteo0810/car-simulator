@@ -37,7 +37,7 @@ class Road:
         self._end = end
         self._speed_limit = speed_limit
         self._paths = (Path(self, 0), Path(self, 1))
-        self._intersections = (start_intersection, end_intersection)
+        self._intersections = (end_intersection, start_intersection)
 
     start = property_get("start")
     end = property_get("end")
@@ -49,6 +49,10 @@ class Road:
         return self._paths[0].contains(position) or self._paths[1].contains(position)
     
     def intersection_built(self):
+        if not self._intersections[0].built:
+            self._intersections[0].build()
+        if not self._intersections[1].built:
+            self._intersections[1].build()
         self._intersections = (self._intersections[0].built, self._intersections[1].built)
 
 
@@ -56,24 +60,25 @@ class Path:
     def __init__(self, road: Road, id_):
         self._id = id_
         self._road = road
+        
+        if self._id:
+            self._start = self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() + pi/2) * get_env(
+                "ROAD_WIDTH") / 4
+            self._end = self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi/2) * get_env(
+                "ROAD_WIDTH") / 4
+        else:
+            self._start = self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() + pi/2) * get_env(
+                "ROAD_WIDTH") / 4
+            self._end = self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi/2) * get_env(
+                "ROAD_WIDTH") / 4
 
     @property
     def start(self):
-        if self._id:
-            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * get_env(
-                "ROAD_WIDTH") / 4
-        else:
-            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * get_env(
-                "ROAD_WIDTH") / 4
+        return self._start
 
     @property
     def end(self):
-        if not self._id:
-            return self._road.start + Vector2.of_angle((self._road.end - self._road.start).angle() - pi) * get_env(
-                "ROAD_WIDTH") / 4
-        else:
-            return self._road.end + Vector2.of_angle((self._road.start - self._road.end).angle() - pi) * get_env(
-                "ROAD_WIDTH") / 4
+        return self._end
 
     @property
     def intersection(self):
@@ -81,10 +86,7 @@ class Path:
 
     @property
     def direction(self):
-        if self._id:
-            return (self._road.start - self._road.end).normalize()
-        else:
-            return (self._road.end - self._road.start).normalize()
+        return (self.end - self.start).normalize()
 
     @property
     def road(self):
@@ -92,6 +94,9 @@ class Path:
     
     def contains(self, position):
         return _dist(*(tuple(self.start) + tuple(self.end) + tuple(position))) < get_env("ROAD_WIDTH")
+    
+    def distance(self, position):
+        return _dist(*(tuple(self.start) + tuple(self.end) + tuple(position)))
 
 
 class RoadModel:
