@@ -125,11 +125,13 @@ def check_collision(car1, car2, dt):
         u1 = wheel0.velocity
         u2 = lerp(wheel1.velocity, wheel2.velocity, rel_hit_pos)
         
-        wheel0.velocity += normal / 2 + u2 - u1
+        r = 2
+        
+        wheel0.velocity += 2 * normal * abs(wheel0.velocity.dot(normal)) + u2 - u1
         wheel0.position = collision + normal / 2
         
-        wheel1.velocity += lerp(-normal / 2 + u1 - wheel1.velocity, 0, rel_hit_pos)
-        wheel2.velocity += lerp(-normal / 2 + u1 - wheel2.velocity, 0, 1 - rel_hit_pos)
+        wheel1.velocity += lerp(-2 * normal * abs(wheel1.velocity.dot(normal)) + u1 - wheel1.velocity, 0, rel_hit_pos)
+        wheel2.velocity += lerp(-2 * normal * abs(wheel2.velocity.dot(normal)) + u1 - wheel2.velocity, 0, 1 - rel_hit_pos)
         
         wheel1.position = lerp(wheel1.last_position, wheel1.position, t) - normal / 2
         wheel2.position = lerp(wheel2.last_position, wheel2.position, t) - normal / 2

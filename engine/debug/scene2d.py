@@ -1,6 +1,7 @@
 import pygame
 
 from engine.debug.controller import PygameController
+from engine.physics import check_collision
 from world.car import Car, CarType
 from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d
@@ -57,8 +58,12 @@ class Scene2d:
         
         for car in self._world.cars:
             car.tick(self.world, dt)
+        for car1 in self._world.cars:
+            for car2 in self._world.cars:
+                if car1 is not car2:
+                    check_collision(car1, car2, dt)
         for car in self._world.cars:
-            car.post_tick(self.world, dt)
+            car.update_last_position(self.world, dt)
             
             points = [wheel.position for wheel in car.wheels]
             

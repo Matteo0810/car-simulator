@@ -1,6 +1,6 @@
 from engine.model.modeled import Modeled
 
-from engine.physics import reconstruct_car, check_collision
+from engine.physics import reconstruct_car
 
 from helpers.utils import *
 from helpers.vector import Vector2
@@ -62,30 +62,26 @@ class Car(Modeled):
         target_speed = self.ai.get_wheel_speed(world, self)
         steer_angle = self.ai.get_steer_angle(world, self)
         braking = self.ai.is_braking(world, self)
-        
+
+        self._wheels[2].angle += steer_angle
+        self._wheels[3].angle += steer_angle
         self._accelerate(world, dt, target_speed, braking)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
         
-        self.reconstruct(steer_angle)
-        
-        for car in world.cars:
-            if car is not self:
-                check_collision(self, car, dt)
+        self.reconstruct()
     
-    def reconstruct(self, steer_angle):
+    def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]
         
         reconstruct_car(self._wheels, self._width, self._length)
-        self._wheels[2].angle += steer_angle
-        self._wheels[3].angle += steer_angle
         
         for i in range(4):
             wheel = self._wheels[i]
             wheel.velocity += (wheel.position - wheels_pre_fabrik[i]) / 1
     
-    def post_tick(self, world, dt):
+    def update_last_position(self, world, dt):
         for wheel in self._wheels:
             wheel.last_position = Vector2(*wheel.position)
     
