@@ -2,7 +2,6 @@ from tkinter import Canvas, Label, Button
 from time import time
 from helpers.dotenv import get_env
 
-from engine.scene.sound import Sound
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
@@ -61,9 +60,6 @@ class Scene(Canvas):
     def show(self):
         self._models.update(self)
         self.pack()
-
-    def get_sound(self, file: str):
-        return Sound(file)
 
     def add_label(self, coordinates: tuple, text: str, font_size: int = 16, color: str = "white"):
         x, y = coordinates
