@@ -1,5 +1,5 @@
+import os
 import threading
-from sys import exit
 from time import time, sleep
 import json
 
@@ -29,6 +29,7 @@ def main():
     
     def pathfinding_thread_run():
         while current_thread.is_alive():
+            sleep(0.1)
             for car in world.cars:
                 if isinstance(car.ai, AIImpl):
                     car.ai.pathfinding(scene)
@@ -41,16 +42,17 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit(0)
+                os._exit(0)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     scene.reset()
-        
-        dt = (time() - last_frame)*2
-        scene.update(dt)
-        
-        last_frame = time()
-        sleep(0.001)
+
+        frame_start = time()
+        dt = (frame_start - last_frame)
+        scene.update(dt/1)
+
+        last_frame = frame_start
+        sleep(max(0., 0.001 - (time() - frame_start)))
 
 
 if __name__ == '__main__':

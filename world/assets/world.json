@@ -4,7 +4,7 @@
             "id": 0,
             "start":[-50, 0],
             "end" : [0, 0],
-            "speed_limit" : 90,
+            "speed_limit" : 30,
             "__comment": "-1: pas d'intersection (considéré comme une intersection avec aucune autre voie)",
             "start_intersection": -1,
             "end_intersection": 0
@@ -13,7 +13,7 @@
             "id": 1,
             "start":[50, 0],
             "end" : [0, 0],
-            "speed_limit" : 90,
+            "speed_limit" : 30,
             "start_intersection": -1,
             "end_intersection": 0
         },
@@ -21,7 +21,7 @@
             "id": 2,
             "start":[0, 50],
             "end" : [0, 0],
-            "speed_limit" : 90,
+            "speed_limit" : 30,
             "start_intersection": -1,
             "end_intersection": 0
         }

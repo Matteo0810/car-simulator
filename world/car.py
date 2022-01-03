@@ -39,27 +39,31 @@ class Car(Modeled):
         for wheel in self._wheels:
             ground = self._world.get_ground_at(wheel.position)
             
-            drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity) > ground.grip \
-                    or braking
+            slipping = wheel.velocity - Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
-            if not drifting and wheel.actual_speed * sign(target_speed) < abs(target_speed):
+            if not wheel.drifting:
+                wheel.drifting = slipping.length() > 10
+            else:
+                wheel.drifting = slipping.length() > 9
+            
+            if wheel.actual_speed * sign(target_speed) < abs(target_speed):
                 actual_acceleration = min(target_speed - wheel.actual_speed,
                                           self._model.acceleration * sign(target_speed),
-                                          key=lambda x: sign(target_speed) * x)
+                                          key=lambda x: sign(target_speed) * x) * (ground.grip*0.6 if wheel.drifting else ground.grip)
                 wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
 
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
-            if drifting:
-                wheel.velocity -= wheel.velocity.normalize() * dt * 5
-                wheel.velocity = lerp(projection, wheel.velocity, dt)
+            if wheel.drifting:
+                wheel.velocity *= 0.9 ** dt
             else:
                 wheel.velocity = projection
 
             rotation_speed_loss = abs(cos(wheel.velocity.angle() - wheel.angle))
             if wheel.actual_speed != 0:
-                wheel.velocity *= rotation_speed_loss ** dt
-                wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
+                wheel.velocity *= rotation_speed_loss ** dt * 0.9 ** dt
+                if dt * ground.friction_loss <= wheel.velocity.length():
+                    wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
 
     def tick(self, dt):
         last_angle = self.angle
@@ -137,6 +141,7 @@ class Wheel:
         self.angle = angle
         self.last_position = position
         self.velocity = Vector2(0, 0)
+        self.drifting = False
 
     @property
     def actual_speed(self):

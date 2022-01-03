@@ -2,7 +2,6 @@ import random
 
 import pygame
 
-import world
 from engine.car_ai import AIImpl
 from engine.debug.controller import PygameController
 from engine.physics import check_collision
@@ -82,10 +81,10 @@ class Scene2d:
                 self._debug_dots[dot] += dt
                 pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(dot, self._camera) + (2, 2)))
         
-        if len(world.car.A) > 0:
-            print(max(world.car.A.items(), key=lambda t: t[1]))
-        for x, y in world.car.A.items():
-            pygame.draw.rect(self.screen, (0, 0, 0), (x, y * 100, 1, 1))
+        #if len(world.car.A) > 0:
+        #    print(max(world.car.A.items(), key=lambda t: t[1]))
+        #for x, y in world.car.A.items():
+        #    pygame.draw.rect(self.screen, (0, 0, 0), (x, y * 100, 1, 1))
     
     def reset(self):
         self._world.cars.clear()
@@ -97,17 +96,17 @@ class Scene2d:
             "d": pygame.K_RIGHT
         }
         
-        green_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 8))
-        green_car.ai = PygameController(green_car, self, 3000, 150)
+        green_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
+        green_car.ai = PygameController(green_car, self, 300, 150)
         
         blue_path = self._world.roads[2].paths[0]
-        blue_car = Car(self._world, Vector2(random.random() * 200 - 100, random.random() * 100), blue_path.direction.angle(), CarType(None, 2.2, 5, 1, (0, 0, 255), 6))
+        blue_car = Car(self._world, Vector2(random.random() * 200 - 100, random.random() * 100), blue_path.direction.angle(), CarType(None, 2.2, 5, 1, (0, 0, 255), 10))
         # blue_car.ai = PygameController(blue_car, self, 30, 15, blue_controls)
         blue_car.ai = AIImpl(blue_path, blue_car)
 
         self._world.cars.extend([
             green_car,
-            #blue_car
+            blue_car
         ])
         
         self._user_car = self._world.cars[0]

@@ -12,11 +12,11 @@ class GroundType(Enum):
 
     @property
     def friction_loss(self):
-        return [3.75, 2, 100000][self.value]
+        return [3, 1, 0][self.value]
     
     @property
     def grip(self):
-        return [2, 5, 0][self.value]
+        return [0.5, 0.7, 0][self.value]
 
 
 class World:
@@ -45,7 +45,7 @@ class World:
         return self._obstacles + self._cars
     
     def get_ground_at(self, position):
-        return GroundType.ROAD#(any((road.contains(position) for road in self._roads)))
+        return GroundType(any((road.contains(position) for road in self._roads)))
     
     @staticmethod
     def _get_intersections(loaded_intersections, j_content, si_id, ei_id):
