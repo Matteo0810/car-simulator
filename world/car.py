@@ -1,13 +1,15 @@
 from engine.model.modeled import Modeled
 
-from engine.physics import reconstruct_car, check_collision
+from engine.physics import reconstruct_car
 
 from helpers.utils import *
 from helpers.vector import Vector2
 
+A = {}
+
 
 class Car(Modeled):
-    def __init__(self, position, angle, car_type, ai):
+    def __init__(self, world, position, angle, car_type, ai=None):
         super().__init__(car_type.model)
         
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
@@ -15,10 +17,11 @@ class Car(Modeled):
         self._width = width = car_type.width
         self._length = length = car_type.length
         self._color = car_type.default_color
+        self._world = world
+        self._angle = angle
         self.ai = ai
 
         front_angle = atan2(width, length)
-        diagonal = (width ** 2 + length ** 2) ** 0.5
 
         wheel_angles = [
             nice_angle(front_angle + pi),
@@ -28,13 +31,13 @@ class Car(Modeled):
         ]
 
         for i in range(4):
-            self._wheels[i].position = position + Vector2.of_angle(wheel_angles[i] + angle) * diagonal / 2
+            self._wheels[i].position = position + Vector2.of_angle(wheel_angles[i] + angle) * car_type.diagonal / 2
             self._wheels[i].last_position = self._wheels[i].position
             self._wheels[i].angle = angle
     
-    def _accelerate(self, world, dt, target_speed, braking):
+    def _accelerate(self, dt, target_speed, braking):
         for wheel in self._wheels:
-            ground = world.get_ground_at(wheel.position)
+            ground = self._world.get_ground_at(wheel.position)
             
             drifting = Vector2.of_angle(wheel.angle, wheel.actual_speed).distance(wheel.velocity) > ground.grip \
                     or braking
@@ -58,37 +61,44 @@ class Car(Modeled):
                 wheel.velocity *= rotation_speed_loss ** dt
                 wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
 
-    def tick(self, world, dt):
-        target_speed = self.ai.get_wheel_speed(world, self)
-        steer_angle = self.ai.get_steer_angle(world, self)
-        braking = self.ai.is_braking(world, self)
-        
-        self._accelerate(world, dt, target_speed, braking)
+    def tick(self, dt):
+        last_angle = self.angle
+        if self.ai:
+            target_speed = self.ai.get_wheel_speed()
+            steer_angle = self.ai.get_steer_angle()
+            braking = self.ai.is_braking()
+        else:
+            target_speed = 0
+            steer_angle = 0
+            braking = False
+
+        self._wheels[2].angle += steer_angle
+        self._wheels[3].angle += steer_angle
+        self._accelerate(dt, target_speed, braking)
         
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
         
-        self.reconstruct(steer_angle)
+        self.reconstruct()
         
-        for car in world.cars:
-            if car is not self:
-                check_collision(self, car, dt)
+        if steer_angle > 0:
+            A[self.velocity.length()] = (self.angle - last_angle) / dt
+            #print((self.angle - last_angle) / dt)
     
-    def reconstruct(self, steer_angle):
+    def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]
         
-        reconstruct_car(self._wheels, self._width, self._length)
-        self._wheels[2].angle += steer_angle
-        self._wheels[3].angle += steer_angle
+        self._angle = reconstruct_car(self._wheels, self._width, self._length)
         
         for i in range(4):
             wheel = self._wheels[i]
             wheel.velocity += (wheel.position - wheels_pre_fabrik[i]) / 1
     
-    def post_tick(self, world, dt):
+    def update_last_position(self, dt):
         for wheel in self._wheels:
             wheel.last_position = Vector2(*wheel.position)
-    
+
+    world = property_get("world")
     model = property_get("model")
     color = property_get("color")
     steer_angle = property_getset("steer_angle")
@@ -101,8 +111,24 @@ class Car(Modeled):
         return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
     
     @property
+    def velocity(self):
+        return sum(w.velocity for w in self._wheels) / 4
+    
+    @property
+    def position(self):
+        return sum(w.position for w in self._wheels) / 4
+    
+    @property
+    def angle(self):
+        return self._angle
+    
+    @property
     def wheels(self):
         return self._wheels[:]
+    
+    @property
+    def hitbox(self):
+        return [wheel.position for wheel in self._wheels]
 
 
 class Wheel:
@@ -132,3 +158,7 @@ class CarType:
     width = property_get("width")
     length = property_get("length")
     acceleration = property_get("acceleration")
+    
+    @property
+    def diagonal(self):
+        return (self.width ** 2 + self.length ** 2) ** 0.5
