@@ -26,17 +26,17 @@ class AI(ABC):
 
 def unpack_actions_flag(actions_flag, speed_limit):
     if actions_flag & 0b11100 == 0b00000:
-        steer_angle = -1
+        steer_angle = -1.4
     elif actions_flag & 0b11100 == 0b00100:
         steer_angle = -0.3
     elif actions_flag & 0b11100 == 0b01000:
         steer_angle = -0.1
     elif actions_flag & 0b11100 == 0b01100:
-        steer_angle = 1
+        steer_angle = 1.4
     elif actions_flag & 0b11100 == 0b10000:
         steer_angle = 0.3
     elif actions_flag & 0b11100 == 0b10100:
-        steer_angle = -0.3
+        steer_angle = 0.1
     else:
         steer_angle = 0
     
@@ -55,8 +55,8 @@ def unpack_actions_flag(actions_flag, speed_limit):
     return steer_angle, wheel_speed, braking
 
 
-TIME_STEP = 0.25
-FORESEE_TIME = 5
+TIME_STEP = 0.5
+FORESEE_TIME = 3
 
 
 class AIImpl(AI):
@@ -86,12 +86,14 @@ class AIImpl(AI):
         self._dt = dt
         self._t += dt
         
-        if self._car.position.distance(self._path.end) < 4:
+        if self._car.position.distance(self._path.end) < 5:
             self._path = self._next_path
             self._next_path = None
         
         if self._next_path is None:
             self._next_path = choice(self._path.intersection.inbounds).path
+            while self._next_path.road == self._path.road and any(p.path.road != self._path.road for p in self._path.intersection.inbounds):
+                self._next_path = choice(self._path.intersection.inbounds).path
             print(self._next_path, self._next_path.intersection)
         
         if len(self._actions) > 0:
@@ -124,11 +126,11 @@ class AIImpl(AI):
         # simulation rapide du déplacement de la voiture et de son environnement
         while True:
             loops += 1
-            parent = max([n for n in nodes], key=lambda node: node["score"])
+            parent = min([n for n in nodes], key=lambda node: node["score"])
             # print(parent)
             nodes.remove(parent)
         
-            if parent["time"] == FORESEE_TIME:
+            if parent["time"] == FORESEE_TIME or loops > 100:
                 self._actions = []
             
                 while parent["parent"]["parent"]:
@@ -152,26 +154,29 @@ class AIImpl(AI):
             
                 steer_angle, wheel_speed, braking = unpack_actions_flag(actions_flag, 1)
             
-                if wheel_speed > 0:
+                if wheel_speed > 0 and velocity < self._path.road.speed_limit:
                     velocity += car.model.acceleration * TIME_STEP
-                if wheel_speed < 0:
+                if wheel_speed < 0 and velocity > -self._path.road.speed_limit:
                     velocity -= car.model.acceleration * TIME_STEP
             
-                if abs(velocity) < (4 + car.model.acceleration / 10):
-                    angle += steer_angle * TIME_STEP * velocity / (6 + car.model.acceleration / 10)
+                if abs(velocity) < 5:
+                    angle += steer_angle * TIME_STEP * (2 - (abs(velocity) / 5)) * 1.8
                 else:
-                    angle += steer_angle * TIME_STEP * copysign(1, velocity)
+                    angle += steer_angle * TIME_STEP * 1.6
             
                 position += Vector2.of_angle(angle, velocity) * TIME_STEP
                 
                 path = self._next_path if parent["on_next_path"] else self._path
-                #score += 1 / path.distance(position)
-                score += 1 / (path.end.distance(position))
+                score += (path.distance(position) ** 1.5)
+                score += path.end.distance(position)
+
+                if path.end.distance(position) < 10:
+                    score += velocity * 1
 
                 node["on_next_path"] = parent["on_next_path"] or path.end.distance(position) < 5
                 
-                if node["on_next_path"]:
-                    score += 0.1
+                if not node["on_next_path"]:
+                    score += self._path.end.distance(self._next_path.end)
                 
                 for collideable in car.world.collideables:
                     if collideable == car:
@@ -183,13 +188,16 @@ class AIImpl(AI):
                         nearest_hitbox_point += collideable.velocity * (parent["time"] + TIME_STEP)
                 
                     if nearest_hitbox_point and nearest_hitbox_point.distance(position) < car.model.diagonal:
-                        score = -1
+                        score = 10000000
             
                 # print()
                 # print(copysign(1, wheel_speed) if wheel_speed != 0 else 0, steer_angle, braking)
                 # print(self._path.distance(position) ** 2)
                 # print(self._path.end.distance(position))
                 # print(score)
+
+                if braking:
+                    score = 10000000
             
                 node["score"] = score
                 node["car_position"] = position

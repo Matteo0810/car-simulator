@@ -99,8 +99,8 @@ class Scene2d:
         green_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
         green_car.ai = PygameController(green_car, self, 300, 150)
         
-        blue_path = self._world.roads[2].paths[0]
-        blue_car = Car(self._world, Vector2(random.random() * 200 - 100, random.random() * 100), blue_path.direction.angle(), CarType(None, 2.2, 5, 1, (0, 0, 255), 10))
+        blue_path = self._world.roads[2].paths[0]#Vector2(random.random() * 200 - 100, random.random() * 100)
+        blue_car = Car(self._world, blue_path.start, blue_path.direction.angle(), CarType(None, 2.2, 5, 1, (0, 0, 255), 40))
         # blue_car.ai = PygameController(blue_car, self, 30, 15, blue_controls)
         blue_car.ai = AIImpl(blue_path, blue_car)
 
