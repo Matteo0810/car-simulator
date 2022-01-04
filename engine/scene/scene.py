@@ -1,6 +1,7 @@
 from tkinter import Canvas, Label, Button
 from time import time
 from helpers.dotenv import get_env
+from helpers.improved_noise import noise
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
@@ -9,7 +10,7 @@ from engine.scene.controller import Controller
 
 class Scene(Canvas):
 
-    def __init__(self, root, controller=False):
+    def __init__(self, root, world=None, controller=False):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -92,7 +93,6 @@ class Scene(Canvas):
 
         button.place(x=x, y=y)
         return button
-
 
 class _FPS:
 

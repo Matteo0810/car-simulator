@@ -1,4 +1,6 @@
 from engine.scene.scene import Scene
+
+from engine.scene.scenes.credits_screen import CreditsScreen
 from engine.scene.scenes.settings_screen import SettingsScreen
 from engine.scene.scenes.worlds_screen import WorldsScreen
 
@@ -17,4 +19,5 @@ class TitleScreen(Scene):
 
         self.add_button((self.mid_width - 30, 260), "Mondes", lambda: self.gui.use(WorldsScreen), 20)
         self.add_button((self.mid_width - 30, 310), "Options", lambda: self.gui.use(SettingsScreen), 20)
-        self.add_button((self.mid_width - 30, 360), "Quitter", self.gui.destroy, 20)
+        self.add_button((self.mid_width - 30, 360), "Crédits", lambda: self.gui.use(CreditsScreen), 20)
+        self.add_button((self.mid_width - 30, 410), "Quitter", self.gui.destroy, 20)

@@ -2,7 +2,7 @@ from tkinter import Tk, Label
 
 from helpers.dotenv import get_env
 
-from engine.scene.scenes.title_screen import TitleScreen
+from engine.scene.scenes.before_title_screen import BeforeTitleScreen
 
 
 class Frame(Tk):
@@ -16,7 +16,7 @@ class Frame(Tk):
         self.geometry(f'{WIDTH}x{HEIGHT}')
         self.resizable(False, False)
 
-        self._scene = TitleScreen(self)
+        self._scene = BeforeTitleScreen(self)
         self._previous_scene = None
 
     def use(self, scene):
