@@ -1,4 +1,4 @@
-import random
+from random import shuffle
 
 import pygame
 
@@ -23,7 +23,7 @@ def map_to_pixel(vl, camera):
 class Scene2d:
     def __init__(self, screen: pygame.Surface, world):
         self._world = world
-
+        
         self._user_car = None
         self.reset()
         
@@ -70,16 +70,17 @@ class Scene2d:
                     check_collision(car1, car2, dt)
         for car in self._world.cars:
             car.update_last_position(dt)
+            car.reconstruct()
             
             points = [wheel.position for wheel in car.wheels]
             
             pygame.draw.polygon(self._screen, car.color, map_to_pixel(points, self._camera))
 
         debug_dots = self._debug_dots.copy()
-        for dot, time in debug_dots.items():
-            if time < 0.2:
-                self._debug_dots[dot] += dt
-                pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(dot, self._camera) + (2, 2)))
+        for dot, l in debug_dots.items():
+            if l[0] < 0.2:
+                l[0] += dt
+                pygame.draw.rect(self.screen, l[1], (to_pixel(dot, self._camera) + (2, 2)))
         
         #if len(world.car.A) > 0:
         #    print(max(world.car.A.items(), key=lambda t: t[1]))
@@ -99,20 +100,24 @@ class Scene2d:
         green_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
         green_car.ai = PygameController(green_car, self, 300, 150)
         
-        blue_path = self._world.roads[2].paths[0]#Vector2(random.random() * 200 - 100, random.random() * 100)
-        blue_car = Car(self._world, blue_path.start, blue_path.direction.angle(), CarType(None, 2.2, 5, 1, (0, 0, 255), 40))
-        # blue_car.ai = PygameController(blue_car, self, 30, 15, blue_controls)
-        blue_car.ai = AIImpl(blue_path, blue_car)
+        colors = [(0, 0, 255), (255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+        shuffle(colors)
+        
+        cars = [green_car]
+        
+        for i in range(5):
+            path = self._world.roads[i].paths[0 if i != 3 and i != 4 else 1]  # Vector2(random.random() * 200 - 100, random.random() * 100)
+            car = Car(self._world, path.start, path.direction.angle(),
+                           CarType(None, 2.2, 5, 1, colors[i], 10))
+            car.ai = AIImpl(path, car)
+            cars.append(car)
 
-        self._world.cars.extend([
-            green_car,
-            blue_car
-        ])
+        self._world.cars.extend(cars)
         
         self._user_car = self._world.cars[0]
     
-    def add_debug_dot(self, position):
-        self._debug_dots[position] = 0
+    def add_debug_dot(self, position, color=(255, 0, 0)):
+        self._debug_dots[position] = [0, color]
     
     screen = property_get("screen")
     user_car = property_get("user_car")

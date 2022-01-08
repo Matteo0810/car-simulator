@@ -16,7 +16,7 @@ class GroundType(Enum):
     
     @property
     def grip(self):
-        return [0.5, 0.7, 0][self.value]
+        return [0.7, 0.9, 0][self.value]
 
 
 class World:

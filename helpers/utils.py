@@ -1,5 +1,5 @@
 from ctypes import c_float, c_int32, cast, byref, POINTER
-from math import cos, sin, atan2, pi, copysign
+from math import pi, copysign
 
 
 def nice_angle(rad):

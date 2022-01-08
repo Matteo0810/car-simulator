@@ -4,7 +4,7 @@
             "__id": 0,
             "start":[-50, 0],
             "end" : [0, 0],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "start_intersection": 1,
             "end_intersection": 0
         },
@@ -12,7 +12,7 @@
             "__id": 1,
             "start":[50, 0],
             "end" : [0, 0],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "start_intersection": 3,
             "end_intersection": 0
         },
@@ -20,7 +20,7 @@
             "__id": 2,
             "start":[0, 50],
             "end" : [0, 0],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "__comment": "-1: pas d'intersection (considéré comme une intersection avec aucune autre voie)",
             "start_intersection": -1,
             "end_intersection": 0
@@ -29,7 +29,7 @@
             "__id": 3,
             "start":[-50, 0],
             "end" : [-50, -50],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "start_intersection": 1,
             "end_intersection": 2
         },
@@ -37,7 +37,7 @@
             "__id": 4,
             "start":[-50, -50],
             "end" : [50, -50],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "start_intersection": 2,
             "end_intersection": 4
         },
@@ -45,7 +45,7 @@
             "__id": 5,
             "start":[50, 0],
             "end" : [50, -50],
-            "speed_limit" : 10,
+            "speed_limit" : 50,
             "start_intersection": 3,
             "end_intersection": 4
         }

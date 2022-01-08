@@ -23,19 +23,23 @@ def main():
     scene = Scene2d(screen, world)
     
     last_frame = time()
-
-    current_thread = threading.current_thread()
-    pathfinding_thread = threading.Thread()
     
-    def pathfinding_thread_run():
-        while current_thread.is_alive():
-            sleep(0.1)
-            for car in world.cars:
-                if isinstance(car.ai, AIImpl):
-                    car.ai.pathfinding(scene)
-
-    pathfinding_thread.__dict__["lock"] = threading.Lock()
-    pathfinding_thread.run = pathfinding_thread_run
+    current_thread = threading.current_thread()
+    
+    class PFThread(threading.Thread):
+        def __init__(self):
+            super().__init__()
+            self.lock = threading.Lock()
+        
+        def run(self):
+            sleep(1)
+            while current_thread.is_alive():
+                for car in world.cars:
+                    if isinstance(car.ai, AIImpl):
+                        car.ai.pathfinding(scene)
+    
+    pathfinding_thread = PFThread()
+    
     pathfinding_thread.start()
     
     while True:
@@ -49,9 +53,10 @@ def main():
 
         frame_start = time()
         dt = (frame_start - last_frame)
-        scene.update(dt/1)
+        scene.update(dt*0.8)
 
         last_frame = frame_start
+        
         sleep(max(0., 0.001 - (time() - frame_start)))
 
 

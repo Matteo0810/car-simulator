@@ -1,11 +1,9 @@
+from math import *
+
 from engine.model.modeled import Modeled
-
 from engine.physics import reconstruct_car
-
 from helpers.utils import *
 from helpers.vector import Vector2
-
-A = {}
 
 
 class Car(Modeled):
@@ -64,6 +62,8 @@ class Car(Modeled):
                 wheel.velocity *= rotation_speed_loss ** dt * 0.9 ** dt
                 if dt * ground.friction_loss <= wheel.velocity.length():
                     wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
+            
+            #engine.debug.scene2d.INSTANCE.add_debug_dot(wheel.position + wheel.velocity, (0, 255, 0))
 
     def tick(self, dt):
         last_angle = self.angle
@@ -85,9 +85,20 @@ class Car(Modeled):
         
         self.reconstruct()
         
-        if steer_angle > 0:
-            A[self.velocity.length()] = (self.angle - last_angle) / dt
-            #print((self.angle - last_angle) / dt)
+        """for a in A:
+            if a[0] > 0.5:
+                goal = (a[1] - self.angle + pi) % (2 * pi) - pi
+                speed = self.velocity.dot(Vector2.of_angle(self.angle))
+                diff_speed = speed - a[3]
+                B.append(f"{a[2]} {goal} {speed} {diff_speed}")
+                A.remove(a)
+            else:
+                a[0] += dt
+        
+        A.append([0, self.angle, steer_angle, self.velocity.dot(Vector2.of_angle(self.angle))])
+        
+        if pygame.key.get_pressed()[pygame.K_a]:
+            open("A", "w").write("\n".join(B))"""
     
     def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]

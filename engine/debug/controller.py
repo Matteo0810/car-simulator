@@ -13,7 +13,9 @@ BASE_CONTROLS = {
 
 
 class PygameController(AI):
-    def __init__(self, car, scene, fw_speed, bw_speed, controls=BASE_CONTROLS):
+    def __init__(self, car, scene, fw_speed, bw_speed, controls=None):
+        if controls is None:
+            controls = BASE_CONTROLS
         self._scene = scene
         self._fw_speed = fw_speed
         self._bw_speed = bw_speed
@@ -34,9 +36,9 @@ class PygameController(AI):
     def get_steer_angle(self):
         steer_angle = 0
         if pygame.key.get_pressed()[self._controls["q"]]:
-            steer_angle += -5 / max(5, abs(self._car.get_actual_front_wheels_speed()))
+            steer_angle += -10 / max(10, abs(self._car.get_actual_front_wheels_speed()))
         if pygame.key.get_pressed()[self._controls["d"]]:
-            steer_angle += 5 / max(5, abs(self._car.get_actual_front_wheels_speed()))
+            steer_angle += 10 / max(10, abs(self._car.get_actual_front_wheels_speed()))
         return steer_angle
 
     def is_braking(self):
