@@ -10,6 +10,7 @@ from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d
 from helpers.dotenv import get_env
 from helpers.utils import *
+from world.intersection import LightsType
 
 
 def to_pixel(v, camera):
@@ -21,13 +22,13 @@ def map_to_pixel(vl, camera):
 
 
 class Scene2d:
-    def __init__(self, screen: pygame.Surface, world):
+    def __init__(self, screen: pygame.Surface, world, PFThread):
         self._world = world
+        self._PFThread = PFThread
+        self._screen = screen
         
         self._user_car = None
         self.reset()
-        
-        self._screen = screen
         
         self._camera = Camera2d(0, 0)
         self._debug_dots = {}
@@ -59,7 +60,18 @@ class Scene2d:
             ]
 
             pygame.draw.polygon(self._screen, (200, 200, 200), map_to_pixel(points, self._camera))
+            
+            for path in road.paths:
+                if path.intersection.ligths_type == LightsType.LIGHTS:
+                    if path.intersection.is_green(path):
+                        pygame.draw.rect(self.screen, (0, 255, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
+                    else:
+                        pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
 
+        for road in self._world.roads:
+            for path in road.paths:
+                path.intersection.tick(self.world, dt)
+        
         for car in self._world.cars:
             car.ai.pre_tick(dt)
         for car in self._world.cars:
@@ -97,7 +109,7 @@ class Scene2d:
             "d": pygame.K_RIGHT
         }
         
-        green_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
+        green_car = Car(self._world, Vector2(0, -50), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
         green_car.ai = PygameController(green_car, self, 300, 150)
         
         colors = [(0, 0, 255), (255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
@@ -105,11 +117,12 @@ class Scene2d:
         
         cars = [green_car]
         
-        for i in range(5):
+        for i in range(3):
             path = self._world.roads[i].paths[0 if i != 3 and i != 4 else 1]  # Vector2(random.random() * 200 - 100, random.random() * 100)
             car = Car(self._world, path.start, path.direction.angle(),
                            CarType(None, 2.2, 5, 1, colors[i], 10))
             car.ai = AIImpl(path, car)
+            self._PFThread(car).start()
             cars.append(car)
 
         self._world.cars.extend(cars)

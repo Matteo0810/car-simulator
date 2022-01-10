@@ -2,63 +2,75 @@
     "roads": [
         {
             "__id": 0,
-            "start":[-50, 0],
-            "end" : [0, 0],
+            "start":[-50, 25],
+            "end" : [0, 25],
             "speed_limit" : 50,
-            "start_intersection": 1,
-            "end_intersection": 0
+            "start_intersection": 0,
+            "end_intersection": 1
         },
         {
             "__id": 1,
-            "start":[50, 0],
-            "end" : [0, 0],
+            "start":[50, 25],
+            "end" : [0, 25],
             "speed_limit" : 50,
-            "start_intersection": 3,
-            "end_intersection": 0
+            "start_intersection": 2,
+            "end_intersection": 1
         },
         {
             "__id": 2,
-            "start":[0, 50],
-            "end" : [0, 0],
+            "start":[0, 25],
+            "end" : [0, -25],
             "speed_limit" : 50,
-            "__comment": "-1: pas d'intersection (considéré comme une intersection avec aucune autre voie)",
-            "start_intersection": -1,
-            "end_intersection": 0
+            "start_intersection": 1,
+            "end_intersection": 3
         },
         {
             "__id": 3,
-            "start":[-50, 0],
-            "end" : [-50, -50],
+            "start":[-50, 25],
+            "end" : [-50, -25],
             "speed_limit" : 50,
-            "start_intersection": 1,
-            "end_intersection": 2
+            "start_intersection": 0,
+            "end_intersection": 4
         },
         {
             "__id": 4,
-            "start":[-50, -50],
-            "end" : [50, -50],
+            "start":[-50, -25],
+            "end" : [0, -25],
             "speed_limit" : 50,
-            "start_intersection": 2,
-            "end_intersection": 4
+            "start_intersection": 4,
+            "end_intersection": 3
         },
         {
             "__id": 5,
-            "start":[50, 0],
-            "end" : [50, -50],
+            "start":[50, 25],
+            "end" : [50, -25],
+            "speed_limit" : 50,
+            "start_intersection": 2,
+            "end_intersection": 5
+        },
+        {
+            "__id": 6,
+            "start":[0, -25],
+            "end" : [50, -25],
             "speed_limit" : 50,
             "start_intersection": 3,
-            "end_intersection": 4
+            "end_intersection": 5
         }
     ],
     "intersections": [
         {
             "__id": 0,
-            "__comment": "Priorité à droite",
-            "type": "NONE"
+            "type": "NONE",
+            "stops": [2]
         },
         {
             "__id": 1,
-            "type": "NONE"
+            "type": "LIGHTS",
+            "groups": [
+                [0],
+                [1],
+                [2]
+            ]
         },
         {
             "__id": 2,
@@ -70,6 +82,10 @@
         },
         {
             "__id": 4,
+            "type": "NONE"
+        },
+        {
+            "__id": 5,
             "type": "NONE"
         },
         {
