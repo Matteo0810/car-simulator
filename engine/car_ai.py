@@ -1,8 +1,8 @@
 import threading
 from abc import ABC, abstractmethod
-from math import *
 from random import choice
 
+from helpers.dotenv import get_env
 from helpers.ordered_list import OrderedList
 from helpers.vector import Vector2
 from helpers.utils import sign
@@ -27,17 +27,34 @@ class AI(ABC):
         pass
 
 
+class DefinedAI(AI):
+    def __init__(self, car):
+        self._car = car
+        self.wheel_speed = 0
+        self.braking = False
+        self.steer_angle = 0
+    
+    def get_wheel_speed(self):
+        return self.wheel_speed * 5 / max(5, abs(self._car.get_actual_front_wheels_speed()))
+    
+    def get_steer_angle(self):
+        return self.steer_angle
+    
+    def is_braking(self):
+        return self.braking
+
+
 def unpack_actions_flag(actions_flag, speed_limit):
     if actions_flag & 0b11100 == 0b00000:
-        steer_angle = -1.0
+        steer_angle = -0.6
     elif actions_flag & 0b11100 == 0b00100:
-        steer_angle = -0.5
+        steer_angle = -0.3
     elif actions_flag & 0b11100 == 0b01000:
         steer_angle = -0.1
     elif actions_flag & 0b11100 == 0b01100:
-        steer_angle = 1
+        steer_angle = 0.6
     elif actions_flag & 0b11100 == 0b10000:
-        steer_angle = 0.5
+        steer_angle = 0.3
     elif actions_flag & 0b11100 == 0b10100:
         steer_angle = 0.1
     else:
@@ -59,13 +76,16 @@ def unpack_actions_flag(actions_flag, speed_limit):
 
 
 TIME_STEP = 0.5
-FORESEE_TIME = 3
+FORESEE_TIME = 2
 
 
 class AIImpl(AI):
     def __init__(self, path, car):
         self._path = path
+        
         self._next_path = None
+        self._choose_next_path()
+        
         self._car = car
         self._t = 0
         self._wheel_speed = 0
@@ -86,26 +106,25 @@ class AIImpl(AI):
     def is_braking(self):
         return self._braking
     
+    def _choose_next_path(self):
+        self._next_path = choice(self._path.intersection.outbounds)
+        while self._next_path.road == self._path.road and any(p.road != self._path.road for p in self._path.intersection.outbounds):
+            self._next_path = choice(self._path.intersection.outbounds)
+    
     def pre_tick(self, dt):
         self._dt = dt
         self._t += dt
-        
-        if self._car.position.distance(self._path.end) < 10:
-            self._lock.acquire()
-            self._path = self._next_path
-            self._next_path = None
-            self._lock.release()
-        
-        if self._next_path is None:
-            self._lock.acquire()
-            
-            self._next_path = choice(self._path.intersection.inbounds).path
-            while self._next_path.road == self._path.road and any(p.path.road != self._path.road for p in self._path.intersection.inbounds):
-                self._next_path = choice(self._path.intersection.inbounds).path
-            
-            self._lock.release()
 
         self._lock.acquire()
+        
+        has_priority = self._path.intersection.has_priority(self._path, self._next_path, self._car.world)
+        
+        if self._car.position.distance(self._path.end) < 10 and has_priority or self._car.position.distance(self._path.end) < 5:
+            self._path = self._next_path
+            self._next_path = None
+        
+        if self._next_path is None:
+            self._choose_next_path()
         
         if len(self._actions) > 0:
             if self._t >= TIME_STEP or self._action_changed:
@@ -119,7 +138,7 @@ class AIImpl(AI):
             
         else:
             self._wheel_speed = 0
-            self._braking = False
+            self._braking = True
             self._steer_angle = 0
         
         self._lock.release()
@@ -128,12 +147,18 @@ class AIImpl(AI):
         car = self._car
 
         self._lock.acquire()
+        
         next_path = self._next_path
         current_path = self._path
-        self._lock.release()
         
-        node_source = {"parent": None, "score": 0, "dev_score": 0, "actions_flag": 0, "time": 0, "on_next_path": False,
-                  "car_position": car.position, "car_velocity": car.velocity.dot(Vector2.of_angle(car.angle)), "car_angle": car.angle}
+        has_priority = current_path.intersection.has_priority(current_path, next_path, self._car.world)
+        
+        node_source = {"parent": None, "score": 0, "actions_flag": 0, "time": 0, "on_next_path": False, "changed_path": False,
+                  "car_position": car.position, "car_velocity": car.velocity.length(), "car_angle": car.angle}
+        
+        start_pos = car.position
+        
+        self._lock.release()
         
         node_value = lambda node: node["score"]# + node["dev_score"]
         
@@ -154,7 +179,7 @@ class AIImpl(AI):
             
             parent = nodes.min()
         
-            if loops > 20:# or parent["time"] == FORESEE_TIME
+            if loops > 20 or parent["time"] == FORESEE_TIME:
                 
                 self._lock.acquire()
                 
@@ -162,7 +187,7 @@ class AIImpl(AI):
                 while parent["parent"]["parent"]:
                     self._actions.append(parent)
                     parent = parent["parent"]
-                    scene.add_debug_dot(parent["car_position"], (200, 200, 0))
+                    #scene.add_debug_dot(parent["car_position"], (200, 200, 0))
                 
                 self._actions.append(parent)
                 self._actions.reverse()
@@ -175,8 +200,9 @@ class AIImpl(AI):
             nodes.remove(parent)
         
             for actions_flag in range(0b11001):
-                if actions_flag & 0b11 == 0b11:
-                    continue
+                #if actions_flag & 0b11 == 0b11:
+                #    continue
+                
                 node = {"parent": parent, "actions_flag": actions_flag, "time": parent["time"] + TIME_STEP}
                 score = 0
                 
@@ -202,21 +228,34 @@ class AIImpl(AI):
                         else:
                             vel_diff = -car.model.acceleration * TIME_STEP
                 
-                velocity += vel_diff
+                #B, C, D, E = 0.01, 1.7, -100, -1.2
+                #x = (velocity + vel_diff) * 25
+                #f = D * sin(C * atan(B * x/2 - E * (B * x/2 - atan(B * x/2))))
+                #angle -= f * steer_angle / 150 * sign(velocity) * 1.5
+                angle += velocity * steer_angle * TIME_STEP / 7
                 
-                B, C, D, E = 0.01, 1.7, -100, -1.2
-                x = velocity * 25
-                f = D * sin(C * atan(B * x/2 - E * (B * x/2 - atan(B * x/2))))
-                angle -= f * steer_angle / 150 * sign(velocity)
+                velocity += vel_diff - 2 * sign(velocity)
                 
                 l_position = position
                 position += Vector2.of_angle(angle, velocity) * TIME_STEP
                 
-                node["on_next_path"] = parent["on_next_path"] or path.end.distance(position) < 5
+                node["on_next_path"] = (parent["on_next_path"] or path.end.distance(position) < 5) and has_priority
+                node["changed_path"] = not parent["on_next_path"] and node["on_next_path"]
                 
                 path = next_path if node["on_next_path"] else current_path
-                score += path.distance(position)
-                score += path.end.distance(position)
+                
+                if not node["changed_path"] and not parent["changed_path"]:
+                    score += path.distance(position)
+                else:
+                    score += path.distance(position)
+                
+                if not has_priority:
+                    goal = (path.end - path.direction * get_env("ROAD_WIDTH") * 0.8)
+                    score += goal.distance(position)
+                    if goal.distance(position) < goal.distance(position + Vector2.of_angle(angle, velocity) / 2):
+                        score += velocity
+                else:
+                    score += path.end.distance(position)
                 
                 if not node["on_next_path"]:
                     score += current_path.end.distance(next_path.end)
@@ -226,12 +265,17 @@ class AIImpl(AI):
                         continue
                 
                     nearest_hitbox_point = collideable.nearest_hitbox_point(position)
-                
-                    if isinstance(collideable, Car):
-                        nearest_hitbox_point += collideable.velocity * (parent["time"] + TIME_STEP)
-                
-                    if nearest_hitbox_point and nearest_hitbox_point.distance(position) < car.model.diagonal:
-                        score += (current_path.end.distance(next_path.end) + current_path.start.distance(current_path.end)) * max(0, nearest_hitbox_point.distance(position) / car.model.diagonal / 2)
+                    
+                    if nearest_hitbox_point:
+                        if isinstance(collideable, Car):
+                            nearest_hitbox_point += collideable.velocity * node["time"]
+                        
+                        dist = nearest_hitbox_point.distance(position)
+                        
+                        if dist <= car.model.diagonal and node["time"] < 1:
+                            score += 10000000
+                        #if dist <= car.model.diagonal:
+                        #    score += (car.model.diagonal - dist)
                 
                 node["score"] = score
                 node["car_position"] = position

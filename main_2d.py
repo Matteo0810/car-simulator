@@ -19,28 +19,24 @@ def main():
 
     json_world = json.loads(open("world/assets/world.json", mode='r').read())
     world = World.load(json_world)
-
-    scene = Scene2d(screen, world)
     
     last_frame = time()
     
     current_thread = threading.current_thread()
     
     class PFThread(threading.Thread):
-        def __init__(self):
+        def __init__(self, car):
             super().__init__()
-            self.lock = threading.Lock()
+            self._car = car
         
         def run(self):
-            sleep(1)
-            while current_thread.is_alive():
-                for car in world.cars:
-                    if isinstance(car.ai, AIImpl):
-                        car.ai.pathfinding(scene)
-    
-    pathfinding_thread = PFThread()
-    
-    pathfinding_thread.start()
+            sleep(0.1)
+            while current_thread.is_alive() and self._car in world.cars:
+                if isinstance(self._car.ai, AIImpl):
+                    self._car.ai.pathfinding(scene)
+                sleep(0)
+
+    scene = Scene2d(screen, world, PFThread)
     
     while True:
         for event in pygame.event.get():

@@ -1,9 +1,14 @@
 from math import *
 
+import pygame
+
 from engine.model.modeled import Modeled
 from engine.physics import reconstruct_car
 from helpers.utils import *
 from helpers.vector import Vector2
+
+A = []
+B = []
 
 
 class Car(Modeled):
@@ -38,18 +43,23 @@ class Car(Modeled):
             ground = self._world.get_ground_at(wheel.position)
             
             slipping = wheel.velocity - Vector2.of_angle(wheel.angle, wheel.actual_speed)
+            if wheel.drifting:
+                print("drifting:", True)
             
             if not wheel.drifting:
-                wheel.drifting = slipping.length() > 10
+                wheel.drifting = False and slipping.length() > 10 / (1 - ground.grip)
             else:
-                wheel.drifting = slipping.length() > 9
+                wheel.drifting = slipping.length() > 9 / (1 - ground.grip)
             
-            if wheel.actual_speed * sign(target_speed) < abs(target_speed):
+            if not braking and wheel.actual_speed * sign(target_speed) < abs(target_speed):
                 actual_acceleration = min(target_speed - wheel.actual_speed,
                                           self._model.acceleration * sign(target_speed),
                                           key=lambda x: sign(target_speed) * x) * (ground.grip*0.6 if wheel.drifting else ground.grip)
                 wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
 
+            if braking:
+                wheel.velocity *= 0.25 ** dt
+            
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
             
             if wheel.drifting:
@@ -85,20 +95,20 @@ class Car(Modeled):
         
         self.reconstruct()
         
-        """for a in A:
+        for a in A:
             if a[0] > 0.5:
                 goal = (a[1] - self.angle + pi) % (2 * pi) - pi
-                speed = self.velocity.dot(Vector2.of_angle(self.angle))
+                speed = self.velocity.length()
                 diff_speed = speed - a[3]
-                B.append(f"{a[2]} {goal} {speed} {diff_speed}")
+                B.append(f"{a[2]} {goal} {lerp(speed, a[3], 0.5)}")
                 A.remove(a)
             else:
                 a[0] += dt
         
-        A.append([0, self.angle, steer_angle, self.velocity.dot(Vector2.of_angle(self.angle))])
+        A.append([0, self.angle, steer_angle, self.velocity.length()])
         
         if pygame.key.get_pressed()[pygame.K_a]:
-            open("A", "w").write("\n".join(B))"""
+            open("A", "w").write("\n".join(B))
     
     def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]

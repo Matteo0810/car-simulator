@@ -34,7 +34,7 @@ class Scene2d:
         self._debug_dots = {}
     
     def clear(self):
-        self._screen.fill((255, 255, 255))
+        self._screen.fill((50, 100, 0))
     
     def update(self, dt: float):
         self.clear()
@@ -115,7 +115,7 @@ class Scene2d:
         colors = [(0, 0, 255), (255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
         shuffle(colors)
         
-        cars = [green_car]
+        cars = []#green_car
         
         for i in range(3):
             path = self._world.roads[i].paths[0 if i != 3 and i != 4 else 1]  # Vector2(random.random() * 200 - 100, random.random() * 100)
