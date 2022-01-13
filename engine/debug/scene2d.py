@@ -112,7 +112,7 @@ class Scene2d:
         green_car = Car(self._world, Vector2(0, -50), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 15))
         green_car.ai = PygameController(green_car, self, 100, 50)
         
-        blue_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 0, 255), 15))
+        blue_car = Car(self._world, Vector2(0, -40), 0, CarType(None, 2.2, 5, 1, (0, 0, 255), 15))
         blue_car.ai = PygameController(blue_car, self, 100, 50, blue_controls)
         #(0, 0, 255), 
         colors = [(255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
