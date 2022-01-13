@@ -109,25 +109,32 @@ class Scene2d:
             "d": pygame.K_RIGHT
         }
         
-        green_car = Car(self._world, Vector2(0, -50), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 30))
-        green_car.ai = PygameController(green_car, self, 300, 150)
+        green_car = Car(self._world, Vector2(0, -50), 0, CarType(None, 2.2, 5, 1, (0, 255, 0), 15))
+        green_car.ai = PygameController(green_car, self, 100, 50)
         
-        colors = [(0, 0, 255), (255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+        blue_car = Car(self._world, Vector2(0, -30), 0, CarType(None, 2.2, 5, 1, (0, 0, 255), 15))
+        blue_car.ai = PygameController(blue_car, self, 100, 50, blue_controls)
+        #(0, 0, 255), 
+        colors = [(255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
         shuffle(colors)
         
-        cars = []#green_car
+        cars = [green_car, blue_car]#green_car
         
         for i in range(3):
             path = self._world.roads[i].paths[0 if i != 3 and i != 4 else 1]  # Vector2(random.random() * 200 - 100, random.random() * 100)
             car = Car(self._world, path.start, path.direction.angle(),
                            CarType(None, 2.2, 5, 1, colors[i], 10))
             car.ai = AIImpl(path, car)
-            self._PFThread(car).start()
             cars.append(car)
 
         self._world.cars.extend(cars)
         
         self._user_car = self._world.cars[0]
+    
+    def start_threads(self):
+        for car in self._world.cars:
+            if isinstance(car.ai, AIImpl):
+                self._PFThread(car).start()
     
     def add_debug_dot(self, position, color=(255, 0, 0)):
         self._debug_dots[position] = [0, color]

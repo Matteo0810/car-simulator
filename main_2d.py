@@ -34,9 +34,10 @@ def main():
             while current_thread.is_alive() and self._car in world.cars:
                 if isinstance(self._car.ai, AIImpl):
                     self._car.ai.pathfinding(scene)
-                sleep(0)
+                sleep(0.0)
 
     scene = Scene2d(screen, world, PFThread)
+    scene.start_threads()
     
     while True:
         for event in pygame.event.get():
@@ -46,6 +47,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     scene.reset()
+                    scene.start_threads()
 
         frame_start = time()
         dt = (frame_start - last_frame)

@@ -256,6 +256,7 @@ class AIImpl(AI):
                         score += velocity
                 else:
                     score += path.end.distance(position)
+                    score -= min(10, abs(velocity))
                 
                 if not node["on_next_path"]:
                     score += current_path.end.distance(next_path.end)
