@@ -2,7 +2,7 @@ from math import copysign
 
 import pygame.event
 
-from engine.car_ai import AI
+from engine.ai.car_ai import AI
 
 BASE_CONTROLS = {
     "z": pygame.K_z,

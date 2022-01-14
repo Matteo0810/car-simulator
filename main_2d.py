@@ -1,11 +1,9 @@
 import os
-import threading
 from time import time, sleep
 import json
 
 import pygame
 
-from engine.car_ai import AIImpl
 from helpers.dotenv import dotenv, get_env
 from engine.debug.scene2d import Scene2d
 from world.world import World
@@ -21,23 +19,9 @@ def main():
     world = World.load(json_world)
     
     last_frame = time()
-    
-    current_thread = threading.current_thread()
-    
-    class PFThread(threading.Thread):
-        def __init__(self, car):
-            super().__init__()
-            self._car = car
-        
-        def run(self):
-            sleep(0.1)
-            while current_thread.is_alive() and self._car in world.cars:
-                if isinstance(self._car.ai, AIImpl):
-                    self._car.ai.pathfinding(scene)
-                sleep(0.0)
 
-    scene = Scene2d(screen, world, PFThread)
-    scene.start_threads()
+    scene = Scene2d(screen, world)
+    scene.start_pf_threads()
     
     while True:
         for event in pygame.event.get():
@@ -47,7 +31,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     scene.reset()
-                    scene.start_threads()
+                    scene.start_pf_threads()
 
         frame_start = time()
         dt = (frame_start - last_frame)

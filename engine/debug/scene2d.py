@@ -1,8 +1,9 @@
+import random
 from random import shuffle
 
 import pygame
 
-from engine.car_ai import AIImpl
+from engine.ai.car_ai import AIImpl
 from engine.debug.controller import PygameController
 from engine.physics import check_collision
 from world.car import Car, CarType
@@ -22,9 +23,8 @@ def map_to_pixel(vl, camera):
 
 
 class Scene2d:
-    def __init__(self, screen: pygame.Surface, world, PFThread):
+    def __init__(self, screen: pygame.Surface, world):
         self._world = world
-        self._PFThread = PFThread
         self._screen = screen
         
         self._user_car = None
@@ -40,6 +40,18 @@ class Scene2d:
         self.clear()
         self._render(dt)
         pygame.display.update()
+        
+        if pygame.key.get_pressed()[pygame.K_u]:
+            car2 = random.choice(self._world.cars)
+            self._user_car.ai = AIImpl(random.choice(random.choice(self._world.roads).paths), self._user_car)
+            self._user_car.ai.start_thread(self)
+            
+            if isinstance(car2.ai, AIImpl):
+                car2.ai.stop_thread()
+            
+            car2.ai = PygameController(car2, self, 100, 50)
+            
+            self._user_car = car2
     
     def _render(self, dt):
         for road in self.world.roads:
@@ -131,10 +143,10 @@ class Scene2d:
         
         self._user_car = self._world.cars[0]
     
-    def start_threads(self):
+    def start_pf_threads(self):
         for car in self._world.cars:
             if isinstance(car.ai, AIImpl):
-                self._PFThread(car).start()
+                car.ai.start_thread(self)
     
     def add_debug_dot(self, position, color=(255, 0, 0)):
         self._debug_dots[position] = [0, color]
