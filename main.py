@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
     frame = Frame()
 
-    # json_world = json.loads(open("world/assets/world.json", mode='r').read())
+    # json_world = json.loads(open("world/assets/forest.json", mode='r').read())
     # world = World.load(json_world)
 
     scene = frame.get_scene()

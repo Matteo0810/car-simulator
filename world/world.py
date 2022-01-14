@@ -20,13 +20,18 @@ class GroundType(Enum):
 
 
 class World:
-    def __init__(self, roads, obstacles):
+    def __init__(self, props, roads, obstacles):
         """
             Prend en paramètre les éléments du monde, comme les voitures, les routes et les obstacles
         """
+        self._props = props
         self._cars = []
         self._roads = roads
         self._obstacles = obstacles
+
+    @property
+    def props(self):
+        return self._props
 
     @property
     def cars(self):
@@ -133,4 +138,4 @@ class World:
         for road in roads:
             road.intersection_built()
         
-        return World(roads, obstacles)
+        return World(content['props'], roads, obstacles)

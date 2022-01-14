@@ -10,6 +10,3 @@ class WorldScreen(Scene, ABC):
     def __init__(self, root):
         super().__init__(root)
 
-
-def get_world_screen_type(world: World):
-    return type("WorldScreen_Impl", (WorldScreen,), {"world": world})

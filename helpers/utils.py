@@ -1,5 +1,6 @@
 from ctypes import c_float, c_int32, cast, byref, POINTER
 from math import pi, copysign
+import os
 
 
 def nice_angle(rad):
@@ -47,3 +48,12 @@ def fast_invsqrt(number):
 
     y = y * (1.5 - (x2 * y * y))
     return y
+
+
+def get_folder_content(path):
+    path = path.replace('/', '\\')
+    root_dir = f'{os.path.abspath(".")}\\{path}'
+    files = []
+    for _, _, files in os.walk(root_dir):
+        files = [os.path.join(root_dir, file) for file in files]
+    return files

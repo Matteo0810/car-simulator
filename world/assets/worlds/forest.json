@@ -1,4 +1,7 @@
 {
+    "props": {
+        "name": "Forêt"
+    },
     "roads": [
         {
             "__id": 0,
