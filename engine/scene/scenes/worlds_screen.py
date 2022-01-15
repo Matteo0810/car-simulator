@@ -1,8 +1,9 @@
+import json
+
 from engine.scene.scene import Scene
 from engine.scene.scenes.world_screen import WorldScreen
 from world.world import World
 from helpers.utils import get_folder_content
-import json
 
 
 class WorldsScreen(Scene):
@@ -15,6 +16,6 @@ class WorldsScreen(Scene):
 
         for world, i in zip(self.worlds, range(len(self.worlds))):
             self.add_button((self.mid_width - 30, 260 + 50 * i), world.props['name'],
-                            lambda: self.gui.use(WorldScreen), 20)
+                            lambda: self.gui.use(WorldScreen.with_(world)), 20)
 
         self.add_button((self.mid_width - 30, 360 + 50 * len(self.worlds)), "Retour", self.gui.previous_scene, 20)

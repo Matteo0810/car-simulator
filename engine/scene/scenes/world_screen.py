@@ -1,7 +1,6 @@
 from abc import ABC
 
 from engine.scene.scene import Scene
-from world.world import World
 
 
 class WorldScreen(Scene, ABC):
@@ -9,4 +8,7 @@ class WorldScreen(Scene, ABC):
     
     def __init__(self, root):
         super().__init__(root)
-
+    
+    @staticmethod
+    def with_(world):
+        return type("WorldScreen_Impl", (WorldScreen,), {"world": world})
