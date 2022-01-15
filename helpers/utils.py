@@ -36,9 +36,6 @@ def sign(x):
 
 
 def fast_invsqrt(number):
-    """
-    TODO v * fast_invsqrt(v.x * v.x + v.y * v.y)
-    """
     x2 = number * 0.5
     y = c_float(number)
 
@@ -50,10 +47,11 @@ def fast_invsqrt(number):
     return y
 
 
-def get_folder_content(path):
+def get_path(path):
     path = path.replace('/', '\\')
-    root_dir = f'{os.path.abspath(".")}\\{path}'
-    files = []
-    for _, _, files in os.walk(root_dir):
-        files = [os.path.join(root_dir, file) for file in files]
-    return files
+    return f'{os.path.abspath(".")}\\{path}'
+
+
+def get_folder_content(path):
+    root_dir = get_path(path)
+    return [os.path.join(root_dir, file) for file in os.listdir(root_dir)]

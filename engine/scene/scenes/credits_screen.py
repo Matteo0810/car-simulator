@@ -7,14 +7,11 @@ class CreditsScreen(Scene):
         super().__init__(root)
 
         height = self.mid_height
-        for credit in self._get_credits():
+        for credit in open('world/assets/credits.txt', 'r', encoding="utf-8").readlines():
             height += 40
             label = self.add_label((self.mid_width - 100 - ((0, 20)[credit.startswith('-')]), height),
                                    credit.replace('-', ''), ((16, 20)[credit.startswith('-')]))
             self.up(label, height)
-
-    def _get_credits(self):
-        return open('world/assets/credits.txt', 'r', encoding="utf-8").readlines()
 
     def up(self, label, height):
         if height >= -100:

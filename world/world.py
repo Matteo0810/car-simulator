@@ -3,6 +3,7 @@ from enum import Enum
 from helpers.vector import Vector2
 from world.road import Road
 from world.intersection import IntersectionBuilder, LightsType
+import json
 
 
 class GroundType(Enum):
@@ -97,6 +98,7 @@ class World:
         :param content: dictionnaire représentant le json du monde
         :return: le monde
         """
+        content = (content, json.loads(content))[type(content) == str]
         roads = []
         obstacles = []
         
