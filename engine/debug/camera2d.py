@@ -14,3 +14,6 @@ class Camera2d:
     def move_to(self, x, y):
         self._x = x
         self._y = y
+    
+    def set_zoom(self, zoom):
+        self._zoom = zoom

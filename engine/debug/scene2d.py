@@ -15,7 +15,8 @@ from world.intersection import LightsType
 
 
 def to_pixel(v, camera):
-    return int(v.x / get_env("PIXEL_WIDTH") + get_env("WIDTH") / 2 + camera.x), int(v.y / get_env("PIXEL_WIDTH") + get_env("HEIGHT") / 2 + camera.y)
+    print(camera.zoom)
+    return int(v.x / get_env("PIXEL_WIDTH") / camera.zoom + get_env("WIDTH") / 2 + camera.x), int(v.y / get_env("PIXEL_WIDTH") / camera.zoom + get_env("HEIGHT") / 2 + camera.y)
 
 
 def map_to_pixel(vl, camera):
@@ -23,9 +24,10 @@ def map_to_pixel(vl, camera):
 
 
 class Scene2d:
-    def __init__(self, screen: pygame.Surface, world):
+    def __init__(self, screen: pygame.Surface, world, debug=False):
         self._world = world
         self._screen = screen
+        self._debug = debug
         
         self._user_car = None
         self.reset()
@@ -73,16 +75,24 @@ class Scene2d:
 
             pygame.draw.polygon(self._screen, (200, 200, 200), map_to_pixel(points, self._camera))
             
-            for path in road.paths:
-                if path.intersection.ligths_type == LightsType.LIGHTS:
-                    if path.intersection.is_green(path):
-                        pygame.draw.rect(self.screen, (0, 255, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
-                    else:
-                        pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
+            if not self._debug:
+                for path in road.paths:
+                    if path.intersection.ligths_type == LightsType.LIGHTS:
+                        if path.intersection.is_green(path):
+                            pygame.draw.rect(self.screen, (0, 255, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
+                        else:
+                            pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
 
-        for road in self._world.roads:
-            for path in road.paths:
-                path.intersection.tick(self.world, dt)
+            if self._debug:
+                for intersection in self.intersections:
+                    for i in range(-1, len(intersection.inbounds)-1):
+                        i1 = intersection.inbounds[i]
+                        i2 = intersection.inbounds[i+1]
+                        pygame.draw.line(self._screen, (255, 0, 0), to_pixel(i1.path.end - i1.path.direction * get_env("ROAD_WIDTH")/2, self._camera), to_pixel(i2.path.end - i2.path.direction * get_env("ROAD_WIDTH")/2, self._camera))
+
+
+        for intersection in self.intersections:
+            intersection.tick(self.world, dt)
         
         for car in self._world.cars:
             car.ai.pre_tick(dt)
@@ -112,6 +122,9 @@ class Scene2d:
         #    pygame.draw.rect(self.screen, (0, 0, 0), (x, y * 100, 1, 1))
     
     def reset(self):
+        if self._debug:
+            return
+        
         self._world.cars.clear()
         
         blue_controls = {
@@ -151,6 +164,11 @@ class Scene2d:
     def add_debug_dot(self, position, color=(255, 0, 0)):
         self._debug_dots[position] = [0, color]
     
+    @property
+    def intersections(self):
+        return list(set([road.paths[0].intersection for road in self.world.roads] + [road.paths[1].intersection for road in self.world.roads]))
+    
     screen = property_get("screen")
     user_car = property_get("user_car")
     world = property_get("world")
+    camera = property_get("camera")
