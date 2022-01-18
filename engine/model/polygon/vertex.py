@@ -46,10 +46,13 @@ class Vertex:
     def rescale(self, scale: int):
         self._scale = scale
 
-    def to_2d(self) -> list:
+    def to_2d(self, camera_pos) -> list:
         width, height = self._position
-        return [int(width + ((self._x * self._distance) / (self._z + self._distance)) * self._scale),
-                int(height + ((self._y * self._distance) / (self._z + self._distance)) * self._scale)]
+        x = self._x - camera_pos.x
+        y = self._y - camera_pos.y
+        z = self._z - camera_pos.z
+        return [int(width + ((x * self._distance) / (z + self._distance)) * self._scale),
+                int(height + ((y * self._distance) / (z + self._distance)) * self._scale)]
 
     def get_scale(self):
         return self._scale

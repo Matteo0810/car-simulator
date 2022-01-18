@@ -12,7 +12,7 @@ class Face:
         self._camera = camera
 
     def _flatten(self):
-        flatten_list = list(map(lambda vertex: vertex.to_2d(), self._meshes))
+        flatten_list = list(map(lambda vertex: vertex.to_2d(self._camera.position), self._meshes))
         return [vertex for mesh in flatten_list for vertex in mesh]
 
     def create(self, canvas):

@@ -98,7 +98,7 @@ class World:
         :param content: dictionnaire représentant le json du monde
         :return: le monde
         """
-        content = (content, json.loads(content))[type(content) == str]
+        content = json.loads(content) if type(content) is str else content
         roads = []
         obstacles = []
         

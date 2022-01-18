@@ -17,12 +17,10 @@ class Camera:
         self._height = height or get_env('HEIGHT')
         self._direction = Vector3(0, 0, 0)
 
-    def move(self, axis: str, newPos: float):
-        try:
-            var_name = f'_{axis}'
-            self.__setattr__(var_name, self.__getattribute__(var_name) + newPos)
-        except ValueError:
-            raise ValueError('Axe invalide')
+    def move(self, dx, dy, dz):
+        self._x += dx
+        self._y += dy
+        self._z += dz
 
     def set_width(self, width: int):
         self._width = width
@@ -32,6 +30,9 @@ class Camera:
 
     def get_direction(self):
         return self._direction
+
+    def set_direction(self, x, y ,z):
+        self._direction = Vector3(x, y, z)
 
     def get_distance_from(self, obj) -> float:
         x, y, z = list(obj)
@@ -45,3 +46,7 @@ class Camera:
 
     def _get_data(self):
         return [self._x, self._y, self._z, self._angle, (self._width, self._height)]
+    
+    @property
+    def position(self):
+        return Vector3(self._x, self._y, self._z)
