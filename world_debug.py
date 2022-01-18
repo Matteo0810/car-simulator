@@ -1,5 +1,5 @@
 import os
-from time import time, sleep
+from time import sleep
 import json
 
 import pygame
@@ -7,6 +7,10 @@ import pygame
 from helpers.dotenv import dotenv, get_env
 from engine.debug.scene2d import Scene2d
 from world.world import World
+
+img_loading1 = pygame.image.load("loading1.png")
+img_bad = pygame.image.load("bad.png")
+img_good = pygame.image.load("good.png")
 
 
 def update_scene(screen):
@@ -33,7 +37,18 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     scene = update_scene(screen)
+                    
         scene.update(0.1)
+
+        screen.blit(img_loading1, (10, 10))
+        try:
+            scene = update_scene(screen)
+            screen.blit(img_good, (10, 10))
+        except:
+            screen.blit(img_bad, (10, 10))
+        pygame.display.update()
+        sleep(0.1)
+
 
 if __name__ == '__main__':
     main()

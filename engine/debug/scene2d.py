@@ -13,9 +13,11 @@ from helpers.dotenv import get_env
 from helpers.utils import *
 from world.intersection import LightsType
 
+pygame.font.init()
+DEFAULT_FONT = pygame.font.SysFont(pygame.font.get_default_font(), 20)
+
 
 def to_pixel(v, camera):
-    print(camera.zoom)
     return int(v.x / get_env("PIXEL_WIDTH") / camera.zoom + get_env("WIDTH") / 2 + camera.x), int(v.y / get_env("PIXEL_WIDTH") / camera.zoom + get_env("HEIGHT") / 2 + camera.y)
 
 
@@ -36,7 +38,7 @@ class Scene2d:
         self._debug_dots = {}
     
     def clear(self):
-        self._screen.fill((50, 100, 0))
+        self._screen.fill((20, 60, 0))
     
     def update(self, dt: float):
         self.clear()
@@ -82,14 +84,16 @@ class Scene2d:
                             pygame.draw.rect(self.screen, (0, 255, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
                         else:
                             pygame.draw.rect(self.screen, (255, 0, 0), (to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (4, 4)))
-
+            
             if self._debug:
-                for intersection in self.intersections:
-                    for i in range(-1, len(intersection.inbounds)-1):
-                        i1 = intersection.inbounds[i]
-                        i2 = intersection.inbounds[i+1]
-                        pygame.draw.line(self._screen, (255, 0, 0), to_pixel(i1.path.end - i1.path.direction * get_env("ROAD_WIDTH")/2, self._camera), to_pixel(i2.path.end - i2.path.direction * get_env("ROAD_WIDTH")/2, self._camera))
-
+                self.screen.blit(DEFAULT_FONT.render(str(road.id), True, (0, 255, 0)), to_pixel(road.end / 2 + road.start / 2, self._camera))
+            
+        if self._debug:
+            for intersection in self.intersections:
+                for i in range(-1, len(intersection.inbounds)-1):
+                    i1 = intersection.inbounds[i]
+                    i2 = intersection.inbounds[i+1]
+                    pygame.draw.line(self._screen, (255, 0, 0), to_pixel(i1.path.end - i1.path.direction * get_env("ROAD_WIDTH")/2, self._camera), to_pixel(i2.path.end - i2.path.direction * get_env("ROAD_WIDTH")/2, self._camera))
 
         for intersection in self.intersections:
             intersection.tick(self.world, dt)

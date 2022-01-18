@@ -32,18 +32,20 @@ def _dist(x1, y1, x2, y2, x3, y3):  # x3,y3 is the point
 
 
 class Road:
-    def __init__(self, start: Vector2, end: Vector2, speed_limit, start_intersection, end_intersection):
+    def __init__(self, start: Vector2, end: Vector2, speed_limit, start_intersection, end_intersection, id_):
         self._start = start
         self._end = end
         self._speed_limit = speed_limit
         self._paths = (Path(self, 0), Path(self, 1))
         self._intersections = (end_intersection, start_intersection)
+        self._id = id_
 
     start = property_get("start")
     end = property_get("end")
     speed_limit = property_get("speed_limit")
     intersections = property_get("intersections")
     paths = property_get("paths")
+    id = property_get("id")
     
     def contains(self, position):
         return self._paths[0].contains(position) or self._paths[1].contains(position)

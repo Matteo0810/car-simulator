@@ -1,9 +1,9 @@
 from enum import Enum
+import json
 
 from helpers.vector import Vector2
 from world.road import Road
 from world.intersection import IntersectionBuilder, LightsType
-import json
 
 
 class GroundType(Enum):
@@ -131,7 +131,7 @@ class World:
             start_intersection, end_intersection = World._get_intersections(intersections, content, si_id, ei_id)
             
             # puis on créé l'objet
-            road = Road(start, end, speed_limit, start_intersection, end_intersection)
+            road = Road(start, end, speed_limit, start_intersection, end_intersection, road_id)
             roads.append(road)
             
             World._add_road(content["intersections"][si_id], start_intersection, road_id, road, True)
