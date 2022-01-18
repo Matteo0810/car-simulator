@@ -63,8 +63,7 @@
     "intersections": [
         {
             "__id": 0,
-            "type": "NONE",
-            "stops": [2]
+            "type": "NONE"
         },
         {
             "__id": 1,
@@ -94,19 +93,6 @@
         {
             "__id": 5,
             "type": "NONE"
-        },
-        {
-            "__comment": "Les routes 3 et 5 ont des stops",
-            "type": "STOPS",
-            "stops": [3, 5]
-        },
-        {
-            "__comment": "Les routes 7 et 8 auront les feux verts quand les routes 9 et 10 auront les feux rouges et vice versa",
-            "type": "LIGHTS",
-            "groups": [
-                [7, 8],
-                [9, 10]
-            ]
         }
     ]
 }
