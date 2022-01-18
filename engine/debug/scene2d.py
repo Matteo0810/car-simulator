@@ -90,10 +90,11 @@ class Scene2d:
             
         if self._debug:
             for intersection in self.intersections:
+                self.screen.blit(DEFAULT_FONT.render(str(intersection.id), True, (120, 0, 120)), to_pixel(sum(inbound.path.end for inbound in intersection.inbounds) / len(intersection.inbounds), self._camera))
                 for i in range(-1, len(intersection.inbounds)-1):
                     i1 = intersection.inbounds[i]
                     i2 = intersection.inbounds[i+1]
-                    pygame.draw.line(self._screen, (255, 0, 0), to_pixel(i1.path.end - i1.path.direction * get_env("ROAD_WIDTH")/2, self._camera), to_pixel(i2.path.end - i2.path.direction * get_env("ROAD_WIDTH")/2, self._camera))
+                    pygame.draw.line(self._screen, (255, 100, 0), to_pixel(i1.path.end - i1.path.direction * get_env("ROAD_WIDTH")/2, self._camera), to_pixel(i2.path.end - i2.path.direction * get_env("ROAD_WIDTH")/2, self._camera))
 
         for intersection in self.intersections:
             intersection.tick(self.world, dt)

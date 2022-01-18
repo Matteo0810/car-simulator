@@ -39,11 +39,9 @@ class PathInfo:
                 cars.append(car)
         return cars
 
-ID_INC = 0
-
 
 class Intersection:
-    def __init__(self, inbounds, outbounds, ligths_type):
+    def __init__(self, inbounds, outbounds, ligths_type, id_):
         """
             inbounds est une liste de PathInfo
             outbounds est une liste de Path
@@ -61,9 +59,7 @@ class Intersection:
         self._lights_time = get_env("TRAFFIC_LIGHTS_DELAY")
         self._mid = sum((in_.path.end - in_.path.direction * get_env("ROAD_WIDTH") / 2 for in_ in self.inbounds)) / len(self.inbounds)
 
-        global ID_INC
-        self._id = ID_INC
-        ID_INC += 1
+        self._id = id_
     
     def tick(self, world, dt):
         if self.ligths_type == LightsType.LIGHTS:
@@ -132,16 +128,18 @@ class Intersection:
     def ligths_type(self):
         return self._ligths_type
     
-    def __hash__(self) -> int:
+    @property
+    def id(self):
         return self._id
 
 
 class IntersectionBuilder:
-    def __init__(self, ligths_type):
+    def __init__(self, ligths_type, id_):
         self._inbounds = []
         self._outbounds = []
         self._ligths_type = ligths_type
         self._built = None
+        self._id = id_
     
     def add_road(self, road, is_start, has_stop=False, lights_group=-1):
         self._inbounds.append(PathInfo(road.paths[is_start], has_stop, lights_group))
@@ -149,7 +147,7 @@ class IntersectionBuilder:
         return self
     
     def build(self):
-        self._built = Intersection(self._inbounds, self._outbounds, self._ligths_type)
+        self._built = Intersection(self._inbounds, self._outbounds, self._ligths_type, self._id)
         return self._built
     
     @property

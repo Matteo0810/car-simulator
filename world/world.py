@@ -56,20 +56,20 @@ class World:
     @staticmethod
     def _get_intersections(loaded_intersections, j_content, si_id, ei_id):
         if si_id == -1:
-            start_intersection = IntersectionBuilder(LightsType.NONE)
+            start_intersection = IntersectionBuilder(LightsType.NONE, si_id)
         else:
             if si_id in loaded_intersections:
                 start_intersection = loaded_intersections[si_id]
             else:
-                start_intersection = IntersectionBuilder(LightsType[j_content["intersections"][si_id]["type"]])
+                start_intersection = IntersectionBuilder(LightsType[j_content["intersections"][si_id]["type"]], si_id)
     
         if ei_id == -1:
-            end_intersection = IntersectionBuilder(LightsType.NONE)
+            end_intersection = IntersectionBuilder(LightsType.NONE, ei_id)
         else:
             if ei_id in loaded_intersections:
                 end_intersection = loaded_intersections[ei_id]
             else:
-                end_intersection = IntersectionBuilder(LightsType[j_content["intersections"][ei_id]["type"]])
+                end_intersection = IntersectionBuilder(LightsType[j_content["intersections"][ei_id]["type"]], ei_id)
 
         loaded_intersections[si_id] = start_intersection
         loaded_intersections[ei_id] = end_intersection
