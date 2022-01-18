@@ -58,6 +58,30 @@
             "speed_limit" : 50,
             "start_intersection": 3,
             "end_intersection": 5
+        },
+        {
+            "__id": 7,
+            "start":[50, -25],
+            "end" : [100, -100],
+            "speed_limit" : 50,
+            "start_intersection": 5,
+            "end_intersection": 6
+        },
+        {
+            "__id": 8,
+            "start":[100, -100],
+            "end" : [-100, -100],
+            "speed_limit" : 50,
+            "start_intersection": 6,
+            "end_intersection": 7
+        },
+        {
+            "__id": 9,
+            "start":[-50, -25],
+            "end" : [-100, -100],
+            "speed_limit" : 50,
+            "start_intersection": 4,
+            "end_intersection": 7
         }
     ],
     "intersections": [
@@ -92,6 +116,14 @@
         },
         {
             "__id": 5,
+            "type": "NONE"
+        },
+        {
+            "__id": 6,
+            "type": "NONE"
+        },
+        {
+            "__id": 7,
             "type": "NONE"
         }
     ]

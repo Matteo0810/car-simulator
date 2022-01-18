@@ -22,6 +22,7 @@ def main():
 
     scene = Scene2d(screen, world)
     scene.start_pf_threads()
+    scene.camera.set_zoom(2)
     
     while True:
         for event in pygame.event.get():
