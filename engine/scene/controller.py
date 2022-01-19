@@ -25,10 +25,12 @@ class Controller:
         self._scene.bind('<ButtonRelease-3>', self._reset_rotate)
 
         self.init_labels()
+        return self
 
     def init_labels(self):
         width, height = self._size
 
+        self._scene.add_label((width - 170, height - 170), "r : reload")
         self._scene.add_label((width - 170, height - 130), "roulette : taille")
         self._scene.add_label((width - 185, height - 90), "z-q-s-d : mouvement")
         self._scene.add_label((width - 170, height - 50), "souris : rotation")

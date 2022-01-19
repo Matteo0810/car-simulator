@@ -1,87 +1,17 @@
 {
     "props": {
-        "name": "Forêt"
+        "name": "Forêt",
+        "file_name": "forest",
+        "type": "forest"
     },
     "roads": [
         {
             "__id": 0,
-            "start":[-50, 25],
-            "end" : [0, 25],
+            "start":[100, 100],
+            "end" : [400, 700],
             "speed_limit" : 50,
             "start_intersection": 0,
             "end_intersection": 1
-        },
-        {
-            "__id": 1,
-            "start":[50, 25],
-            "end" : [0, 25],
-            "speed_limit" : 50,
-            "start_intersection": 2,
-            "end_intersection": 1
-        },
-        {
-            "__id": 2,
-            "start":[0, 25],
-            "end" : [0, -25],
-            "speed_limit" : 50,
-            "start_intersection": 1,
-            "end_intersection": 3
-        },
-        {
-            "__id": 3,
-            "start":[-50, 25],
-            "end" : [-50, -25],
-            "speed_limit" : 50,
-            "start_intersection": 0,
-            "end_intersection": 4
-        },
-        {
-            "__id": 4,
-            "start":[-50, -25],
-            "end" : [0, -25],
-            "speed_limit" : 50,
-            "start_intersection": 4,
-            "end_intersection": 3
-        },
-        {
-            "__id": 5,
-            "start":[50, 25],
-            "end" : [50, -25],
-            "speed_limit" : 50,
-            "start_intersection": 2,
-            "end_intersection": 5
-        },
-        {
-            "__id": 6,
-            "start":[0, -25],
-            "end" : [50, -25],
-            "speed_limit" : 50,
-            "start_intersection": 3,
-            "end_intersection": 5
-        },
-        {
-            "__id": 7,
-            "start":[50, -25],
-            "end" : [100, -100],
-            "speed_limit" : 50,
-            "start_intersection": 5,
-            "end_intersection": 6
-        },
-        {
-            "__id": 8,
-            "start":[100, -100],
-            "end" : [-100, -100],
-            "speed_limit" : 50,
-            "start_intersection": 6,
-            "end_intersection": 7
-        },
-        {
-            "__id": 9,
-            "start":[-50, -25],
-            "end" : [-100, -100],
-            "speed_limit" : 50,
-            "start_intersection": 4,
-            "end_intersection": 7
         }
     ],
     "intersections": [

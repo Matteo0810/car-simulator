@@ -1,5 +1,3 @@
-import json
-
 from engine.scene.scene import Scene
 from engine.scene.scenes.world_screen import WorldScreen
 from world.world import World

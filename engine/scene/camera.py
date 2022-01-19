@@ -31,7 +31,7 @@ class Camera:
     def get_direction(self):
         return self._direction
 
-    def set_direction(self, x, y ,z):
+    def set_direction(self, x, y, z):
         self._direction = Vector3(x, y, z)
 
     def get_distance_from(self, obj) -> float:
@@ -46,7 +46,7 @@ class Camera:
 
     def _get_data(self):
         return [self._x, self._y, self._z, self._angle, (self._width, self._height)]
-    
+
     @property
     def position(self):
         return Vector3(self._x, self._y, self._z)

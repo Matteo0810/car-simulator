@@ -5,13 +5,14 @@ from engine.model.material.mtl_loader import MTLLoader
 
 class ObjLoader:
 
-    def __init__(self, content: list, mtl_loader: MTLLoader, position=None, size=None):
+    def __init__(self, content: list, mtl_loader: MTLLoader, distance=None, position=None, size=None):
         self._materials = mtl_loader.get_materials()
         self._content = [line.split() for line in content if len(line) > 1]
 
         # positions
         self._position = position
         self._size = size
+        self._distance = distance
 
         # polygon
         self._meshes = self._get_meshes()
@@ -20,17 +21,17 @@ class ObjLoader:
         self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position: tuple = None, size: int = None, material_path:str = None):
+    def load(relative_path: str, position: tuple = None, size: int = None, distance: int = None, material_path: str = None):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
         return ObjLoader(
             open(relative_path, 'r', encoding="utf-8").readlines(),
             MTLLoader.load(material_path or relative_path),
-            position, size
+            distance, position, size
         )
 
     def _get_meshes(self) -> list:
-        return [Vertex(element[1:], self._position, self._size) for element in self._content if element[0] == 'v']
+        return [Vertex(element[1:], self._distance, self._position, self._size) for element in self._content if element[0] == 'v']
 
     def _get_faces(self) -> dict:
         result, content = {}, self._content

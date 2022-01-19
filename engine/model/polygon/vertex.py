@@ -4,13 +4,13 @@ from helpers.dotenv import get_env
 
 class Vertex:
 
-    def __init__(self, coordinates: list, position: tuple = None, scale: int = None):
+    def __init__(self, coordinates: list, distance: int = None, position: tuple = None, scale: int = None):
         x, y, z = coordinates
         self._x = float(x)
         self._y = float(y)
         self._z = float(z)
 
-        self._distance = 6
+        self._distance = distance or 6
         self._scale = scale or 100
         self._position = position or (get_env('WIDTH') // 2, get_env('HEIGHT') // 2)
 

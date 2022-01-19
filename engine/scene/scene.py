@@ -10,7 +10,7 @@ from engine.scene.controller import Controller
 
 class Scene(Canvas):
 
-    def __init__(self, root, world=None, controller=False):
+    def __init__(self, root, controller=False):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -93,6 +93,7 @@ class Scene(Canvas):
 
         button.place(x=x, y=y)
         return button
+
 
 class _FPS:
 
