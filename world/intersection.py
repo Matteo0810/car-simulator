@@ -7,7 +7,7 @@ from world.road import Path
 from helpers.utils import property_get
 
 
-class LightsType(Enum):
+class IntersectionType(Enum):
     # NONE: les voitures ne respectent que la priorité a droite
     NONE = 0
     
@@ -16,7 +16,7 @@ class LightsType(Enum):
     STOPS = 1
     
     # LIGHTS: les voies sont séparées en groupe de feu tricolores. Une voiture arrivant a une voie doit attendre que le
-    # feu de sa voie soit vert pour passer. Les feux alternes par groupe.
+    # feu de sa voie soit vert pour passer. Les feux alternent par groupes.
     LIGHTS = 2
 
 
@@ -46,7 +46,7 @@ class Intersection:
             inbounds est une liste de PathInfo
             outbounds est une liste de Path
         """
-        if ligths_type is None or type(ligths_type) is not LightsType:
+        if ligths_type is None or type(ligths_type) is not IntersectionType:
             raise TypeError(f"ligths_type must be of type LightsType, not {type(ligths_type)}")
         
         self._inbounds = inbounds
@@ -62,7 +62,7 @@ class Intersection:
         self._id = id_
     
     def tick(self, world, dt):
-        if self.ligths_type == LightsType.LIGHTS:
+        if self.ligths_type == IntersectionType.LIGHTS:
             self._lights_time -= dt
             if self._lights_time < 0:
                 self._lights_time = get_env("TRAFFIC_LIGHTS_DELAY")
@@ -76,11 +76,11 @@ class Intersection:
 
     @property
     def priority_ordered_inbounds(self):
-        if self.ligths_type == LightsType.NONE:
+        if self.ligths_type == IntersectionType.NONE:
             return [self._inbounds]
-        if self.ligths_type == LightsType.STOPS:
+        if self.ligths_type == IntersectionType.STOPS:
             return [[in_ for in_ in self._inbounds if not in_.has_stop], [in_ for in_ in self._inbounds if in_.has_stop]]
-        if self.ligths_type == LightsType.LIGHTS:
+        if self.ligths_type == IntersectionType.LIGHTS:
             return [[in_ for in_ in self._inbounds if in_.lights_group == self._green_group],
                     [in_ for in_ in self._inbounds if in_.lights_group != self._green_group]]
         raise AssertionError()
@@ -106,7 +106,7 @@ class Intersection:
                         priority = False
                 return priority
             else:
-                if self.ligths_type == LightsType.LIGHTS:
+                if self.ligths_type == IntersectionType.LIGHTS:
                     return False
                 for an_inbound in self.priority_ordered_inbounds[i]:
                     if len(an_inbound.get_inbound_cars(world)) > 0:

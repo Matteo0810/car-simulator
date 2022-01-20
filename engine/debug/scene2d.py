@@ -11,7 +11,7 @@ from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d
 from helpers.dotenv import get_env
 from helpers.utils import *
-from world.intersection import LightsType
+from world.intersection import IntersectionType
 
 pygame.font.init()
 DEFAULT_FONT = pygame.font.SysFont(pygame.font.get_default_font(), 20)
@@ -84,7 +84,7 @@ class Scene2d:
 
             if not self._debug:
                 for path in road.paths:
-                    if path.intersection.ligths_type == LightsType.LIGHTS:
+                    if path.intersection.ligths_type == IntersectionType.LIGHTS:
                         if path.intersection.is_green(path):
                             pygame.draw.rect(self.screen, (0, 255, 0), (
                                         to_pixel(path.end - path.direction * get_env("ROAD_WIDTH"), self._camera) + (

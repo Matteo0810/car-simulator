@@ -3,7 +3,7 @@ import json
 
 from helpers.vector import Vector2
 from world.road import Road
-from world.intersection import IntersectionBuilder, LightsType
+from world.intersection import IntersectionBuilder, IntersectionType
 
 
 class GroundType(Enum):
@@ -56,20 +56,20 @@ class World:
     @staticmethod
     def _get_intersections(loaded_intersections, j_content, si_id, ei_id):
         if si_id == -1:
-            start_intersection = IntersectionBuilder(LightsType.NONE, si_id)
+            start_intersection = IntersectionBuilder(IntersectionType.NONE, si_id)
         else:
             if si_id in loaded_intersections:
                 start_intersection = loaded_intersections[si_id]
             else:
-                start_intersection = IntersectionBuilder(LightsType[j_content["intersections"][si_id]["type"]], si_id)
+                start_intersection = IntersectionBuilder(IntersectionType[j_content["intersections"][si_id]["type"]], si_id)
     
         if ei_id == -1:
-            end_intersection = IntersectionBuilder(LightsType.NONE, ei_id)
+            end_intersection = IntersectionBuilder(IntersectionType.NONE, ei_id)
         else:
             if ei_id in loaded_intersections:
                 end_intersection = loaded_intersections[ei_id]
             else:
-                end_intersection = IntersectionBuilder(LightsType[j_content["intersections"][ei_id]["type"]], ei_id)
+                end_intersection = IntersectionBuilder(IntersectionType[j_content["intersections"][ei_id]["type"]], ei_id)
 
         loaded_intersections[si_id] = start_intersection
         loaded_intersections[ei_id] = end_intersection
@@ -77,13 +77,13 @@ class World:
     
     @staticmethod
     def _add_road(j_intersection, intersection, road_id, road, is_start):
-        if intersection.ligths_type == LightsType.NONE:
+        if intersection.ligths_type == IntersectionType.NONE:
             intersection.add_road(road, is_start)
     
-        elif intersection.ligths_type == LightsType.STOPS:
+        elif intersection.ligths_type == IntersectionType.STOPS:
             intersection.add_road(road, is_start, has_stop=(road_id in j_intersection["stops"]))
     
-        elif intersection.ligths_type == LightsType.LIGHTS:
+        elif intersection.ligths_type == IntersectionType.LIGHTS:
             group_id = -1
             for i in range(len(j_intersection["groups"])):
                 if road_id in j_intersection["groups"][i]:
