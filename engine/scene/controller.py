@@ -15,7 +15,7 @@ class Controller:
 
     def setup(self):
         self._scene.focus_set()
-        self._scene.bind('<Key>', self._move)
+        # self._scene.bind('<Key>', self._move)
         self._scene.bind('<MouseWheel>', self._zoom)
 
         self._scene.bind('<B1-Motion>', self._rotate)
@@ -34,8 +34,11 @@ class Controller:
         self._scene.add_label((width - 170, height - 130), "roulette : taille")
         self._scene.add_label((width - 185, height - 90), "z-q-s-d : mouvement")
         self._scene.add_label((width - 170, height - 50), "souris : rotation")
+        
+    def handle_keys(self, event):
+        self.get_moves(event)
 
-    def _move(self, event):
+    def get_moves(self, event):
         moves = {
             'z': ('y', 0.5),
             'q': ('x', 0.5),

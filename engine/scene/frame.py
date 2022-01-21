@@ -14,7 +14,7 @@ class Frame(Tk):
         # settings
         WIDTH, HEIGHT = get_env('WIDTH'), get_env('HEIGHT')
         self.title('Car simulator')
-        self.iconphoto(False, PhotoImage(file=get_path('world/assets/images/icon.png')))
+        self.iconphoto(False, PhotoImage(file=get_path('assets/images/icon.png')))
         self.geometry(f'{WIDTH}x{HEIGHT}')
         self.resizable(False, False)
 

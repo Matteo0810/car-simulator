@@ -9,7 +9,7 @@ class WorldsScreen(Scene):
     def __init__(self, root):
         super().__init__(root)
         self.worlds = [World.load(open(file_name, mode='r', encoding='utf-8').read())
-                       for file_name in get_folder_content('world/assets/worlds')]
+                       for file_name in get_folder_content('assets/worlds')]
 
         self.add_label((self.mid_width - 50, 200), "Mondes", 25)
 
