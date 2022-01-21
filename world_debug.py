@@ -8,13 +8,12 @@ from helpers.dotenv import dotenv, get_env
 from engine.debug.scene2d import Scene2d
 from world.world import World
 
-img_loading1 = pygame.image.load("loading1.png")
-img_bad = pygame.image.load("bad.png")
-img_good = pygame.image.load("good.png")
+img_bad = pygame.image.load("assets/bad.png")
+img_good = pygame.image.load("assets/good.png")
 
 
 def update_scene(screen):
-    json_world = json.loads(open("world/assets/worlds/forest.json", mode='r').read())
+    json_world = json.loads(open("assets/worlds/forest.json", mode='r').read())
     world = World.load(json_world)
     scene = Scene2d(screen, world, debug=True)
     scene.camera.set_zoom(2)
@@ -40,7 +39,6 @@ def main():
                     
         scene.update(0.1)
 
-        screen.blit(img_loading1, (10, 10))
         try:
             scene = update_scene(screen)
             screen.blit(img_good, (10, 10))

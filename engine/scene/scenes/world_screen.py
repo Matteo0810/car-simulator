@@ -1,21 +1,24 @@
-from engine.physics import check_collision
-from engine.scene.scene import Scene
-
-from world.world import World
-
 import json
 from time import time, sleep
 from threading import Thread
 
+from engine.physics import check_collision
+from engine.scene.scene import Scene
+from engine.car_controller import CarController
+from helpers.dotenv import get_env
+from world.world import World
+
 
 class WorldScreen(Scene):
-
+    world = None
+    
     def __init__(self, root):
         super().__init__(root, True)
         self._config = json.loads(open('world/assets/worlds_config.json', mode='r').read())
 
         self._default_camera.move(*self._config['camera']['position'])
         self._last_frame = time()
+        self.add_controller(CarController(self))
         # car = Car(self.world, Vector2(0, 0), 0, CarType("default", 2.2, 5, 1, (0, 255, 0), 15))
         # car.ai = CarController ? une classe qui extends de AI (voir PygameController)
         # self.world.cars.append(car)
@@ -64,7 +67,7 @@ class WorldScreen(Scene):
 
     def _reload(self, event):
         if event.char == 'r':
-            self.gui.use(WorldScreen.with_(World.load(open(f'world/assets/worlds/{self.world.props["file_name"]}.json'
+            self.gui.use(WorldScreen.with_(World.load(open(f'{get_env("ASSETS_DIR")}worlds/{self.world.props["file_name"]}.json'
                                                            , mode='r', encoding='utf-8').read())))
 
     @property

@@ -15,7 +15,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((get_env("WIDTH"), get_env("HEIGHT")))
 
-    json_world = json.loads(open("world/assets/worlds/forest.json", mode='r').read())
+    json_world = json.loads(open("assets/worlds/forest.json", mode='r').read())
     world = World.load(json_world)
     
     last_frame = time()

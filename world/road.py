@@ -105,7 +105,7 @@ class RoadModel:
     def __init__(self, start: list, end: list, models: Models):
         self._start = start
         self._end = end
-        self._model = models.add(f'{get_env("MODELS_DIR")}/roads/road',
+        self._model = models.add(f'{get_env("ASSETS_DIR")}models/roads/road',
                                  position=self._get_middle(),
                                  size=get_env('ROAD_WIDTH'))
 
