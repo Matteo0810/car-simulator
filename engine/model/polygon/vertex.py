@@ -1,21 +1,19 @@
 from math import pi, cos, sin
+
 from helpers.dotenv import get_env
+from helpers.vector import Vector3
 
 
 class Vertex:
 
-    def __init__(self, coordinates: list, distance: int = None, position: tuple = None, scale: int = None):
-        x, y, z = coordinates
-        self._x = float(x)
-        self._y = float(y)
-        self._z = float(z)
+    def __init__(self, coordinates: Vector3, obj_pos: Vector3, distance: int = 6):
+        self._x, self._y, self._z = tuple(coordinates)
+        self._obj_pos = obj_pos
 
-        self._distance = distance or 6
-        self._scale = scale or 100
-        self._position = position or (get_env('WIDTH') // 2, get_env('HEIGHT') // 2)
+        self._distance = distance
 
     def rotate(self, axis: str, angle: float):
-        angle = angle / 450 * 180 / pi
+        angle *= pi / 180
 
         if axis == 'z':
             x = self._x * cos(angle) - self._y * sin(angle)
@@ -42,29 +40,39 @@ class Vertex:
             self.__setattr__(var_name, self.__getattribute__(var_name) + newPos)
         except ValueError:
             raise ValueError('Axe invalide')
-
+ 
     def rescale(self, scale: int):
         self._scale = scale
 
-    def to_2d(self, camera_pos) -> list:
-        width, height = self._position
-        x = self._x - camera_pos.x
-        y = self._y - camera_pos.y
-        z = self._z - camera_pos.z
-        return [int(width + ((x * self._distance) / (z + self._distance)) * self._scale),
-                int(height + ((y * self._distance) / (z + self._distance)) * self._scale)]
+    def to_2d(self, camera) -> list:
+        X = self._x + self._obj_pos.x
+        Y = self._y + self._obj_pos.y
+        Z = self._z + self._obj_pos.z
+        
+        n = -camera.direction * camera.zoom * 1000
+        C = camera.position
+        
+        CA = Vector3(X, Y, Z) - C
 
-    def get_scale(self):
-        return self._scale
-
-    def get_z(self):
-        return self._z
-
-    def get_y(self):
-        return self._y
-
-    def get_x(self):
-        return self._x
+        try:
+            t = (n.x * (-n.x) + n.y * (-n.y) + n.z * (-n.z)) / (n.x * CA.x + n.y * CA.y + n.z * CA.z)
+            
+            CprimH = (t * CA - n)
+            
+            bx = CprimH.dot(camera.right) + get_env('WIDTH') / 2
+            by = -CprimH.dot(camera.up) + get_env('HEIGHT') / 2
+            
+            return [int(bx),
+                    int(by)]
+        except ZeroDivisionError:
+            return [1000, 1000]
+    
+    @property
+    def position(self):
+        return Vector3(self._x + self._obj_pos.x, self._y + self._obj_pos.y, self._z + self._obj_pos.z)
+    
+    def plan_distance(self, camera):
+        return camera.direction.dot(self.position - camera.position)
 
     def __iter__(self):
         return [self._x, self._y, self._z].__iter__()

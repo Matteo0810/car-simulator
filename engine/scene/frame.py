@@ -2,7 +2,6 @@ from tkinter import Tk, PhotoImage
 
 from helpers.dotenv import get_env
 from helpers.utils import get_path
-
 from engine.scene.scenes.before_title_screen import BeforeTitleScreen
 
 

@@ -1,16 +1,17 @@
 from engine.model.polygon.vertex import Vertex
 from engine.model.polygon.polygon import Polygon
 from engine.model.material.mtl_loader import MTLLoader
+from helpers.vector import Vector3
 
 
 class ObjLoader:
 
-    def __init__(self, content: list, mtl_loader: MTLLoader, distance=None, position=None, size=None):
+    def __init__(self, content: list, mtl_loader: MTLLoader, distance=6, position=None, size=1):
         self._materials = mtl_loader.get_materials()
         self._content = [line.split() for line in content if len(line) > 1]
 
         # positions
-        self._position = position
+        self._position = position or Vector3(0, 0, 0)
         self._size = size
         self._distance = distance
 
@@ -21,7 +22,7 @@ class ObjLoader:
         self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position: tuple = None, size: int = None, distance: int = None, material_path: str = None):
+    def load(relative_path: str, position: Vector3 = None, size: int = 1, distance: int = 6, material_path: str = None):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
         return ObjLoader(
@@ -31,7 +32,7 @@ class ObjLoader:
         )
 
     def _get_meshes(self) -> list:
-        return [Vertex(element[1:], self._distance, self._position, self._size) for element in self._content if element[0] == 'v']
+        return [Vertex(Vector3(*element[1:]) * self._size, self._position, self._distance) for element in self._content if element[0] == 'v']
 
     def _get_faces(self) -> dict:
         result, content = {}, self._content

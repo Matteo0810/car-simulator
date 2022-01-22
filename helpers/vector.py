@@ -151,7 +151,7 @@ class Vector3:
         return f"Vector3(*{(self.x, self.y, self.z)})"
 
     def __iter__(self):
-        return [self.x, self.y].__iter__()
+        return [self.x, self.y, self.z].__iter__()
 
     def __add__(self, other):
         if not isinstance(other, Vector3):

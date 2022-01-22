@@ -1,6 +1,7 @@
+import re
+
 from engine.model.animations.animations import Animations
 from engine.model.polygon.face import Face
-import re
 
 
 class Polygon:
@@ -32,9 +33,6 @@ class Polygon:
     def set_camera(self, camera):
         self._camera = camera
 
-    def get_scale(self):
-        return self._meshes[0].get_scale()
-
     def get_animations(self):
         return self._animations
 
@@ -49,5 +47,5 @@ class Polygon:
                 result.append(self._get_face(face, material))
         return sorted(
             result,
-            key=lambda vertex: vertex.avg_z()
+            key=lambda face: face.avg_dist()
         )

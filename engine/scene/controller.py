@@ -60,7 +60,8 @@ class Controller:
         elif event.delta < 0 and self._scale > 0:
             self._scale = 1
 
-        self._scene.update(lambda model: model.rescale(model.get_scale() + self._scale))
+        self._scene.get_camera().set_zoom(self._scene.get_camera().zoom + (-0.05, 0.05)[event.delta > 0])
+        self._scene.update()
 
     def _reset_rotate(self, _):
         self._previous = []
@@ -68,13 +69,18 @@ class Controller:
 
     def _rotate(self, event):
         if self._previous:
-            self._scene.update(lambda model: self._rotate_xy(model, event))
+            camera = self._scene.get_camera()
+            camera.set_direction(camera.yaw + (event.x - self._previous[0]) / 20, camera.pitch + (event.y - self._previous[1]) / 20)
+            self._scene.update()
         self._previous = [event.x, event.y]
 
     def _rotate_z(self, event):
-        if self._previous_z:
-            self._scene.update(lambda model: model.rotate('z', (event.x - self._previous_z) / 20))
-        self._previous_z = event.x
+        # la 3eme rotation n'est plus possible (rotation y: le roll, pas implémenté, la caméra est définie par yaw et pitch)
+        
+        #if self._previous_z:
+        #    self._scene.update(lambda model: model.rotate('z', (event.x - self._previous_z) / 20))
+        #self._previous_z = event.x
+        pass
 
     def _rotate_xy(self, model, event):
         model.rotate('x', (event.y - self._previous[1]) / 20)
