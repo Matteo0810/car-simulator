@@ -1,6 +1,5 @@
 from math import pi, cos, sin
 
-from helpers.dotenv import get_env
 from helpers.vector import Vector3
 
 
@@ -11,54 +10,64 @@ class Vertex:
         self._obj_pos = obj_pos
 
         self._distance = distance
+        
+        self._rotations = {'x': 0, 'y': 0, 'z': 0}
 
     def rotate(self, axis: str, angle: float):
         angle *= pi / 180
 
-        if axis == 'z':
-            x = self._x * cos(angle) - self._y * sin(angle)
-            y = self._y * cos(angle) + self._x * sin(angle)
-            z = self._z
-        elif axis == 'x':
-            y = self._y * cos(angle) - self._z * sin(angle)
-            z = self._z * cos(angle) + self._y * sin(angle)
-            x = self._x
-        elif axis == 'y':
-            x = self._x * cos(angle) - self._z * sin(angle)
-            z = self._z * cos(angle) + self._x * sin(angle)
-            y = self._y
+        if axis == 'z' or axis == 'x' or axis == 'y':
+            self._rotations[axis] += angle
         else:
             raise ValueError('Axe invalide')
 
-        self._x = x
-        self._y = y
-        self._z = z
+    def set_rotation(self, axis: str, angle: float):
+        angle *= pi / 180
 
-    def move(self, axis: str, newPos: float):
-        try:
-            var_name = f'_{axis}'
-            self.__setattr__(var_name, self.__getattribute__(var_name) + newPos)
-        except ValueError:
+        if axis == 'z' or axis == 'x' or axis == 'y':
+            self._rotations[axis] = angle
+        else:
             raise ValueError('Axe invalide')
- 
-    def rescale(self, scale: int):
-        self._scale = scale
+
+    def move(self, dx, dy, dz):
+        self._obj_pos += Vector3(dx, dy, dz)
+    
+    def set_obj_pos(self, x, y, z):
+        self._obj_pos = Vector3(x, y, z)
 
     def to_2d(self, camera) -> list:
-        X = self._x + self._obj_pos.x
-        Y = self._y + self._obj_pos.y
-        Z = self._z + self._obj_pos.z
-        return camera.get_projection(Vector3(X, Y, Z))
+        return camera.get_projection(self.position)
     
     @property
     def position(self):
-        return Vector3(self._x + self._obj_pos.x, self._y + self._obj_pos.y, self._z + self._obj_pos.z)
+        x = self._x
+        y = self._y
+        z = self._z
+        for axis, angle in self._rotations.items():
+            if axis == 'z':
+                X = x * cos(angle) - y * sin(angle)
+                Y = y * cos(angle) + x * sin(angle)
+                Z = z
+            elif axis == 'x':
+                Y = y * cos(angle) - z * sin(angle)
+                Z = z * cos(angle) + y * sin(angle)
+                X = x
+            elif axis == 'y':
+                X = x * cos(angle) - z * sin(angle)
+                Z = z * cos(angle) + x * sin(angle)
+                Y = y
+            
+            x = X
+            y = Y
+            z = Z
+
+        X = x + self._obj_pos.x
+        Y = y + self._obj_pos.y
+        Z = z + self._obj_pos.z
+        return Vector3(X, Y, Z)
     
     def plan_distance(self, camera):
         return camera.direction.dot(self.position - camera.position)
-
-    def __iter__(self):
-        return [self._x, self._y, self._z].__iter__()
 
     def __str__(self):
         return f'3d Coordinates ({self._x}, {self._y}, {self._z})'

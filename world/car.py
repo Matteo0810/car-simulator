@@ -1,5 +1,6 @@
 from math import *
 
+from engine.model.model import Model
 from engine.model.modeled import Modeled
 from engine.physics import reconstruct_car
 from helpers.utils import *
@@ -8,10 +9,10 @@ from helpers.vector import Vector2
 
 class Car(Modeled):
     def __init__(self, world, position, angle, car_type, ai=None):
-        super().__init__(car_type.model)
+        super().__init__(Model.load(car_type.model))
 
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
-        self._model = car_type
+        self._car_type = car_type
         self._width = width = car_type.width
         self._length = length = car_type.length
         self._color = car_type.default_color
@@ -48,7 +49,7 @@ class Car(Modeled):
 
             if not braking and wheel.actual_speed * sign(target_speed) < abs(target_speed):
                 actual_acceleration = min(target_speed - wheel.actual_speed,
-                                          self._model.acceleration * sign(target_speed),
+                                          self._car_type.acceleration * sign(target_speed),
                                           key=lambda x: sign(target_speed) * x) * (
                                           ground.grip * 0.6 if wheel.drifting else ground.grip)
                 wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
@@ -105,7 +106,7 @@ class Car(Modeled):
             wheel.last_position = Vector2(*wheel.position)
 
     world = property_get("world")
-    model = property_get("model")
+    car_type = property_get("car_type")
     color = property_get("color")
     steer_angle = property_getset("steer_angle")
     braking = property_getset("braking")

@@ -1,6 +1,6 @@
 class Color:
 
-    def __init__(self, r: int, g: int, b: int, alpha: float = 0):
+    def __init__(self, r: int, g: int, b: int, alpha: float = 1):
         self._r = round(r * alpha + (1.0 - alpha) * 255)
         self._g = round(g * alpha + (1.0 - alpha) * 255)
         self._b = round(b * alpha + (1.0 - alpha) * 255)

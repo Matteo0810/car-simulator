@@ -1,8 +1,5 @@
-import json
-
 from engine.model.objloader import ObjLoader
 from helpers.dotenv import get_env
-from helpers.vector import Vector2
 
 
 class Model:
@@ -20,7 +17,7 @@ class Model:
     
     @staticmethod
     def load(name):
-        j_hitbox = json.loads(get_env("ASSETS_DIR_DIR") + "models/" + name + "/hitbox.json.json")
-        hitbox = [Vector2(**p) for p in j_hitbox["points"]]
+        #j_hitbox = json.loads(get_env("ASSETS_DIR") + "models/" + name + "/hitbox.json")
+        #hitbox = [Vector2(**p) for p in j_hitbox["points"]]
         polygon = ObjLoader.load(get_env("ASSETS_DIR") + "models/" + name + "/" + name).get_polygon()
-        return Model(polygon, hitbox)
+        return Model(polygon, [])

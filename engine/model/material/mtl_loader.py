@@ -4,7 +4,7 @@ from engine.model.material.material import Material
 class MTLLoader:
 
     def __init__(self, content: list):
-        self._content = [line.split() for line in content if len(line) > 1]
+        self._content = [line.split("#")[0].split() for line in content if len(line.split("#")[0]) > 1]
         self._materials = self._parse_materials()
 
     @staticmethod

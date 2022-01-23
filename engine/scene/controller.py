@@ -34,6 +34,8 @@ class Controller:
         self._scene.add_label((width - 170, height - 50), "souris : rotation")
         
     def handle_keys(self, event):
+        # NE PLUS UTILISER
+        assert False
         self.get_moves(event)
         return self
 

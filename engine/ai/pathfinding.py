@@ -101,14 +101,14 @@ def find_path(scene, car, next_path, current_path):
             else:
                 if wheel_speed > 0 and velocity < path.road.speed_limit:
                     if sign(velocity) != sign(wheel_speed):
-                        vel_diff = car.model.acceleration * TIME_STEP
+                        vel_diff = car.car_type.acceleration * TIME_STEP
                     else:
-                        vel_diff = car.model.acceleration * TIME_STEP
+                        vel_diff = car.car_type.acceleration * TIME_STEP
                 if wheel_speed < 0 and velocity > -path.road.speed_limit:
                     if sign(velocity) != sign(wheel_speed):
-                        vel_diff = -car.model.acceleration * TIME_STEP
+                        vel_diff = -car.car_type.acceleration * TIME_STEP
                     else:
-                        vel_diff = -car.model.acceleration * TIME_STEP
+                        vel_diff = -car.car_type.acceleration * TIME_STEP
 
             # B, C, D, E = 0.01, 1.7, -100, -1.2
             # x = (velocity + vel_diff) * 25
@@ -155,7 +155,7 @@ def find_path(scene, car, next_path, current_path):
                     
                     dist = nearest_hitbox_point.distance(position)
                     
-                    if dist <= car.model.diagonal and node["time"] < 1:
+                    if dist <= car.car_type.diagonal and node["time"] < 1:
                         score += 10000000
                     # if dist <= car.model.diagonal:
                     #    score += (car.model.diagonal - dist)

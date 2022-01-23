@@ -31,7 +31,7 @@ class PygameController(AI):
         elif pygame.key.get_pressed()[self._controls["s"]]:
             return -self._bw_speed
         actual_speed = self._car.get_actual_back_wheels_speed()
-        return 0 if abs(actual_speed) < self._car.model.acceleration else actual_speed - copysign(self._car.model.acceleration, actual_speed)
+        return 0 if abs(actual_speed) < self._car.car_type.acceleration else actual_speed - copysign(self._car.car_type.acceleration, actual_speed)
 
     def get_steer_angle(self):
         steer_angle = 0

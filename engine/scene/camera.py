@@ -1,6 +1,6 @@
 from math import cos, sin, pi
 
-from helpers.vector import Vector3, Vector2
+from helpers.vector import Vector3
 from helpers.dotenv import get_env
 
 
@@ -16,7 +16,7 @@ class Camera:
         self._height = height or get_env('HEIGHT')
         self._yaw = 0
         self._pitch = 0
-        self._zoom = 1
+        self._zoom = 0.3
 
     def move(self, dx, dy, dz):
         self._x += dx
@@ -62,8 +62,8 @@ class Camera:
 
             CprimH = (t * CA - n)
 
-            bx = CprimH.dot(self.right) + get_env('WIDTH') / 2
-            by = -CprimH.dot(self.up) + get_env('HEIGHT') / 2
+            bx = CprimH.dot(self.right) + self._width / 2
+            by = -CprimH.dot(self.up) + self._height / 2
 
             return [int(bx),
                     int(by)]
@@ -71,10 +71,10 @@ class Camera:
             return None
 
     def is_in_plan(self, obj):
-        if type(obj) is Vector2:
-            return obj.x < 0 or obj.y < 0 or obj.x > get_env('WIDTH') or obj.y > get_env('HEIGHT')
+        if type(obj) is list:
+            return not (obj.x < 0 or obj.y < 0 or obj.x > self._width or obj.y > self._height)
         elif type(obj) is Vector3:
-            pass
+            return self.is_in_plan(self.get_projection(obj))
 
     @property
     def position(self):

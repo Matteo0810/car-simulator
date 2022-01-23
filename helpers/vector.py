@@ -22,6 +22,10 @@ class Vector2:
     def y(self):
         return self._y
 
+    @property
+    def z(self):
+        return 0
+
     def length_squared(self):
         return self.x ** 2 + self.y ** 2
 
@@ -32,6 +36,8 @@ class Vector2:
         return (self.x - other.x) ** 2 + (self.y - other.y) ** 2
 
     def distance(self, other):
+        if type(other) is Vector3:
+            return other.distance(self)
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
     def normalize(self):
@@ -124,6 +130,10 @@ class Vector3:
     def z(self):
         return self._z
 
+    @property
+    def xy(self):
+        return Vector2(self.x, self.y)
+
     def length_squared(self):
         return self.x ** 2 + self.y ** 2 + self.z ** 2
 
@@ -154,6 +164,8 @@ class Vector3:
         return [self.x, self.y, self.z].__iter__()
 
     def __add__(self, other):
+        if other == 0 or other is None:
+            return self
         if not isinstance(other, Vector3):
             raise TypeError()
         return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z)

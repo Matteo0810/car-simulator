@@ -17,6 +17,7 @@ class TitleScreen(Scene):
         
         self.get_camera().set_direction(0, 0)
         self.get_camera().set_position(0, 0, 0)
+        self.get_camera().set_zoom(1)
         car = models.add('car/car', position=Vector3(-2.8, 10, -2.7))
         car.rotate('y', 0).rotate('z', 30)
 

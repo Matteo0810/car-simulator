@@ -19,7 +19,6 @@ class Models(dict):
         polygon.set_camera(self._camera)
         self[self._model_id] = polygon
         self._model_id += 1
-        polygon.rotate('x', -90)
         return polygon
 
     def get(self, model_id: int) -> Polygon:
@@ -33,7 +32,11 @@ class Models(dict):
     def update(self, canvas, callback=None):
         if len(self) < 1:
             return
+        faces = []
         for polygon in self.all():
             if callback:
                 callback(polygon)
-            polygon.render(canvas)
+            faces.extend(polygon.faces)
+        
+        for face in sorted(faces, key=lambda f: f.avg_dist()):
+            face.create(canvas)
