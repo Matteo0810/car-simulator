@@ -11,6 +11,9 @@ from helpers.vector import Vector3, Vector2
 
 from world.world import World
 
+ROAD_MODEL_LENGTH = 7.6
+ROAD_MODEL_WIDTH = 4
+
 
 class WorldScreen(Scene):
     world = None
@@ -35,6 +38,7 @@ class WorldScreen(Scene):
 
         self.bind('<Key>', self._handle_keys)
         Thread(target=self._thread).start()
+        self._stop_thread = False
 
     def _render(self):
         self.get_models().add(f'grounds/ground_{self.world.props["type"]}/ground', size=100, position=Vector3(0, 0, 0))
@@ -114,3 +118,6 @@ class WorldScreen(Scene):
     @staticmethod
     def with_(world):
         return type("WorldScreen_Impl", (WorldScreen,), {"world": world})
+
+    def on_leave(self):
+        self._stop_thread = True

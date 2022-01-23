@@ -48,24 +48,7 @@ class Vertex:
         X = self._x + self._obj_pos.x
         Y = self._y + self._obj_pos.y
         Z = self._z + self._obj_pos.z
-        
-        n = -camera.direction * camera.zoom * 1000
-        C = camera.position
-        
-        CA = Vector3(X, Y, Z) - C
-
-        try:
-            t = (n.x * (-n.x) + n.y * (-n.y) + n.z * (-n.z)) / (n.x * CA.x + n.y * CA.y + n.z * CA.z)
-            
-            CprimH = (t * CA - n)
-            
-            bx = CprimH.dot(camera.right) + get_env('WIDTH') / 2
-            by = -CprimH.dot(camera.up) + get_env('HEIGHT') / 2
-            
-            return [int(bx),
-                    int(by)]
-        except ZeroDivisionError:
-            return [1000, 1000]
+        return camera.get_projection(Vector3(X, Y, Z))
     
     @property
     def position(self):

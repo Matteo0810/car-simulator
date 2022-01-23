@@ -1,6 +1,6 @@
 from math import cos, sin, pi
 
-from helpers.vector import Vector3
+from helpers.vector import Vector3, Vector2
 from helpers.dotenv import get_env
 
 
@@ -46,6 +46,35 @@ class Camera:
 
     def _get_data(self):
         return [self._x, self._y, self._z, (self._width, self._height)]
+
+    def get_projection(self, obj: Vector3):
+        X = obj.x
+        Y = obj.y
+        Z = obj.z
+
+        n = -self.direction * self.zoom * 1000
+        C = self.position
+
+        CA = Vector3(X, Y, Z) - C
+
+        try:
+            t = (n.x * (-n.x) + n.y * (-n.y) + n.z * (-n.z)) / (n.x * CA.x + n.y * CA.y + n.z * CA.z)
+
+            CprimH = (t * CA - n)
+
+            bx = CprimH.dot(self.right) + get_env('WIDTH') / 2
+            by = -CprimH.dot(self.up) + get_env('HEIGHT') / 2
+
+            return [int(bx),
+                    int(by)]
+        except ZeroDivisionError:
+            return None
+
+    def is_in_plan(self, obj):
+        if type(obj) is Vector2:
+            return obj.x < 0 or obj.y < 0 or obj.x > get_env('WIDTH') or obj.y > get_env('HEIGHT')
+        elif type(obj) is Vector3:
+            pass
 
     @property
     def position(self):

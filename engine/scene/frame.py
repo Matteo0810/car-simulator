@@ -24,6 +24,7 @@ class Frame(Tk):
     def use(self, scene):
         self._previous_scene = self._scene.__class__
         self._scene.destroy()
+        self._scene.on_leave()
         self._scene = scene(self)
         self._scene.show()
 
