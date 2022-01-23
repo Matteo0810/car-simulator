@@ -1,7 +1,8 @@
 from tkinter import Canvas, Label, Button
 from time import time
-
 from helpers.dotenv import get_env
+from helpers.improved_noise import noise
+
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 from engine.scene.controller import Controller
@@ -98,6 +99,9 @@ class Scene(Canvas):
     @property
     def is_dev(self):
         return get_env('ENV') == 'DEV'
+
+    def on_leave(self):
+        pass
 
 
 class _FPS:

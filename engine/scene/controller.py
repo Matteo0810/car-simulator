@@ -14,8 +14,6 @@ class Controller:
         self._scale = 0
 
     def setup(self):
-        self._scene.focus_set()
-        # self._scene.bind('<Key>', self._move)
         self._scene.bind('<MouseWheel>', self._zoom)
 
         self._scene.bind('<B1-Motion>', self._rotate)
@@ -37,13 +35,14 @@ class Controller:
         
     def handle_keys(self, event):
         self.get_moves(event)
+        return self
 
     def get_moves(self, event):
         moves = {
-            'z': ('y', 0.5),
-            'q': ('x', 0.5),
-            'd': ('x', -0.5),
-            's': ('y', -0.5)
+            'z': ('y', -0.5),
+            'q': ('x', -0.5),
+            'd': ('x', 0.5),
+            's': ('y', 0.5)
         }
         self._scene.update(lambda model: self._move_model(moves, model, event.char))
 

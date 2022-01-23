@@ -19,6 +19,7 @@ class Models(dict):
         polygon.set_camera(self._camera)
         self[self._model_id] = polygon
         self._model_id += 1
+        polygon.rotate('x', -90)
         return polygon
 
     def get(self, model_id: int) -> Polygon:

@@ -9,7 +9,7 @@ from helpers.vector import Vector2
 class Car(Modeled):
     def __init__(self, world, position, angle, car_type, ai=None):
         super().__init__(car_type.model)
-        
+
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
         self._model = car_type
         self._width = width = car_type.width
@@ -32,31 +32,32 @@ class Car(Modeled):
             self._wheels[i].position = position + Vector2.of_angle(wheel_angles[i] + angle) * car_type.diagonal / 2
             self._wheels[i].last_position = self._wheels[i].position
             self._wheels[i].angle = angle
-    
+
     def _accelerate(self, dt, target_speed, braking):
         for wheel in self._wheels:
             ground = self._world.get_ground_at(wheel.position)
-            
+
             slipping = wheel.velocity - Vector2.of_angle(wheel.angle, wheel.actual_speed)
             if wheel.drifting:
                 print("drifting:", True)
-            
+
             if not wheel.drifting:
                 wheel.drifting = False and slipping.length() > 10 / (1 - ground.grip)
             else:
                 wheel.drifting = slipping.length() > 9 / (1 - ground.grip)
-            
+
             if not braking and wheel.actual_speed * sign(target_speed) < abs(target_speed):
                 actual_acceleration = min(target_speed - wheel.actual_speed,
                                           self._model.acceleration * sign(target_speed),
-                                          key=lambda x: sign(target_speed) * x) * (ground.grip*0.6 if wheel.drifting else ground.grip)
+                                          key=lambda x: sign(target_speed) * x) * (
+                                          ground.grip * 0.6 if wheel.drifting else ground.grip)
                 wheel.velocity += actual_acceleration * Vector2.of_angle(wheel.angle) * dt
 
             if braking:
                 wheel.velocity *= 0.25 ** dt
-            
+
             projection = Vector2.of_angle(wheel.angle, wheel.actual_speed)
-            
+
             if wheel.drifting:
                 wheel.velocity *= 0.9 ** dt
             else:
@@ -67,8 +68,8 @@ class Car(Modeled):
                 wheel.velocity *= rotation_speed_loss ** dt * 0.9 ** dt
                 if dt * ground.friction_loss <= wheel.velocity.length():
                     wheel.velocity -= wheel.velocity.normalize() * dt * ground.friction_loss
-            
-            #engine.debug.scene2d.INSTANCE.add_debug_dot(wheel.position + wheel.velocity, (0, 255, 0))
+
+            # engine.debug.scene2d.INSTANCE.add_debug_dot(wheel.position + wheel.velocity, (0, 255, 0))
 
     def tick(self, dt):
         last_angle = self.angle
@@ -84,21 +85,21 @@ class Car(Modeled):
         self._wheels[2].angle += steer_angle
         self._wheels[3].angle += steer_angle
         self._accelerate(dt, target_speed, braking)
-        
+
         for wheel in self._wheels:
             wheel.position += wheel.velocity * dt
-        
+
         self.reconstruct()
-    
+
     def reconstruct(self):
         wheels_pre_fabrik = [w.position for w in self._wheels]
-        
+
         self._angle = reconstruct_car(self._wheels, self._width, self._length)
-        
+
         for i in range(4):
             wheel = self._wheels[i]
             wheel.velocity += (wheel.position - wheels_pre_fabrik[i]) / 1
-    
+
     def update_last_position(self, dt):
         for wheel in self._wheels:
             wheel.last_position = Vector2(*wheel.position)
@@ -114,23 +115,23 @@ class Car(Modeled):
 
     def get_actual_back_wheels_speed(self):
         return lerp(self._wheels[0].actual_speed, self._wheels[1].actual_speed, 0.5)
-    
+
     @property
     def velocity(self):
         return sum(w.velocity for w in self._wheels) / 4
-    
+
     @property
     def position(self):
         return sum(w.position for w in self._wheels) / 4
-    
+
     @property
     def angle(self):
         return self._angle
-    
+
     @property
     def wheels(self):
         return self._wheels[:]
-    
+
     @property
     def hitbox(self):
         return [wheel.position for wheel in self._wheels]
@@ -164,7 +165,7 @@ class CarType:
     width = property_get("width")
     length = property_get("length")
     acceleration = property_get("acceleration")
-    
+
     @property
     def diagonal(self):
         return (self.width ** 2 + self.length ** 2) ** 0.5

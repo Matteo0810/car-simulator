@@ -194,3 +194,8 @@ class Vector3:
 
     def __hash__(self):
         return ((bits(self.x) * 73856093) ^ (bits(self.y) * 19349663) ^ (bits(self.z) * 83492791)) % 0x80000000
+
+    @staticmethod
+    def from_vector2(vector2: Vector2, z=0):
+        x, y = vector2
+        return Vector3(x, y, z)

@@ -5,4 +5,20 @@ Mattéo Gaillard
 
 - musiques utilisées
 Cars
-Zizi
+
+- Blender
+Version utilisée 3.0.0 (3 décembre 2021)
+Créateur Ton Roosendaal
+Institut blender fondée en 2007
+Développé par Fondation Blender
+Formats lus .blend, OBJ, DAE,
+Alembic, format de fichier 3D Mesh, FBX,
+Biovision, Hierarchy, PLY, Extensible 3d
+Site web blender.org
+Environnement X86, x86_64, AMD64,
+ARMv8 et architecture MIPS
+Taille des données 199 Mo, 188 Mo et 147 Mo
+Type Logiciel de modélisation tridimensionnelle
+Le projet Apricot (Yo Frankie!)
+
+- Pygame
