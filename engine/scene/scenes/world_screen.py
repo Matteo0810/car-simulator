@@ -41,12 +41,12 @@ class WorldScreen(Scene):
 
         # self._car_controller = CarController()
         
-        for i in range(1, 2):
+        for i in range(1, 3):
             car = Car(self.world, Vector2(-10, 30 * i), 0, CarType("car", 2.2, 5, 1, (0, 255, 0), 10))
             car.ai = AIImpl(self.world.roads[0].paths[0], car)
             self.world.cars.append(car)
             # ne marche pas si ca tourne plusieurs fois
-            self.after(1000, lambda: car.ai.start_thread(None))
+            car.ai.start_thread(None)
 
         self.add_button((20, 20), "Quitter", lambda: self.gui.use(self.gui.scenes['title_screen']))
 
@@ -212,16 +212,28 @@ class WorldScreen(Scene):
     
     def build_ground(self):
         ground_offset = random.randint(0, 100000000)
+        seed1 = random.randint(0, 100000000)
+        seed2 = random.randint(0, 100000000)
     
         for x in range(-20, 20):
             for y in range(-20, 20):
-                freq, amp, bias = 0.4, 10, -9.9
+                freq, amp, bias = pi / 8, 10, -9.9
                 height00 = improved_noise.noise(x * freq + ground_offset, y * freq) * amp + bias
                 height01 = improved_noise.noise(x * freq + ground_offset, (y + 1) * freq) * amp + bias
                 height10 = improved_noise.noise((x + 1) * freq + ground_offset, y * freq) * amp + bias
                 height11 = improved_noise.noise((x + 1) * freq + ground_offset, (y + 1) * freq) * amp + bias
-            
+
                 face_width = 20
+                
+                dx00 = improved_noise.noise(x * 1 + seed1, y * 1) * face_width * 20
+                dy00 = improved_noise.noise(x * 1 + seed2, y * 1) * face_width * 20
+                dx01 = improved_noise.noise(x * 1 + seed1, (y + 1) * 1) * face_width * 20
+                dy01 = improved_noise.noise(x * 1 + seed2, (y + 1) * 1) * face_width * 20
+                dx10 = improved_noise.noise((x + 1) * 1 + seed1, y * 1) * face_width * 20
+                dy10 = improved_noise.noise((x + 1) * 1 + seed2, y * 1) * face_width * 20
+                dx11 = improved_noise.noise((x + 1) * 1 + seed1, (y + 1) * 1) * face_width * 20
+                dy11 = improved_noise.noise((x + 1) * 1 + seed2, (y + 1) * 1) * face_width * 20
+            
                 material = Material({"Kd": [0, 150/255, 0], "d": 1})
             
                 models = self.get_models()
@@ -230,23 +242,23 @@ class WorldScreen(Scene):
                 triangle1 = Polygon([], {})
                 triangle2 = Polygon([], {})
                 
-                if (x + y) % 2 == 0:
-                    triangle1.faces.append(Face([Vertex(Vector3(0, 0, height00), obj_pos),
-                                                 Vertex(Vector3(0, face_width, height01), obj_pos),
-                                                 Vertex(Vector3(face_width, 0, height10), obj_pos)
+                if random.random() < 0.5:
+                    triangle1.faces.append(Face([Vertex(Vector3(dx00, dy00, height00), obj_pos),
+                                                 Vertex(Vector3(dx01, dy01 + face_width, height01), obj_pos),
+                                                 Vertex(Vector3(face_width + dx10, dy10, height10), obj_pos)
                                                  ], material))
-                    triangle2.faces.append(Face([Vertex(Vector3(face_width, face_width, height11), obj_pos),
-                                                 Vertex(Vector3(0, face_width, height01), obj_pos),
-                                                 Vertex(Vector3(face_width, 0, height10), obj_pos)
+                    triangle2.faces.append(Face([Vertex(Vector3(face_width + dx11, face_width + dx11, height11), obj_pos),
+                                                 Vertex(Vector3(dx01, face_width + dx01, height01), obj_pos),
+                                                 Vertex(Vector3(face_width + dx10, dx10, height10), obj_pos)
                                                  ], material))
                 else:
-                    triangle1.faces.append(Face([Vertex(Vector3(0, face_width, height01), obj_pos),
-                                                 Vertex(Vector3(0, 0, height00), obj_pos),
-                                                 Vertex(Vector3(face_width, face_width, height11), obj_pos)
+                    triangle1.faces.append(Face([Vertex(Vector3(dx01, face_width + dx01, height01), obj_pos),
+                                                 Vertex(Vector3(dx00, dx00, height00), obj_pos),
+                                                 Vertex(Vector3(face_width + dx11, face_width + dx11, height11), obj_pos)
                                                  ], material))
-                    triangle2.faces.append(Face([Vertex(Vector3(face_width, 0, height10), obj_pos),
-                                                 Vertex(Vector3(0, 0, height00), obj_pos),
-                                                 Vertex(Vector3(face_width, face_width, height11), obj_pos)
+                    triangle2.faces.append(Face([Vertex(Vector3(face_width + dx10, dx10, height10), obj_pos),
+                                                 Vertex(Vector3(dx00, dx00, height00), obj_pos),
+                                                 Vertex(Vector3(face_width + dx11, face_width + dx11, height11), obj_pos)
                                                  ], material))
             
                 triangle1.set_camera(self.get_camera())
