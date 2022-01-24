@@ -22,3 +22,5 @@ Type Logiciel de modélisation tridimensionnelle
 Le projet Apricot (Yo Frankie!)
 
 - Pygame
+
+- © NSI PRODUCTION 2022
