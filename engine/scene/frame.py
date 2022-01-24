@@ -2,6 +2,7 @@ from tkinter import Tk, PhotoImage
 
 from helpers.dotenv import get_env
 from helpers.utils import get_path
+
 from engine.scene.scenes.before_title_screen import BeforeTitleScreen
 from engine.scene.scenes.title_screen import TitleScreen
 
@@ -21,18 +22,18 @@ class Frame(Tk):
         self._scene = BeforeTitleScreen(self)
         self._previous_scene = None
 
-    def use(self, scene):
+    scenes = {
+        "title_screen": TitleScreen
+    }
+
+    def use(self, screen):
         self._previous_scene = self._scene.__class__
         self._scene.destroy()
-        self._scene.on_leave()
-        self._scene = scene(self)
+        self._scene = screen(self)
         self._scene.show()
 
     def previous_scene(self):
         self.use(self._previous_scene)
-
-    def title_screen(self):
-        self.use(TitleScreen)
 
     def get_scene(self):
         return self._scene

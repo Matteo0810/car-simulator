@@ -5,12 +5,11 @@ from helpers.improved_noise import noise
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
-from engine.scene.controller import Controller
 
 
 class Scene(Canvas):
     
-    def __init__(self, root, controller=False):
+    def __init__(self, root):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -19,7 +18,6 @@ class Scene(Canvas):
         )
         
         self.gui = root
-        self._controllers = []
         self.width = get_env('WIDTH')
         self.height = get_env('HEIGHT')
         
@@ -32,18 +30,7 @@ class Scene(Canvas):
         if self.is_dev:
             self._fps = _FPS(self)
             self._fps.update()
-            
-            if controller:
-                self._controllers.append(Controller(self).setup())
-                
-    def add_controller(self, controller):
-        self._controllers.append(controller)
-                
-    def get_controller_keys(self, event):
-        if self._controllers and self.is_dev:
-            for controller in self._controllers:
-                controller.handle_keys(event)
-    
+
     def get_camera(self) -> Camera:
         return self._default_camera
     
@@ -99,9 +86,6 @@ class Scene(Canvas):
     @property
     def is_dev(self):
         return get_env('ENV') == 'DEV'
-
-    def on_leave(self):
-        pass
 
 
 class _FPS:

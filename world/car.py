@@ -2,7 +2,7 @@ from math import *
 
 from engine.model.model import Model
 from engine.model.modeled import Modeled
-from engine.physics import reconstruct_car
+from helpers.physics import reconstruct_car
 from helpers.utils import *
 from helpers.vector import Vector2
 

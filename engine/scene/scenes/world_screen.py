@@ -4,16 +4,19 @@ from math import cos, sin, pi
 from time import time, sleep
 from threading import Thread, main_thread
 
+from engine.scene.scene import Scene
+
 from engine.ai.car_ai import AIImpl
 from engine.model.material.material import Material
 from engine.model.polygon.face import Face
 from engine.model.polygon.polygon import Polygon
 from engine.model.polygon.vertex import Vertex
-from engine.physics import check_collision
-from engine.scene.scene import Scene
+
+from helpers.physics import check_collision
 from helpers import improved_noise
 from helpers.dotenv import get_env
 from helpers.vector import Vector3, Vector2
+
 from world.car import Car, CarType
 from world.world import World
 
@@ -25,7 +28,7 @@ class WorldScreen(Scene):
     world = None
 
     def __init__(self, root):
-        super().__init__(root, True)
+        super().__init__(root)
         self._config = json.loads(open(f'{get_env("ASSETS_DIR")}/worlds_config.json', mode='r').read())
 
         # self._car_controller = CarController()
@@ -35,7 +38,7 @@ class WorldScreen(Scene):
         self.world.cars.append(car)
         self.after(1000, lambda: car.ai.start_thread(None))
 
-        self.add_button((20, 20), "Quitter", self.gui.title_screen)
+        self.add_button((20, 20), "Quitter", lambda: self.gui.use(self.gui.scenes['title_screen']))
 
         # rendering
         camera = self.get_camera()
