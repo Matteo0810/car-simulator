@@ -5,11 +5,9 @@ from helpers.vector import Vector3
 
 class Vertex:
 
-    def __init__(self, coordinates: Vector3, obj_pos: Vector3, distance: int = 6):
+    def __init__(self, coordinates: Vector3, obj_pos: Vector3):
         self._x, self._y, self._z = tuple(coordinates)
         self._obj_pos = obj_pos
-
-        self._distance = distance
         
         self._rotations = {'x': 0, 'y': 0, 'z': 0}
 

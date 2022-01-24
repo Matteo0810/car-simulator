@@ -4,24 +4,32 @@ from math import cos, sin, pi
 from time import time, sleep
 from threading import Thread, main_thread
 
-from engine.scene.scene import Scene
+from PIL import ImageGrab
 
+from engine.scene.scene import Scene
 from engine.ai.car_ai import AIImpl
 from engine.model.material.material import Material
 from engine.model.polygon.face import Face
 from engine.model.polygon.polygon import Polygon
 from engine.model.polygon.vertex import Vertex
-
 from helpers.physics import check_collision
 from helpers import improved_noise
 from helpers.dotenv import get_env
 from helpers.vector import Vector3, Vector2
-
 from world.car import Car, CarType
 from world.world import World
 
-ROAD_MODEL_LENGTH = 7.6
-ROAD_MODEL_WIDTH = 4
+ROAD_MODEL_LENGTH = 8 * 1.75 - 0.1
+ROAD_MODEL_WIDTH = 8
+INTERSECTION_MODEL_WIDTH = 8
+
+
+def grab_image(root, widget):
+    x = root.winfo_rootx()+widget.winfo_x()
+    y = root.winfo_rooty()+widget.winfo_y()
+    x1 = x+widget.winfo_width()
+    y1 = y+widget.winfo_height()
+    return ImageGrab.grab().crop((x, y, x1, y1))
 
 
 class WorldScreen(Scene):
@@ -33,10 +41,12 @@ class WorldScreen(Scene):
 
         # self._car_controller = CarController()
         
-        car = Car(self.world, Vector2(0, 30), 0, CarType("car", 2.2, 5, 1, (0, 255, 0), 10))
-        car.ai = AIImpl(self.world.roads[0].paths[0], car)
-        self.world.cars.append(car)
-        self.after(1000, lambda: car.ai.start_thread(None))
+        for i in range(1, 2):
+            car = Car(self.world, Vector2(-10, 30 * i), 0, CarType("car", 2.2, 5, 1, (0, 255, 0), 10))
+            car.ai = AIImpl(self.world.roads[0].paths[0], car)
+            self.world.cars.append(car)
+            # ne marche pas si ca tourne plusieurs fois
+            self.after(1000, lambda: car.ai.start_thread(None))
 
         self.add_button((20, 20), "Quitter", lambda: self.gui.use(self.gui.scenes['title_screen']))
 
@@ -49,7 +59,7 @@ class WorldScreen(Scene):
         self._user_car = None
         self._is_user_driving = False
         
-        self._landscape_polygons = {}
+        self._landscape = None
         
         self._render()
         self.bind('<Key>', self._handle_keys)
@@ -60,10 +70,15 @@ class WorldScreen(Scene):
     def _render(self):
         self.build_ground()
         
+        pos_mul = 1.
+        pos_offset = Vector2(0, 0)
+        
         for intersection in self.intersections:
             middle = (sum(inbound.path.end for inbound in intersection.inbounds) + sum(outbound.start for outbound in intersection.outbounds))\
                      / len(intersection.inbounds) / 2
-            self.get_models().add('roads/intersections/intersection', position=Vector3.from_vector2(middle, 0.099))
+            middle *= pos_mul
+            middle += pos_offset
+            self.get_models().add('roads/intersections/intersection', size=1.3, position=Vector3.from_vector2(middle, 0.099))
 
         for road in self.world.roads:
             A, B = road.start, road.end
@@ -75,33 +90,36 @@ class WorldScreen(Scene):
 
             for i in range(int(AB.length() // ROAD_MODEL_LENGTH)):
                 mid_road = A + (i + 0.5) * AB.normalize() * ROAD_MODEL_LENGTH
-                self.get_models().add('roads/road', position=Vector3.from_vector2(mid_road, 0.1)).rotate('z', rotation)
+                mid_road *= pos_mul
+                mid_road += pos_offset
+                self.get_models().add('roads/road', size=1.75, position=Vector3.from_vector2(mid_road, 0.1)).rotate('z', rotation)
 
             mid_road_last = B - AB.normalize() * ROAD_MODEL_LENGTH / 2
-            self.get_models().add('roads/road', position=Vector3.from_vector2(mid_road_last, 0.1))\
+            mid_road_last *= pos_mul
+            mid_road_last += pos_offset
+            self.get_models().add('roads/road', size=1.75, position=Vector3.from_vector2(mid_road_last, 0.1))\
                 .rotate('z', rotation)
     
     def update(self, callback=None):
         self.clear()
         faces = []
         
-        for polygon in self.get_models().all():
-            if polygon not in self._landscape_polygons:
-                faces.extend((polygon, f) for f in polygon.faces)
-            else:
-                for tk_polygon in self._landscape_polygons[polygon]:
-                    tk_polygon.draw(self)
+        if not self._landscape:
+            self._landscape = []
+            for polygon in self.get_models().all():
+                faces.extend(polygon.faces)
+            
+            for face in sorted(faces, key=lambda f: f.avg_dist()):
+                self._landscape.append(face.create(self))
+        else:
+            for shape in self._landscape:
+                shape.draw(self)
         
-        for polygon, face in sorted(faces, key=lambda f: f[1].avg_dist()):
-            if polygon not in self._landscape_polygons:
-                self._landscape_polygons[polygon] = []
-            self._landscape_polygons[polygon].append(face.create(self))
-
         faces = []
         
         for car in self.world.cars:
             car.model.polygon.set_camera(self.get_camera())
-            car.model.polygon.set_position(*Vector3.from_vector2(car.position, 2))
+            car.model.polygon.set_position(*Vector3.from_vector2(car.position, 1))
             car.model.polygon.set_rotation('z', car.angle / pi * 180 + 90)
             faces.extend(car.model.polygon.faces)
             
@@ -151,7 +169,7 @@ class WorldScreen(Scene):
         
         if self._user_car:
             if self._user_car.position.distance(self.get_camera().position.xy) > 40:
-                self._landscape_polygons = {}
+                self._landscape = None
                 camera = self.get_camera()
                 camera.set_position(*Vector3.from_vector2(self._user_car.position, camera.position.z))
         

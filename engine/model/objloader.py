@@ -6,14 +6,13 @@ from helpers.vector import Vector3
 
 class ObjLoader:
 
-    def __init__(self, content: list, mtl_loader: MTLLoader, distance=6, position=None, size=1):
+    def __init__(self, content: list, mtl_loader: MTLLoader, position=None, size: float = 1):
         self._materials = mtl_loader.get_materials()
         self._content = [line.split() for line in content if len(line) > 1]
 
         # positions
         self._position = position or Vector3(0, 0, 0)
         self._size = size
-        self._distance = distance
 
         # polygon
         self._meshes = self._get_meshes()
@@ -22,17 +21,17 @@ class ObjLoader:
         self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position: Vector3 = None, size: int = 1, distance: int = 6, material_path: str = None):
+    def load(relative_path: str, position: Vector3 = None, size: float = 1, material_path: str = None):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
         return ObjLoader(
             open(relative_path, 'r', encoding="utf-8").readlines(),
             MTLLoader.load(material_path or relative_path),
-            distance, position, size
+            position, size
         )
 
     def _get_meshes(self) -> list:
-        return [Vertex(Vector3(*element[1:]) * self._size, self._position, self._distance) for element in self._content if element[0] == 'v']
+        return [Vertex(Vector3(*element[1:]) * self._size, self._position) for element in self._content if element[0] == 'v']
 
     def _get_faces(self) -> dict:
         result, content = {}, self._content
