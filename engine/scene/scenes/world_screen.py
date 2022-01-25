@@ -4,8 +4,6 @@ from math import cos, sin, pi
 from time import time, sleep
 from threading import Thread, main_thread
 
-from PIL import ImageGrab
-
 from engine.scene.scene import Scene
 from engine.ai.car_ai import AIImpl
 from engine.model.material.material import Material
@@ -22,14 +20,6 @@ from world.world import World
 ROAD_MODEL_LENGTH = 8 * 1.75 - 0.1
 ROAD_MODEL_WIDTH = 8
 INTERSECTION_MODEL_WIDTH = 8
-
-
-def grab_image(root, widget):
-    x = root.winfo_rootx()+widget.winfo_x()
-    y = root.winfo_rooty()+widget.winfo_y()
-    x1 = x+widget.winfo_width()
-    y1 = y+widget.winfo_height()
-    return ImageGrab.grab().crop((x, y, x1, y1))
 
 
 class WorldScreen(Scene):
