@@ -1,7 +1,8 @@
-from tkinter import Canvas, Label, Button
+from tkinter import ANCHOR, Canvas, Label, Button, PhotoImage
 from time import time
+from threading import Thread
+
 from helpers.dotenv import get_env
-from helpers.improved_noise import noise
 
 from engine.scene.models import Models
 from engine.scene.camera import Camera
@@ -9,7 +10,7 @@ from engine.scene.camera import Camera
 
 class Scene(Canvas):
     
-    def __init__(self, root):
+    def __init__(self, root, is_loading=False):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
@@ -25,6 +26,10 @@ class Scene(Canvas):
         self.mid_height = self.height // 2
         
         self._default_camera = Camera()
+
+        self._is_loading = is_loading
+        self._loading_thread = None
+
         self._models = Models(self._default_camera, None)
         
         if self.is_dev:
@@ -48,6 +53,9 @@ class Scene(Canvas):
         self.delete('all')
     
     def show(self):
+        if self._is_loading:
+            self.pack()
+            return
         self._models.update(self)
         self.pack()
     
@@ -82,7 +90,7 @@ class Scene(Canvas):
         
         button.place(x=x, y=y)
         return button
-    
+
     @property
     def is_dev(self):
         return get_env('ENV') == 'DEV'
