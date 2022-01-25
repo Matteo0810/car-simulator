@@ -1,9 +1,7 @@
-from tkinter import ANCHOR, Canvas, Label, Button, PhotoImage
+from tkinter import Canvas, Label, Button
 from time import time
-from threading import Thread
 
 from helpers.dotenv import get_env
-
 from engine.scene.models import Models
 from engine.scene.camera import Camera
 
@@ -56,7 +54,7 @@ class Scene(Canvas):
         if self._is_loading:
             self.pack()
             return
-        self._models.update(self)
+        self.update()
         self.pack()
     
     def add_label(self, coordinates: tuple, text: str, font_size: int = 16, color: str = "white"):
