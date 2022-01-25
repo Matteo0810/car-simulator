@@ -6,9 +6,15 @@ from helpers.vector import Vector3
 
 class ObjLoader:
 
-    def __init__(self, content: list, mtl_loader: MTLLoader, position=None, size: float = 1):
-        self._materials = mtl_loader.get_materials()
-        self._content = [line.split() for line in content if len(line) > 1]
+    def __init__(self, content: list, directory, position=None, size: float = 1):
+        self._materials = {}
+        
+        self._content = [line.split("#")[0].split() for line in content if len(line.split("#")[0]) > 1]
+        
+        for args in self._content:
+            if args[0].lower() == "mtllib":
+                file = directory + args[1]
+                self._materials.update(MTLLoader(open(file, mode='r', encoding="utf-8").readlines()).get_materials())
 
         # positions
         self._position = position or Vector3(0, 0, 0)
@@ -21,13 +27,12 @@ class ObjLoader:
         self._polygon = Polygon(self._meshes, self._faces)
 
     @staticmethod
-    def load(relative_path: str, position: Vector3 = None, size: float = 1, material_path: str = None):
+    def load(relative_path: str, position: Vector3 = None, size: float = 1):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
+        directory = relative_path.removesuffix(relative_path.split("/")[-1])
         return ObjLoader(
-            open(relative_path, 'r', encoding="utf-8").readlines(),
-            MTLLoader.load(material_path or relative_path),
-            position, size
+            open(relative_path, 'r', encoding="utf-8").readlines(), directory, position, size
         )
 
     def _get_meshes(self) -> list:

@@ -1,5 +1,4 @@
 import json
-import random
 from math import cos, sin, pi
 from time import time, sleep
 from threading import Thread, main_thread
@@ -15,7 +14,6 @@ from world.world import World
 
 ROAD_MODEL_LENGTH = 8 * 1.75 - 0.1
 ROAD_MODEL_WIDTH = 8
-INTERSECTION_MODEL_WIDTH = 8
 
 
 class WorldScreen(Scene):
@@ -69,7 +67,7 @@ class WorldScreen(Scene):
         for road in self.world.roads:
             A, B = road.start, road.end
             AB: Vector2 = (B - A)
-            A, B = A + AB.normalize() * get_env("ROAD_WIDTH")/4, road.end - AB.normalize() * get_env("ROAD_WIDTH")/4
+            A, B = A + AB.normalize() * get_env("ROAD_WIDTH")/2, road.end - AB.normalize() * get_env("ROAD_WIDTH")/2
             AB: Vector2 = (B - A)
 
             rotation = AB.angle() / pi * 180 + 90

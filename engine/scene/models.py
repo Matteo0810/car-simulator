@@ -12,9 +12,9 @@ class Models(dict):
         self._camera = camera
         self._loader = loader
 
-    def add(self, path: str, position: Vector3 = None, size: float = 1, material_path: str = None) -> Polygon:
+    def add(self, path: str, position: Vector3 = None, size: float = 1) -> Polygon:
         path = f'{get_env("ASSETS_DIR")}models/{path}'
-        model = ObjLoader.load(path, position=position, size=size, material_path=material_path)
+        model = ObjLoader.load(path, position=position, size=size)
         polygon = model.get_polygon()
         polygon.set_camera(self._camera)
         self[self._model_id] = polygon
