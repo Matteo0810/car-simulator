@@ -19,8 +19,8 @@ class TitleScreen(Scene):
         self.get_camera().set_position(0, 0, 0)
         self.get_camera().set_zoom(1)
 
-        car = models.add('car/car', position=Vector3(-2.8, 10, -2.7))
-        car.rotate('y', 0).rotate('z', 30)
+        car = models.add('car/car', position=Vector3(2.8, 10, -2.7))
+        car.rotate('y', 0).rotate('z', -30)
 
         self.add_button((self.mid_width - 30, 260), "Mondes", lambda: self.gui.use(WorldsScreen), 20)
         self.add_button((self.mid_width - 30, 310), "Options", lambda: self.gui.use(SettingsScreen), 20)

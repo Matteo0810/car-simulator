@@ -52,7 +52,7 @@ class Camera:
         Y = obj.y
         Z = obj.z
 
-        n = -self.direction * self.zoom * 1000
+        n = self.direction * self.zoom * 1000
         C = self.position
 
         CA = Vector3(X, Y, Z) - C
@@ -63,7 +63,7 @@ class Camera:
             CprimH = (t * CA - n)
 
             bx = CprimH.dot(self.right) + self._width / 2
-            by = -CprimH.dot(self.up) + self._height / 2
+            by = CprimH.dot(self.up) + self._height / 2
 
             return [int(bx),
                     int(by)]
