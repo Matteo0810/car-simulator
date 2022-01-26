@@ -43,7 +43,7 @@ class TitleScreen(Scene):
         for i in range(len(tree_positions)):
             x, y = tree_positions[i]
             
-            tree_model = random.randint(0, 1)
+            tree_model = random.randint(0, 0)
             if tree_model == 0:
                 tree = models.add("tree1/lowpolytree", position=Vector3(x, y, -1))
                 tree.rotate('x', 180).rotate('z', random.randint(0, 360))

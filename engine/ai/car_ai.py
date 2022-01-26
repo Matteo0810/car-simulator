@@ -110,6 +110,14 @@ class AIImpl(AI):
         
         self._lock.release()
     
+    @property
+    def path(self):
+        return self._path
+    
+    @property
+    def next_path(self):
+        return self._next_path
+    
     def start_thread(self, scene):
         if not self._my_thread:
             self._my_thread = PFThread(self._car, scene)

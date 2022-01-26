@@ -5,7 +5,7 @@ import pygame
 
 from engine.ai.car_ai import AIImpl
 from engine.debug.controller import PygameController
-from engine.physics import check_collision
+from helpers.physics import check_collision
 from world.car import Car, CarType
 from helpers.vector import Vector2
 from engine.debug.camera2d import Camera2d

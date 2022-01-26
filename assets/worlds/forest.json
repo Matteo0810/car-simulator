@@ -7,83 +7,99 @@
     "roads": [
         {
             "__id": 0,
-            "start":[-50, 25],
-            "end" : [0, 25],
+            "start":[-100, 100],
+            "end" : [0, 100],
             "speed_limit" : 50,
             "start_intersection": 0,
             "end_intersection": 1
         },
         {
             "__id": 1,
-            "start":[50, 25],
-            "end" : [0, 25],
+            "start":[100, 100],
+            "end" : [0, 100],
             "speed_limit" : 50,
             "start_intersection": 2,
             "end_intersection": 1
         },
         {
             "__id": 2,
-            "start":[0, 25],
-            "end" : [0, -25],
+            "start":[0, 100],
+            "end" : [0, 0],
             "speed_limit" : 50,
             "start_intersection": 1,
             "end_intersection": 3
         },
         {
             "__id": 3,
-            "start":[-50, 25],
-            "end" : [-50, -25],
+            "start":[-100, 100],
+            "end" : [-100, 0],
             "speed_limit" : 50,
             "start_intersection": 0,
             "end_intersection": 4
         },
         {
             "__id": 4,
-            "start":[-50, -25],
-            "end" : [0, -25],
+            "start":[-100, 0],
+            "end" : [0, 0],
             "speed_limit" : 50,
             "start_intersection": 4,
             "end_intersection": 3
         },
         {
             "__id": 5,
-            "start":[50, 25],
-            "end" : [50, -25],
+            "start":[100, 100],
+            "end" : [100, 0],
             "speed_limit" : 50,
             "start_intersection": 2,
             "end_intersection": 5
         },
         {
             "__id": 6,
-            "start":[0, -25],
-            "end" : [50, -25],
+            "start":[0, 0],
+            "end" : [100, 0],
             "speed_limit" : 50,
             "start_intersection": 3,
             "end_intersection": 5
         },
         {
             "__id": 7,
-            "start":[50, -25],
-            "end" : [100, -100],
+            "start":[0, 0],
+            "end" : [0, -100],
             "speed_limit" : 50,
-            "start_intersection": 5,
+            "start_intersection": 3,
             "end_intersection": 6
         },
         {
             "__id": 8,
-            "start":[100, -100],
-            "end" : [-100, -100],
+            "start":[100, 0],
+            "end" : [100, -100],
+            "speed_limit" : 50,
+            "start_intersection": 5,
+            "end_intersection": 7
+        },
+        {
+            "__id": 9,
+            "start":[0, -100],
+            "end" : [100, -100],
             "speed_limit" : 50,
             "start_intersection": 6,
             "end_intersection": 7
         },
         {
-            "__id": 9,
-            "start":[-50, -25],
+            "__id": 10,
+            "start":[-100, 0],
             "end" : [-100, -100],
             "speed_limit" : 50,
             "start_intersection": 4,
-            "end_intersection": 7
+            "end_intersection": 8
+        },
+        {
+            "__id": 11,
+            "start":[0, -100],
+            "end" : [-100, -100],
+            "speed_limit" : 50,
+            "start_intersection": 6,
+            "end_intersection": 8
         }
     ],
     "intersections": [
@@ -108,7 +124,7 @@
             "__id": 3,
             "type": "LIGHTS",
             "groups": [
-                [2],
+                [2, 7],
                 [4, 6]
             ]
         },
@@ -126,6 +142,10 @@
         },
         {
             "__id": 7,
+            "type": "NONE"
+        },
+        {
+            "__id": 8,
             "type": "NONE"
         }
     ]

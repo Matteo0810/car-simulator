@@ -25,9 +25,12 @@ class WorldScreen(Scene):
 
         # self._car_controller = CarController()
         
-        for i in range(1,2):
-            car = Car(self.world, Vector2(-10, 30 * i), 0, CarType("car", 2.2, 5, 1, (0, 255, 0), 10))
-            car.ai = AIImpl(self.world.roads[0].paths[0], car)
+        car_models = ["low_car_red", "low_car_blue"] * 3
+        
+        for i in range(1):
+            path = self.world.roads[i].paths[0]
+            car = Car(self.world, path.start + path.direction * 10, path.direction.angle(), CarType(car_models[i-1], 2.2, 5, 1, (0, 255, 0), 10))
+            car.ai = AIImpl(path, car)
             self.world.cars.append(car)
             # ne marche pas si ca tourne plusieurs fois
             car.ai.start_thread(None)
@@ -38,7 +41,7 @@ class WorldScreen(Scene):
         camera = self.get_camera()
         camera.set_direction(*self._config['camera']['direction'])
         camera.move(*self._config['camera']['position'])
-        camera.set_zoom(0.6)
+        camera.set_zoom(0.8)
         
         self._user_car = None
         self._is_user_driving = False
@@ -148,14 +151,19 @@ class WorldScreen(Scene):
         if self._stop_thread:
             return
         
+        max_car_distance = 40
+        
         if len(self.world.cars) > 0 and not self._user_car:
             self._user_car = self.world.cars[0]
         
         if self._user_car:
-            if self._user_car.position.distance(self.get_camera().position.xy) > 40:
+            if self._user_car.position.distance(self.get_camera().position.xy) > max_car_distance:
                 self._landscape = None
                 camera = self.get_camera()
-                camera.set_position(*Vector3.from_vector2(self._user_car.position, camera.position.z))
+                car = self._user_car
+                camera_tp = car.ai.next_path.start if isinstance(car.ai, AIImpl) else car.position
+                camera_pos = min(max_car_distance-1, camera_tp.distance(car.position)) * (camera_tp - car.position).normalize() + car.position
+                camera.set_position(*Vector3.from_vector2(camera_pos, camera.position.z))
         
         self.update()
         
