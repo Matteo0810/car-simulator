@@ -7,7 +7,7 @@ from engine.scene.scene import Scene
 from engine.ai.car_ai import AIImpl
 
 from helpers.physics import check_collision
-from helpers.improved_noise import build_ground
+from helpers.build_ground import build_ground
 from helpers.dotenv import get_env
 from helpers.vector import Vector3, Vector2
 
