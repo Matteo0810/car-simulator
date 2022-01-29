@@ -2,7 +2,6 @@ from tkinter import Tk, PhotoImage
 
 from helpers.dotenv import get_env
 from helpers.utils import get_path
-
 from engine.scene.scenes.before_title_screen import BeforeTitleScreen
 from engine.scene.scenes.title_screen import TitleScreen
 
@@ -21,6 +20,9 @@ class Frame(Tk):
 
         self._scene = BeforeTitleScreen(self)
         self._previous_scene = None
+        
+        import main
+        self.after(1000, main.start_music)
 
     scenes = {
         "title_screen": TitleScreen
