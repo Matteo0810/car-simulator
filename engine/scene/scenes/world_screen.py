@@ -1,12 +1,17 @@
 import json
+import random
 from math import cos, sin, pi
 from time import time, sleep
 from threading import Thread, main_thread
 
+from engine.model.material.material import Material
+from engine.model.polygon.face import Face
+from engine.model.polygon.polygon import Polygon
+from engine.model.polygon.vertex import Vertex
 from engine.scene.scene import Scene
 from engine.ai.car_ai import AIImpl
 from helpers.physics import check_collision
-from helpers.improved_noise import build_ground
+from helpers.improved_noise import noise
 from helpers.dotenv import get_env
 from helpers.vector import Vector3, Vector2
 from world.car import Car, CarType
@@ -32,7 +37,6 @@ class WorldScreen(Scene):
             car = Car(self.world, path.start + path.direction * 10, path.direction.angle(), CarType(car_models[i-1], 2.2, 5, 1, (0, 255, 0), 10))
             car.ai = AIImpl(path, car)
             self.world.cars.append(car)
-            # ne marche pas si ca tourne plusieurs fois
             car.ai.start_thread(None)
 
         self.add_button((20, 20), "Quitter", lambda: self.gui.use(self.gui.scenes['title_screen']))
@@ -55,7 +59,7 @@ class WorldScreen(Scene):
         self.after(100, self.update_loop)
 
     def _render(self):
-        build_ground(self.get_models(), self.get_camera())
+        self.build_ground(self.get_models(), self.get_camera())
         
         pos_mul = 1.
         pos_offset = Vector2(0, 0)
@@ -138,7 +142,7 @@ class WorldScreen(Scene):
         while main_thread().is_alive() and not self._stop_thread:
             frame_start = time()
             dt = (frame_start - last_frame)
-            self._tick(dt * 0.5)
+            self._tick(dt * 1)
             last_frame = frame_start
             
             sleep(max(0., 0.01 - (time() - frame_start)))
@@ -201,5 +205,61 @@ class WorldScreen(Scene):
 
     def on_leave(self):
         self._stop_thread = True
+
+    def build_ground(self, models, camera, face_width=40, min_x=-20, min_y=-20, max_x=20, max_y=20, amp=10):
+        ground_offset = random.randint(0, 100000000)
+        seed1 = random.randint(0, 100000000)
+        seed2 = random.randint(0, 100000000)
     
-   
+        for x in range(min_x, max_x):
+            for y in range(min_y, max_y):
+                freq, bias = pi / 8, -9.9
+                height00 = noise(x * freq + ground_offset, y * freq) * amp + bias
+                height01 = noise(x * freq + ground_offset, (y + 1) * freq) * amp + bias
+                height10 = noise((x + 1) * freq + ground_offset, y * freq) * amp + bias
+                height11 = noise((x + 1) * freq + ground_offset, (y + 1) * freq) * amp + bias
+            
+                dx00 = noise(x * 1 + seed1, y * 1) * face_width * 20
+                dy00 = noise(x * 1 + seed2, y * 1) * face_width * 20
+                dx01 = noise(x * 1 + seed1, (y + 1) * 1) * face_width * 20
+                dy01 = noise(x * 1 + seed2, (y + 1) * 1) * face_width * 20
+                dx10 = noise((x + 1) * 1 + seed1, y * 1) * face_width * 20
+                dy10 = noise((x + 1) * 1 + seed2, y * 1) * face_width * 20
+                dx11 = noise((x + 1) * 1 + seed1, (y + 1) * 1) * face_width * 20
+                dy11 = noise((x + 1) * 1 + seed2, (y + 1) * 1) * face_width * 20
+            
+                material = Material({"Kd": [0, 150 / 255, 0], "d": 1})
+            
+                obj_pos = Vector3(x * face_width, y * face_width, 0)
+            
+                triangle1 = Polygon([], {})
+                triangle2 = Polygon([], {})
+            
+                if random.random() < 0.5:
+                    triangle1.faces.append(Face([Vertex(Vector3(dx00, dy00, height00), obj_pos),
+                                                 Vertex(Vector3(dx01, dy01 + face_width, height01), obj_pos),
+                                                 Vertex(Vector3(face_width + dx10, dy10, height10), obj_pos)
+                                                 ], material))
+                    triangle2.faces.append(
+                        Face([Vertex(Vector3(face_width + dx11, face_width + dy11, height11), obj_pos),
+                              Vertex(Vector3(dx01, face_width + dx01, height01), obj_pos),
+                              Vertex(Vector3(face_width + dx10, dx10, height10), obj_pos)
+                              ], material))
+                else:
+                    triangle1.faces.append(Face([Vertex(Vector3(dx01, face_width + dx01, height01), obj_pos),
+                                                 Vertex(Vector3(dx00, dx00, height00), obj_pos),
+                                                 Vertex(Vector3(face_width + dx11, face_width + dy11, height11),
+                                                        obj_pos)
+                                                 ], material))
+                    triangle2.faces.append(Face([Vertex(Vector3(face_width + dx10, dx10, height10), obj_pos),
+                                                 Vertex(Vector3(dx00, dx00, height00), obj_pos),
+                                                 Vertex(Vector3(face_width + dx11, face_width + dy11, height11),
+                                                        obj_pos)
+                                                 ], material))
+            
+                triangle1.set_camera(camera)
+                triangle2.set_camera(camera)
+            
+                models[models._model_id] = triangle1
+                models[models._model_id + 1] = triangle2
+                models._model_id += 2
