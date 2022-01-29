@@ -8,7 +8,7 @@ from helpers.dotenv import dotenv
 from engine.scene.frame import Frame
 
 if sys.platform == 'win32':
-    pass
+    import windows_sound as sound_module
 
 
 MUSIC_ON = False
@@ -26,7 +26,6 @@ def start_music():
 
 
 def stop_music():
-    global sound_module
     try:
         sound_module.stopsound()
     except BaseException as e:
