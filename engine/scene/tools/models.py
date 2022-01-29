@@ -6,11 +6,10 @@ from helpers.vector import Vector3
 
 class Models(dict):
 
-    def __init__(self, camera, loader):
+    def __init__(self, camera):
         super().__init__()
         self._model_id = 1
         self._camera = camera
-        self._loader = loader
 
     def add(self, path: str, position: Vector3 = None, size: float = 1) -> Polygon:
         path = f'{get_env("ASSETS_DIR")}models/{path}'
@@ -24,19 +23,7 @@ class Models(dict):
     def get(self, model_id: int) -> Polygon:
         if model_id in self:
             return self[model_id]
-        raise ValueError('Objet introuvable')
+        raise ValueError('Model introuvable')
 
     def all(self):
         return self.values()
-
-    def update(self, canvas, callback=None):
-        if len(self) < 1:
-            return
-        faces = []
-        for polygon in self.all():
-            if callback:
-                callback(polygon)
-            faces.extend(polygon.faces)
-        
-        for face in sorted(faces, key=lambda f: f.avg_dist()):
-            face.create(canvas)

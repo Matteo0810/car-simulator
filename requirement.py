@@ -1,5 +1,4 @@
 import sys
-import subprocess
 
 
 class VersionException(Exception):
@@ -11,6 +10,6 @@ if sys.version_info >= (3, 9):
 
 for module in ["tkinter", "pygame"]:
     try:
-        subprocess.call(f'pip install {module}')
-    except ModuleNotFoundError:
-        raise ModuleNotFoundError(f'Impossible d\'installer le module {module}.')
+        __import__(module)
+    except RuntimeError:
+        raise RuntimeError(f'Veuillez installer le module {module}.')

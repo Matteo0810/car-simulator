@@ -1,6 +1,7 @@
 from engine.model.polygon.vertex import Vertex
 from engine.model.polygon.polygon import Polygon
 from engine.model.material.mtl_loader import MTLLoader
+
 from helpers.vector import Vector3
 
 
@@ -36,7 +37,8 @@ class ObjLoader:
         )
 
     def _get_meshes(self) -> list:
-        return [Vertex(Vector3(*element[1:]) * self._size, self._position) for element in self._content if element[0] == 'v']
+        return [Vertex(Vector3(*element[1:]) * self._size, self._position)
+                for element in self._content if element[0] == 'v']
 
     def _get_faces(self) -> dict:
         result, content = {}, self._content

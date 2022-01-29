@@ -1,4 +1,5 @@
 from engine.scene.scene import Scene
+
 from helpers.dotenv import get_env
 
 
@@ -14,7 +15,8 @@ class CreditsScreen(Scene):
                                    credit.replace('-', ''), ((16, 20)[credit.startswith('-')]))
             self.up(label, height)
         height += 40 * 15
-        quit_button = self.add_button((self.mid_width - 100, height), "Retour au menu", self.gui.previous_scene)
+
+        quit_button = self.add_button((self.mid_width - 100, height), "Retour au menu", self.gui.use_last_scene)
         self.up(quit_button, height, min_height=get_env("HEIGHT") - 40)
 
     def up(self, label, height, min_height=-100):

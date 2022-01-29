@@ -2,8 +2,11 @@ from tkinter import Tk, PhotoImage
 
 from helpers.dotenv import get_env
 from helpers.utils import get_path
+
 from engine.scene.scenes.before_title_screen import BeforeTitleScreen
 from engine.scene.scenes.title_screen import TitleScreen
+from engine.scene.scenes.worlds_screen import WorldsScreen
+from engine.scene.scenes.credits_screen import CreditsScreen
 
 
 class Frame(Tk):
@@ -19,29 +22,26 @@ class Frame(Tk):
         self.resizable(False, False)
 
         self._scene = BeforeTitleScreen(self)
-        self._previous_scene = None
+        self._last_scene = None
         
         import main
         self.after(1000, main.start_music)
 
-    scenes = {
-        "title_screen": TitleScreen
+    screens = {
+        "title": TitleScreen,
+        "worlds": WorldsScreen,
+        "credits": CreditsScreen
     }
 
     def use(self, screen):
-        self._previous_scene = self._scene.__class__
+        self._last_scene = self._scene.__class__
+        self._scene.events.emit('leave')
         self._scene.destroy()
         self._scene = screen(self)
         self._scene.show()
 
-    def previous_scene(self):
-        self.use(self._previous_scene)
-
-    def get_scene(self):
-        return self._scene
-
-    def get_models(self):
-        return self._scene.get_models()
+    def use_last_scene(self):
+        self.use(self._last_scene)
 
     def show(self):
         self._scene.show()

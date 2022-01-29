@@ -17,7 +17,5 @@ class Model:
     
     @staticmethod
     def load(name):
-        #j_hitbox = json.loads(get_env("ASSETS_DIR") + "models/" + name + "/hitbox.json")
-        #hitbox = [Vector2(**p) for p in j_hitbox["points"]]
         polygon = ObjLoader.load(get_env("ASSETS_DIR") + "models/" + name + "/" + name).get_polygon()
         return Model(polygon, [])

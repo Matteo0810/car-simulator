@@ -22,6 +22,7 @@ class Camera:
         self._x += dx
         self._y += dy
         self._z += dz
+        return self
 
     def set_width(self, width: int):
         self._width = width
@@ -31,15 +32,18 @@ class Camera:
 
     def set_zoom(self, zoom):
         self._zoom = zoom
+        return self
 
     def set_direction(self, yaw, pitch):
         self._yaw = (yaw + 180) % 360 - 180
         self._pitch = max(-90, min(90, (pitch + 180) % 360 - 180))
+        return self
 
     def set_position(self, x, y, z):
         self._x = x
         self._y = y
         self._z = z
+        return self
 
     def __iter__(self):
         return iter(self._get_data())

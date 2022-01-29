@@ -1,22 +1,29 @@
 from tkinter import Canvas, Label, Button
-from time import time
 
+from helpers.event_emitter import EventEmitter
 from helpers.dotenv import get_env
-from engine.scene.models import Models
-from engine.scene.camera import Camera
+
+from engine.scene.tools.models import Models
+from engine.scene.tools.camera import Camera
+from engine.scene.tools.fps import FPS
 
 
 class Scene(Canvas):
     
-    def __init__(self, root, is_loading=False):
+    def __init__(self, root, title=None):
         super().__init__(
             master=root,
             height=get_env('HEIGHT'),
             width=get_env('WIDTH'),
             bg="black"
         )
-        
+
         self.gui = root
+        self.events = EventEmitter()
+
+        self._buttons = []
+        self._title = title
+
         self.width = get_env('WIDTH')
         self.height = get_env('HEIGHT')
         
@@ -25,14 +32,14 @@ class Scene(Canvas):
         
         self._default_camera = Camera()
 
-        self._is_loading = is_loading
-        self._loading_thread = None
-
-        self._models = Models(self._default_camera, None)
+        self._models = Models(self._default_camera)
         
         if self.is_dev:
-            self._fps = _FPS(self)
+            self._fps = FPS(self)
             self._fps.update()
+
+    def set_buttons(self, buttons):
+        self._buttons = buttons
 
     def get_camera(self) -> Camera:
         return self._default_camera
@@ -40,9 +47,15 @@ class Scene(Canvas):
     def get_models(self) -> Models:
         return self._models
     
-    def update(self, callback=None):
+    def update(self):
         self.clear()
-        self._models.update(self, callback)
+
+        faces = []
+        for polygon in self.get_models().all():
+            faces.extend(polygon.faces)
+
+        for face in sorted(faces, key=lambda f: f.avg_dist()):
+            face.create(self)
         
         if self.is_dev:
             self._fps.update()
@@ -51,12 +64,15 @@ class Scene(Canvas):
         self.delete('all')
     
     def show(self):
-        if self._is_loading:
-            self.pack()
-            return
+        if self._title:
+            self.add_label((self.mid_width - 100, 200), self._title, 25)
+        for button, i in zip(self._buttons, range(len(self._buttons))):
+            self.add_button((self.mid_width - 30, 260 + 49 * i), text=button['text'],
+                            callback=button['callback'], font_size=20)
+
         self.update()
-        self.pack()
-    
+        self.place(x=-2, y=-2)
+
     def add_label(self, coordinates: tuple, text: str, font_size: int = 16, color: str = "white"):
         x, y = coordinates
         label = Label(self,
@@ -92,27 +108,3 @@ class Scene(Canvas):
     @property
     def is_dev(self):
         return get_env('ENV') == 'DEV'
-
-
-class _FPS:
-    
-    def __init__(self, scene):
-        self._scene = scene
-        self._count = 0
-        self._last = time()
-        self._label = None
-    
-    def _update_count(self):
-        current = time()
-        if (current - self._last) > 1:
-            self._count = 0
-            self._last = current
-            return
-        self._count += 1
-    
-    def update(self):
-        self._update_count()
-        if self._label is not None:
-            self._label['text'] = f'[Dev] FPS: {self._count}'
-            return
-        self._label = self._scene.add_label((get_env('WIDTH') // 2, 15), f'[Dev] FPS: 0')

@@ -1,4 +1,4 @@
-from engine.scene.models import Models
+from engine.scene.tools.models import Models
 from helpers.utils import *
 from helpers.vector import Vector2
 from helpers.dotenv import get_env

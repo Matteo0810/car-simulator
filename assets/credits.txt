@@ -21,6 +21,10 @@ Taille des données 199 Mo, 188 Mo et 147 Mo
 Type Logiciel de modélisation tridimensionnelle
 Le projet Apricot (Yo Frankie!)
 
-- Pygame
+- Bibliothèques
+Pygame
+Tkinter
+Cerveaux ©
+FFMPEG
 
 - © NSI PRODUCTION 2022

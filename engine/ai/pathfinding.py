@@ -157,8 +157,8 @@ def find_path(scene, car, next_path, current_path):
                     
                     if dist <= car.car_type.diagonal and node["time"] < 1:
                         score += 10000000
-                    # if dist <= car.model.diagonal:
-                    #    score += (car.model.diagonal - dist)
+                    # if dist <= low_car_default.model.diagonal:
+                    #    score += (low_car_default.model.diagonal - dist)
             
             node["score"] = score
             node["car_position"] = position

@@ -137,9 +137,9 @@ class Scene2d:
                 l[0] += dt
                 pygame.draw.rect(self.screen, l[1], (to_pixel(dot, self._camera) + (2, 2)))
 
-        # if len(world.car.A) > 0:
-        #    print(max(world.car.A.items(), key=lambda t: t[1]))
-        # for x, y in world.car.A.items():
+        # if len(world.low_car_default.A) > 0:
+        #    print(max(world.low_car_default.A.items(), key=lambda t: t[1]))
+        # for x, y in world.low_car_default.A.items():
         #    pygame.draw.rect(self.screen, (0, 0, 0), (x, y * 100, 1, 1))
 
     def reset(self):
@@ -155,10 +155,10 @@ class Scene2d:
             "d": pygame.K_RIGHT
         }
 
-        green_car = Car(self._world, Vector2(0, -50), 0, CarType("car", 2.2, 5, 1, (0, 255, 0), 15))
+        green_car = Car(self._world, Vector2(0, -50), 0, CarType("low_car_default", 2.2, 5, 1, (0, 255, 0), 15))
         green_car.ai = PygameController(green_car, self, 100, 50)
 
-        blue_car = Car(self._world, Vector2(0, -40), 0, CarType("car", 2.2, 5, 1, (0, 0, 255), 15))
+        blue_car = Car(self._world, Vector2(0, -40), 0, CarType("low_car_default", 2.2, 5, 1, (0, 0, 255), 15))
         blue_car.ai = PygameController(blue_car, self, 100, 50, blue_controls)
         # (0, 0, 255),
         colors = [(255, 0, 0), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
@@ -170,7 +170,7 @@ class Scene2d:
             path = self._world.roads[i].paths[
                 0 if i != 3 and i != 4 else 1]  # Vector2(random.random() * 200 - 100, random.random() * 100)
             car = Car(self._world, path.start, path.direction.angle(),
-                      CarType("car", 2.2, 5, 1, colors[i], 10))
+                      CarType("low_car_default", 2.2, 5, 1, colors[i], 10))
             car.ai = AIImpl(path, car)
             cars.append(car)
 
