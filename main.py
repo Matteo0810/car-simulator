@@ -1,5 +1,9 @@
 import sys
 
+import requirement
+
+requirement.check()
+
 from helpers.dotenv import dotenv
 from engine.scene.frame import Frame
 
@@ -11,7 +15,6 @@ MUSIC_ON = False
 
 
 def start_music():
-    global sound_module
     try:
         sound_module.playsound("musics/title_screen.wav", 1)  # volume est inutilisé
     except BaseException as e:

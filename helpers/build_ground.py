@@ -1,10 +1,9 @@
 from math import pi
 import random
 
+from helpers.improved_noise import noise
 from helpers.vector import Vector3
-
 from engine.model.material.material import Material
-
 from engine.model.polygon.face import Face
 from engine.model.polygon.vertex import Vertex
 from engine.model.polygon.polygon import Polygon
