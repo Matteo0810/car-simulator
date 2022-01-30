@@ -24,23 +24,6 @@ class AI(ABC):
         pass
 
 
-class DefinedAI(AI):
-    def __init__(self, car):
-        self._car = car
-        self.wheel_speed = 0
-        self.braking = False
-        self.steer_angle = 0
-    
-    def get_wheel_speed(self):
-        return self.wheel_speed * 5 / max(5, abs(self._car.get_actual_front_wheels_speed()))
-    
-    def get_steer_angle(self):
-        return self.steer_angle
-    
-    def is_braking(self):
-        return self.braking
-
-
 TIME_STEP = 0.5
 FORESEE_TIME = 2
 
