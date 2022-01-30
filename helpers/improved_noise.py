@@ -1,5 +1,8 @@
 from math import floor
 
+# implémentation en python du bruit de perlin
+# COPYRIGHT 2002 KEN PERLIN
+
 
 p = [151, 160, 137, 91, 90, 15,
      131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
@@ -16,19 +19,15 @@ p = [151, 160, 137, 91, 90, 15,
      138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180] * 2
 
 
-def fade(t):
+def _fade(t):
     return t * t * t * (t * (t * 6 - 15) + 10)
 
 
-def lerp(t, a, b):
+def _lerp(t, a, b):
     return a + t * (b - a)
 
 
-def lerpt(t, a, b):
-    return (lerp(t, a[0], b[0]), lerp(t, a[1], b[1]), lerp(t, a[2], b[2]))
-
-
-def grad(hash_, x, y, z):
+def _grad(hash_, x, y, z):
     h = hash_ & 15
     u = x if h < 8 else y
     v = y if h < 4 else (x if h == 12 or h == 14 else z)
@@ -44,9 +43,9 @@ def noise(x, y=0, z=0):
     y -= floor(y)
     z -= floor(z)
 
-    u = fade(x)
-    v = fade(y)
-    w = fade(z)
+    u = _fade(x)
+    v = _fade(y)
+    w = _fade(z)
 
     A = p[X] + Y
     AA = p[A] + Z
@@ -55,11 +54,11 @@ def noise(x, y=0, z=0):
     BA = p[B] + Z
     BB = p[B + 1] + Z
 
-    return lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z),
-                                grad(p[BA], x - 1, y, z)),
-                        lerp(u, grad(p[AB], x, y - 1, z),
-                             grad(p[BB], x - 1, y - 1, z))),
-                lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1),
-                             grad(p[BA + 1], x - 1, y, z - 1)),
-                     lerp(u, grad(p[AB + 1], x, y - 1, z - 1),
-                          grad(p[BB + 1], x - 1, y - 1, z - 1))))
+    return _lerp(w, _lerp(v, _lerp(u, _grad(p[AA], x, y, z),
+                                   _grad(p[BA], x - 1, y, z)),
+                          _lerp(u, _grad(p[AB], x, y - 1, z),
+                                _grad(p[BB], x - 1, y - 1, z))),
+                 _lerp(v, _lerp(u, _grad(p[AA + 1], x, y, z - 1),
+                                _grad(p[BA + 1], x - 1, y, z - 1)),
+                       _lerp(u, _grad(p[AB + 1], x, y - 1, z - 1),
+                             _grad(p[BB + 1], x - 1, y - 1, z - 1))))
