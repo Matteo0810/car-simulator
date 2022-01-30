@@ -1,4 +1,5 @@
 import sys
+import pkgutil
 
 
 class VersionException(Exception):
@@ -10,7 +11,5 @@ def check():
         raise VersionException('Version python invalide >= 3.9.')
     
     for module in ["tkinter", "pygame"]:
-        try:
-            __import__(module)
-        except ImportError:
+        if not pkgutil.get_loader(module):
             raise RuntimeError(f'Veuillez installer le module {module}.')
