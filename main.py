@@ -36,11 +36,12 @@ def stop_music():
     MUSIC_ON = False
 
 
-if __name__ == "__main__":
-    main()
-    
 def main():
     dotenv()
-
+    
     frame = Frame()
     frame.show()
+
+
+if __name__ == "__main__":
+    main()
