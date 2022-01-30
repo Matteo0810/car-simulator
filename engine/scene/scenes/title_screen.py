@@ -1,7 +1,6 @@
 import random
 
 from engine.scene.scene import Scene
-
 from helpers.vector import Vector3, Vector2
 from helpers.utils import lerp
 
@@ -51,4 +50,4 @@ class TitleScreen(Scene):
             ng = int(lerp(100, 200, i / self.height))
             nb = int(lerp(0, 255, i / self.height))
             color = "#%02x%02x%02x" % (nr, ng, nb)
-            self.create_line(0, i, self.width, i, tags=("gradient",), fill=color)
+            self.create_line(0, i, self.width+2, i, tags=("gradient",), fill=color)
