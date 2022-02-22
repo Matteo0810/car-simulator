@@ -9,7 +9,10 @@ from helpers.vector import Vector2
 
 class Car(Modeled):
     def __init__(self, world, position, angle, car_type, ai=None):
-        super().__init__(Model.load(car_type.model))
+        if car_type.model:
+            super().__init__(Model.load(car_type.model))
+        else:
+            super().__init__(None)
 
         self._wheels = [Wheel(Vector2(0, 0), 0) for _ in range(4)]
         self._car_type = car_type

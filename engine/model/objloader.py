@@ -3,6 +3,7 @@ from engine.model.polygon.polygon import Polygon
 from engine.model.material.mtl_loader import MTLLoader
 
 from helpers.vector import Vector3
+from helpers.utils import removesuffix
 
 
 class ObjLoader:
@@ -31,7 +32,7 @@ class ObjLoader:
     def load(relative_path: str, position: Vector3 = None, size: float = 1):
         if len(relative_path.split('.')) < 2:
             relative_path += ".obj"
-        directory = relative_path.removesuffix(relative_path.split("/")[-1])
+        directory = removesuffix(relative_path, relative_path.split("/")[-1])
         return ObjLoader(
             open(relative_path, 'r', encoding="utf-8").readlines(), directory, position, size
         )

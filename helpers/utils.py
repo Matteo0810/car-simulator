@@ -55,3 +55,9 @@ def get_path(path):
 def get_folder_content(path):
     root_dir = get_path(path)
     return [os.path.join(root_dir, file) for file in os.listdir(root_dir)]
+
+
+def removesuffix(string, suffix):
+    if string[len(string)-len(suffix):] == suffix:
+        return string[:-len(suffix)]
+    return string
